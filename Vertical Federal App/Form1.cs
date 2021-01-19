@@ -26,7 +26,6 @@ namespace Vertical_Federal_App
         private List<GaugeBlockSet> reference_gauge_sets;
         private List<GaugeBlockSet> calibration_gauge_sets;
         private List<Stack> suitable_gauges;
-        private List<Measurement> measurements;
         private Material steel;
         private Material tungsten_carbide;
         private Material ceramic;
@@ -49,7 +48,6 @@ namespace Vertical_Federal_App
             INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             calibration_gauge_sets = new List<GaugeBlockSet>();  //make a new list for calibration gauge sets
             reference_gauge_sets = new List<GaugeBlockSet>();
-            measurements = new List<Measurement>();
             radiobuttionclearcalled = false;
         }
 
@@ -787,14 +785,17 @@ namespace Vertical_Federal_App
             current_measurement.R1 = R1;
             current_measurement.R2 = R2;
             current_measurement.CalSetSerial = setSerialTextBox.Text;
-            current_measurement.CalGaugeSerial = working_gauge.SerialNumber;
-            current_measurement.Nominal = working_gauge.Size;
+
+            current_measurement.CalibrationGauge = working_gauge;
+            //current_measurement.CalGaugeSerial = working_gauge.SerialNumber;
+            //current_measurement.Nominal = working_gauge.Size;
 
 
             current_measurement.ReferenceStack = ref_g;
-            current_measurement.CalGaugeExpCoeff = working_gauge.GaugeBlockMaterial.exp_coeff;
-            current_measurement.CalGaugeYoungMod = working_gauge.GaugeBlockMaterial.youngs_modulus;
-            current_measurement.CalGaugePoissonRatio = working_gauge.GaugeBlockMaterial.poissons_ratio;
+            //current_measurement.CalGaugeExpCoeff = working_gauge.GaugeBlockMaterial.exp_coeff;
+            //current_measurement.CalGaugeYoungMod = working_gauge.GaugeBlockMaterial.youngs_modulus;
+            //current_measurement.CalGaugePoissonRatio = working_gauge.GaugeBlockMaterial.poissons_ratio;
+           
             
 
 

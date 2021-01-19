@@ -8,6 +8,7 @@ namespace Vertical_Federal_App
 {
     public class Measurement
     {
+        private static List<Measurement> measurements;  
         private const double oz_f_to_n_f = 0.27801385;  //newtons
         private GaugeBlock calibration_gauge;
         private double reference_deformation_top_probe;
@@ -154,6 +155,17 @@ namespace Vertical_Federal_App
             set { gauge_stack = value; }
         }
 
+        public GaugeBlock CalibrationGauge
+        {
+            get { return calibration_gauge; }
+            set { calibration_gauge = value; }
+        }
+        public static List<Measurement> Measurements
+        {
+            get { return measurements; }
+            set { measurements = value; }
+        }
+
         public double calculateVariation()
         {
             double mean_of_centre_value =  (C1+C2+C3)/3;
@@ -221,15 +233,12 @@ namespace Vertical_Federal_App
             }
 
             top_probe_deformation_cal_gauge = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(top_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(cal_gauge_poissons_ratio, 2)) / (Math.PI * cal_gauge_youngs_mod*1000000000)), 2 / 3) *
+                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus*1000000000)), 2 / 3) *
                     Math.Pow(1 / probe_d, 1 / 3);
 
             bottom_probe_deformation_cal_gauge = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(cal_gauge_poissons_ratio, 2)) / (Math.PI * cal_gauge_youngs_mod * 1000000000)), 2 / 3) *
+                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
                     Math.Pow(1 / probe_d, 1 / 3); 
-
-            
-
 
         }
         public void CalculateDeviations(ref double corrected_centre_dev,ref double corrected_extreme_dev, ref double corrected_length_mm)
