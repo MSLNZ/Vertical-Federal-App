@@ -209,39 +209,45 @@ namespace Vertical_Federal_App
             double probe_youngs_mod = fed.ProbeYoungsMod*1000000000; //Pa
             double probe_poissons_ratio = fed.ProbePoissonsRatio;
 
+            double v_ball = (1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod);
+            double v_plate_ref_gauge1 = (1 - Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus);
+            double v_plate_ref_gauge2 = (1 - Math.Pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.youngs_modulus);
+            double v_plate_ref_gauge3 = (1 - Math.Pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.youngs_modulus);
+            double v_plate_cal_gauge = (1 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus);
+
+            double term1 = (Math.Pow(3 * Math.PI, 2 / 3) / 2);
+            double term2_top = Math.Pow(top_probe_force, 2 / 3);
+            double term2_bottom = Math.Pow(bottom_probe_force, 2 / 3);
+            double term3_ref_top = Math.Pow(v_ball + v_plate_ref_gauge1, 2/3);
+            double term3_ref_bot1 = Math.Pow(v_ball + v_plate_ref_gauge1, 2 / 3);
+            double term3_ref_bot2 = Math.Pow(v_ball + v_plate_ref_gauge2, 2 / 3);
+            double term3_ref_bot3 = Math.Pow(v_ball + v_plate_ref_gauge3, 2 / 3);
+            double term3_cal = Math.Pow(v_ball + v_plate_cal_gauge, 2 / 3);
+            double term4 = Math.Pow(1 / probe_d, 1 / 3);
+
+
+
             //The top gauge should alway be assigned to Gauge1 in the case where a stack is made from gauges with difference mechanical properties.
-            reference_deformation_top_probe = Math.Pow((3 * Math.PI),(2 / 3))/2*Math.Pow(top_probe_force,2/3)*
-                Math.Pow(((1-Math.Pow(probe_poissons_ratio, 2))/(Math.PI*probe_youngs_mod)+(1-Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2))/(Math.PI* gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus * 1000000000)),2/3)*
-                Math.Pow(1/probe_d,1/3);
+            reference_deformation_top_probe = term1 * term2_top * term3_ref_top * term4;
 
             if (singleton)
             {
-                reference_deformation_bottom_probe = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
-                Math.Pow(1 / probe_d, 1 / 3);
+                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot1 * term4;
             }
             else if (two_gauge_stack)
             {
                 
-                reference_deformation_bottom_probe = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
-                    Math.Pow(1 / probe_d, 1 / 3);
+                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot2 * term4;
             }
             else
             {
               
-                reference_deformation_bottom_probe = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
-                    Math.Pow(1 / probe_d, 1 / 3);
+                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot3 * term4;
             }
 
-            top_probe_deformation_cal_gauge = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(top_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus*1000000000)), 2 / 3) *
-                    Math.Pow(1 / probe_d, 1 / 3);
+            top_probe_deformation_cal_gauge = term1 * term2_top * term3_cal * term4;
 
-            bottom_probe_deformation_cal_gauge = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
-                    Math.Pow(1 / probe_d, 1 / 3); 
+            bottom_probe_deformation_cal_gauge = term1 * term2_bottom * term3_cal * term4;
 
         }
         public void CalculateDeviations(ref double corrected_centre_dev, ref double corrected_extreme_dev, ref double corrected_length_mm_inch)
