@@ -19,7 +19,7 @@ namespace Vertical_Federal_App
     public partial class VerticalFedForm : Form
     {
         private SerialDataReveived sdr;
-
+        private bool header_written;
         private VerticalFederal federal;
         private GaugeBlock working_gauge;
         private Stack ref_g;
@@ -45,10 +45,11 @@ namespace Vertical_Federal_App
             sdr = new SerialDataReveived(DataReceived);
             working_gauge = new GaugeBlock();
             INI2XML.DoIni2XmlConversion(ref messagesRichTextBox);
-            INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
+            if(INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             calibration_gauge_sets = new List<GaugeBlockSet>();  //make a new list for calibration gauge sets
             reference_gauge_sets = new List<GaugeBlockSet>();
             radiobuttionclearcalled = false;
+            header_written = false;
         }
 
         private void Comopenbutton_Click(object sender, EventArgs e)
@@ -62,7 +63,7 @@ namespace Vertical_Federal_App
             setSerialTextBox.Enabled = true;
             gaugeSerialTextBox.Enabled = true;
             referenceSetComboBox.Enabled = true;
-            calGaugeSizeTextBox.Enabled = true;
+            calGaugeNominalTextBox.Enabled = true;
             gaugeParametersGroupBox.Enabled = true;
             suitableReferenceGaugesComboBox.Enabled = true;
             expNumericUpDown.Enabled = true;
@@ -82,62 +83,80 @@ namespace Vertical_Federal_App
                     case (int)RadioButtonPos.R1:
                         rb_position = (int)RadioButtonPos.C1; //this is the next position we need to go to
                         R1TextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         R1RadioButton.Checked = false;
                         centreRadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         C1label.ForeColor = System.Drawing.Color.Green;
                         break;
                     case (int)RadioButtonPos.C1:
                         rb_position = (int)RadioButtonPos.A; //this is the next position we need to go to
                         C1TextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         centreRadioButton.Checked = false;
                         topRightRadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         C1label.ForeColor = System.Drawing.Color.Black;
                         break;
                     case (int)RadioButtonPos.A:
                         rb_position = (int)RadioButtonPos.B; //this is the next position we need to go to
                         ATextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         topRightRadioButton.Checked = false;
                         topLeftRadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         break;
                     case (int)RadioButtonPos.B:
                         rb_position = (int)RadioButtonPos.C2; //this is the next position we need to go to
                         BTextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         topLeftRadioButton.Checked = false;
                         centreRadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         C2label.ForeColor = System.Drawing.Color.Green;
                         break;
                     case (int)RadioButtonPos.C2:
                         rb_position = (int)RadioButtonPos.D; //this is the next position we need to go to
                         C2TextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         centreRadioButton.Checked = false;
                         bottomRightRadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         C2label.ForeColor = System.Drawing.Color.Black;
                         break;
                     case (int)RadioButtonPos.D:
                         rb_position = (int)RadioButtonPos.E; //this is the next position we need to go to
                         DTextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         topRightRadioButton.Checked = false;
                         topLeftRadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         break;
                     case (int)RadioButtonPos.E:
                         rb_position = (int)RadioButtonPos.C3; //this is the next position we need to go to
                         ETextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         topLeftRadioButton.Checked = false;
                         centreRadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         C3label.ForeColor = System.Drawing.Color.Green;
                         break;
                     case (int)RadioButtonPos.C3:
                         rb_position = (int)RadioButtonPos.R2; //this is the next position we need to go to
                         C3TextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         centreRadioButton.Checked = false;
                         R2RadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         C3label.ForeColor = System.Drawing.Color.Black;
                         break;
                     case (int)RadioButtonPos.R2:
                         rb_position = (int)RadioButtonPos.R1; //this is the next position we need to go to
                         R2TextBox.Text = data;
+                        radiobuttionclearcalled = true;
                         R2RadioButton.Checked = false;
                         R1RadioButton.Checked = true;
+                        radiobuttionclearcalled = false;
                         break;
                 }
 
@@ -298,7 +317,7 @@ namespace Vertical_Federal_App
 
             try
             {
-                working_gauge.Size = System.Convert.ToDouble(calGaugeSizeTextBox.Text);
+                working_gauge.Nominal = System.Convert.ToDouble(calGaugeNominalTextBox.Text);
             }
             catch (FormatException)
             {
@@ -306,12 +325,12 @@ namespace Vertical_Federal_App
                 return;
             }
 
-            if (working_gauge.Metric && (working_gauge.Size < 0.5 || working_gauge.Size > 100))  //metric units
+            if (working_gauge.Metric && (working_gauge.Nominal < 0.5 || working_gauge.Nominal > 100))  //metric units
             {
                 MessageBox.Show("Gauge block size is not in the measuring range of the comparator");
                 return;
             }
-            if (!working_gauge.Metric && (working_gauge.Size < 0.01 || working_gauge.Size > 4))   //imperial units
+            if (!working_gauge.Metric && (working_gauge.Nominal < 0.01 || working_gauge.Nominal > 4))   //imperial units
             {
                 MessageBox.Show("Gauge block size is not in the measuring range of the comparator");
                 return;
@@ -337,7 +356,7 @@ namespace Vertical_Federal_App
             foreach (GaugeBlock gb1 in all_ref_gauges)
             {
                 //case for a singleton gauge reference
-                if (working_gauge.Size == gb1.Size)
+                if (working_gauge.Nominal == gb1.Nominal)
                 {
                     Stack gauge_stack = new Stack();
                     gauge_stack.Gauge1 = gb1;
@@ -347,8 +366,8 @@ namespace Vertical_Federal_App
                     suitable_gauges.Add(gauge_stack);
 
                     suitableReferenceGaugesComboBox.Items.Clear();
-                    suitableReferenceGaugesComboBox.Items.Add(gb1.Size.ToString());
-                    suitableReferenceGaugesComboBox.SelectedItem = gb1.Size.ToString();
+                    suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString());
+                    suitableReferenceGaugesComboBox.SelectedItem = gb1.Nominal.ToString();
                     return;
 
                 }
@@ -356,25 +375,25 @@ namespace Vertical_Federal_App
                 {
 
                     //case for a two gauge stacked reference (don't compare the same gauge with itself)
-                    if ((working_gauge.Size == (gb1.Size + gb2.Size)) && (gauge_count1 != gauge_count2))
+                    if ((working_gauge.Nominal == (gb1.Nominal + gb2.Nominal)) && (gauge_count1 != gauge_count2))
                     {
                         Stack gauge_stack = new Stack();
                         gauge_stack.Gauge1 = gb1;
                         gauge_stack.Gauge2 = gb2;
                         suitable_gauges.Add(gauge_stack);
-                        suitableReferenceGaugesComboBox.Items.Add(gb1.Size.ToString() + ",  " + gb2.Size.ToString());
+                        suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString() + ",  " + gb2.Nominal.ToString());
                     }
                     foreach (GaugeBlock gb3 in all_ref_gauges)
                     {
                         //case for a three gauge stacked reference (don't compare the same gauge with itself)
-                        if ((working_gauge.Size == (gb1.Size + gb2.Size + gb3.Size)) && (gauge_count1 != gauge_count2) && (gauge_count2 != gauge_count3) && (gauge_count1 != gauge_count3))
+                        if ((working_gauge.Nominal == (gb1.Nominal + gb2.Nominal + gb3.Nominal)) && (gauge_count1 != gauge_count2) && (gauge_count2 != gauge_count3) && (gauge_count1 != gauge_count3))
                         {
                             Stack gauge_stack = new Stack();
                             gauge_stack.Gauge1 = gb1;
                             gauge_stack.Gauge2 = gb2;
                             gauge_stack.Gauge3 = gb3;
                             suitable_gauges.Add(gauge_stack);
-                            suitableReferenceGaugesComboBox.Items.Add(gb1.Size.ToString() + ",  " + gb2.Size.ToString() + ",  " + gb3.Size.ToString());
+                            suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString() + ",  " + gb2.Nominal.ToString() + ",  " + gb3.Nominal.ToString());
                         }
 
                         gauge_count3++;
@@ -773,8 +792,13 @@ namespace Vertical_Federal_App
                 MessageBox.Show("No data or invalid data for E");
                 return;
             }
-
+            double r_dev = 0.0;
+            double corr_centre_dev = 0.0;
+            double variation = 0.0;
+            double corr_extreme_dev = 0.0;
+            double corr_length = 0.0;
             Measurement current_measurement = new Measurement();
+            if (!metricCheckBox.Checked) current_measurement.Metric = false;
             current_measurement.A = A;
             current_measurement.B = B;
             current_measurement.C1 = C1;
@@ -784,24 +808,30 @@ namespace Vertical_Federal_App
             current_measurement.E = E;
             current_measurement.R1 = R1;
             current_measurement.R2 = R2;
+            double.TryParse(referenceDeviationTextBox.Text, out r_dev);
+            current_measurement.RefDeviation_um_uinch = r_dev;
             current_measurement.CalSetSerial = setSerialTextBox.Text;
-
             current_measurement.CalibrationGauge = working_gauge;
-            //current_measurement.CalGaugeSerial = working_gauge.SerialNumber;
-            //current_measurement.Nominal = working_gauge.Size;
-
-
             current_measurement.ReferenceStack = ref_g;
-            //current_measurement.CalGaugeExpCoeff = working_gauge.GaugeBlockMaterial.exp_coeff;
-            //current_measurement.CalGaugeYoungMod = working_gauge.GaugeBlockMaterial.youngs_modulus;
-            //current_measurement.CalGaugePoissonRatio = working_gauge.GaugeBlockMaterial.poissons_ratio;
-           
+            current_measurement.CalculateVariation();
+            current_measurement.CalculateMeasuredDiff_um_uinch();
+            current_measurement.RefLength();
+            current_measurement.calculateElasticDeformations(federal);
+            current_measurement.CalculateDeviations(ref corr_centre_dev,ref corr_extreme_dev,ref corr_length);
             
 
 
-            double extreme_deviation;
-            double limit_deviation;
-            double centre_deviation;
+            if (!header_written)
+            {
+                //write the header string of the output rich text box
+                gaugeResultsRichTextBox.Text = "Measurement No.  Nominal  Centre Dev  Extreme Dev  Variation";
+                header_written = true;
+            }
+                
+            
+            
+
+
 
 
 

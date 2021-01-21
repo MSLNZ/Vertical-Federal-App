@@ -39,11 +39,12 @@ namespace Vertical_Federal_App
         private double b;
         private double d;
         private double e;
+        private bool metric;
         
         
         public Measurement()
         {
-
+            metric = true;
         }
 
         public double R1
@@ -102,12 +103,8 @@ namespace Vertical_Federal_App
             get { return cal_gauge_serial; }
             set { cal_gauge_serial = value; }
         }
-        public double Nominal
-        {
-            get { return nominal; }
-            set { nominal = value; }
-        }
-        public double RefDeviation
+
+        public double RefDeviation_um_uinch
         {
             get { return reference_deviation; }
             set { reference_deviation = value; }
@@ -131,19 +128,19 @@ namespace Vertical_Federal_App
             set { cal_gauge_poissons_ratio = value; }
         }
 
-        public double ExtremeDeviation
+        public double ExtremeDeviation_um_uinch
         {
             get { return extreme_deviation; }
             set { extreme_deviation = value; }
         }
 
-        public double limitDeviation
+        public double limitDeviation_um_uinch
         {
             get { return limit_deviation; }
             set { limit_deviation = value; }
         }
         
-        public double CentreDeviation
+        public double CentreDeviation_um_uinch
         {
             get { return centre_deviation; }
             set { centre_deviation = value; }
@@ -153,6 +150,11 @@ namespace Vertical_Federal_App
         {
             get { return gauge_stack; }
             set { gauge_stack = value; }
+        }
+        public bool Metric
+        {
+            get { return metric; }
+            set { metric = value; }
         }
 
         public GaugeBlock CalibrationGauge
@@ -166,7 +168,7 @@ namespace Vertical_Federal_App
             set { measurements = value; }
         }
 
-        public double calculateVariation()
+        public double CalculateVariation()
         {
             double mean_of_centre_value =  (C1+C2+C3)/3;
 
@@ -176,7 +178,7 @@ namespace Vertical_Federal_App
             return variation;
         }
 
-        public double calculateMeasuredDiff()
+        public double CalculateMeasuredDiff_um_uinch()
         {
             double mean_of_centre_value = (C1 + C2 + C3) / 3;
             double average_ref = (R1 + R2) / 2;
@@ -185,7 +187,8 @@ namespace Vertical_Federal_App
         }
         public double RefLength()
         {
-            return (Nominal + RefDeviation);
+            if (metric) return ( CalibrationGauge.Nominal + RefDeviation_um_uinch / 1000);
+            else return (CalibrationGauge.Nominal + RefDeviation_um_uinch / 1000000);
         }
         public void calculateElasticDeformations(VerticalFederal fed)
         {
@@ -197,7 +200,7 @@ namespace Vertical_Federal_App
             else if (ReferenceStack.Gauge3 == null) two_gauge_stack = true;
             else three_gauge_stack = true;
             
-            //convert force units to metric (newtons) 1Oz force 0.27801385n
+            //convert force units to metric (newtons) 1 oz force 0.27801385n
             double top_probe_force = fed.TopProbeForce * oz_f_to_n_f;
             double bottom_probe_force = fed.BottomProbeForce * oz_f_to_n_f;
 
@@ -208,27 +211,27 @@ namespace Vertical_Federal_App
 
             //The top gauge should alway be assigned to Gauge1 in the case where a stack is made from gauges with difference mechanical properties.
             reference_deformation_top_probe = Math.Pow((3 * Math.PI),(2 / 3))/2*Math.Pow(top_probe_force,2/3)*
-                Math.Pow(((1-Math.Pow(probe_poissons_ratio, 2))/(Math.PI*probe_youngs_mod)+(1-Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2))/(Math.PI* gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio * 1000000000)),2/3)*
+                Math.Pow(((1-Math.Pow(probe_poissons_ratio, 2))/(Math.PI*probe_youngs_mod)+(1-Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2))/(Math.PI* gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus * 1000000000)),2/3)*
                 Math.Pow(1/probe_d,1/3);
 
             if (singleton)
             {
                 reference_deformation_bottom_probe = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio * 1000000000)), 2 / 3) *
+                Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
                 Math.Pow(1 / probe_d, 1 / 3);
             }
             else if (two_gauge_stack)
             {
                 
                 reference_deformation_bottom_probe = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio * 1000000000)), 2 / 3) *
+                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
                     Math.Pow(1 / probe_d, 1 / 3);
             }
             else
             {
               
                 reference_deformation_bottom_probe = Math.Pow((3 * Math.PI), (2 / 3)) / 2 * Math.Pow(bottom_probe_force, 2 / 3) *
-                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio * 1000000000)), 2 / 3) *
+                    Math.Pow(((1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod) + (1 - Math.Pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.youngs_modulus * 1000000000)), 2 / 3) *
                     Math.Pow(1 / probe_d, 1 / 3);
             }
 
@@ -241,44 +244,58 @@ namespace Vertical_Federal_App
                     Math.Pow(1 / probe_d, 1 / 3); 
 
         }
-        public void CalculateDeviations(ref double corrected_centre_dev,ref double corrected_extreme_dev, ref double corrected_length_mm)
+        public void CalculateDeviations(ref double corrected_centre_dev, ref double corrected_extreme_dev, ref double corrected_length_mm_inch)
         {
-            corrected_length_mm = (bottom_probe_deformation_cal_gauge * 1000) - (reference_deformation_bottom_probe * 1000) + RefLength() - (reference_deformation_top_probe * 1000) + calculateMeasuredDiff() + (top_probe_deformation_cal_gauge * 1000);
-            corrected_length = corrected_length_mm;
-
-
-            centre_deviation = corrected_length-Nominal;
-            corrected_centre_dev = centre_deviation;
-
-            //calculate the deviation of each point.
-            double A_dev = A - (R1 + R2) / 2 + RefDeviation + getCorrection_um();
-            double B_dev = B - (R1 + R2) / 2 + RefDeviation + getCorrection_um();
-            double D_dev = D - (R1 + R2) / 2 + RefDeviation + getCorrection_um();
-            double E_dev = E - (R1 + R2) / 2 + RefDeviation + getCorrection_um();
-            double[] values_array = new double[] { A_dev, B_dev, D_dev, E_dev,centre_deviation };
-            double max_dev = values_array.Max();
-            double min_dev = values_array.Min();
-
-            //calculate extreme deviation
-            if (Math.Abs(max_dev) > Math.Abs(min_dev))
+            if (metric)
             {
-                extreme_deviation = max_dev;
-                corrected_extreme_dev = max_dev;
+                corrected_length_mm_inch = (bottom_probe_deformation_cal_gauge * 1000) - (reference_deformation_bottom_probe * 1000) + RefLength() - (reference_deformation_top_probe * 1000) + CalculateMeasuredDiff_um_uinch() / 1000 + (top_probe_deformation_cal_gauge * 1000);
+                corrected_length = corrected_length_mm_inch;
+                centre_deviation = (corrected_length - CalibrationGauge.Nominal) *1000; //centre deviation is in um
+                corrected_centre_dev = centre_deviation;
             }
             else
             {
-                extreme_deviation = min_dev;
-                corrected_extreme_dev = min_dev;
+                corrected_length_mm_inch = (bottom_probe_deformation_cal_gauge * 1000/25.4) - (reference_deformation_bottom_probe * 1000 / 25.4) + RefLength() - (reference_deformation_top_probe * 1000 / 25.4) + CalculateMeasuredDiff_um_uinch() / 1000000 + (top_probe_deformation_cal_gauge * 1000 / 25.4);
+                corrected_length = corrected_length_mm_inch;
+                centre_deviation = (corrected_length - CalibrationGauge.Nominal) * 1000000; //centre deviation is in uinch
+                corrected_centre_dev = centre_deviation;
             }
+
+                //calculate the deviation of each point.
+                double A_dev = A - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double B_dev = B - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double D_dev = D - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double E_dev = E - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double[] values_array = new double[] { A_dev, B_dev, D_dev, E_dev, centre_deviation };
+                double max_dev = values_array.Max();
+                double min_dev = values_array.Min();
+
+                //calculate extreme deviation
+                if (Math.Abs(max_dev) > Math.Abs(min_dev))
+                {
+                    extreme_deviation = max_dev;
+                    corrected_extreme_dev = max_dev;
+                }
+                else
+                {
+                    extreme_deviation = min_dev;
+                    corrected_extreme_dev = min_dev;
+                }
+            
+            
             
             
         }
 
        
-        public double getCorrection_um()
+        public double getCorrection_um_uinch()
         {
-            elastic_correction = centre_deviation - calculateMeasuredDiff() * 1000 + reference_deviation;
-            return elastic_correction;
+            
+            
+             elastic_correction = centre_deviation - CalculateMeasuredDiff_um_uinch() + RefDeviation_um_uinch;
+             return elastic_correction;
+            
+          
         }
     }
 }

@@ -43,10 +43,18 @@
             this.referenceDeviationTextBox = new System.Windows.Forms.TextBox();
             this.refDeviationLabel = new System.Windows.Forms.Label();
             this.gaugeParametersGroupBox = new System.Windows.Forms.GroupBox();
+            this.poissonsRatioTextBox = new System.Windows.Forms.TextBox();
+            this.youngModulusTextBox = new System.Windows.Forms.TextBox();
+            this.poissonsRatioLabel = new System.Windows.Forms.Label();
+            this.youngsModulusLabel = new System.Windows.Forms.Label();
+            this.materialComboBox = new System.Windows.Forms.ComboBox();
+            this.MaterialLabel = new System.Windows.Forms.Label();
+            this.CalGaugeExpCoeffLabel = new System.Windows.Forms.Label();
+            this.expNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label15 = new System.Windows.Forms.Label();
             this.suitableReferenceGaugesComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.calGaugeSizeTextBox = new System.Windows.Forms.TextBox();
+            this.calGaugeNominalTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.C1TextBox = new System.Windows.Forms.TextBox();
             this.gaugeBlockGroupBox = new System.Windows.Forms.GroupBox();
@@ -81,24 +89,16 @@
             this.label12 = new System.Windows.Forms.Label();
             this.gaugeResultsRichTextBox = new System.Windows.Forms.RichTextBox();
             this.measurementGroupBox = new System.Windows.Forms.GroupBox();
+            this.R2RadioButton = new System.Windows.Forms.RadioButton();
+            this.R1RadioButton = new System.Windows.Forms.RadioButton();
             this.saveGaugeData = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.messagesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label14 = new System.Windows.Forms.Label();
-            this.R1RadioButton = new System.Windows.Forms.RadioButton();
-            this.R2RadioButton = new System.Windows.Forms.RadioButton();
-            this.expNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.CalGaugeExpCoeffLabel = new System.Windows.Forms.Label();
-            this.MaterialLabel = new System.Windows.Forms.Label();
-            this.materialComboBox = new System.Windows.Forms.ComboBox();
-            this.youngsModulusLabel = new System.Windows.Forms.Label();
-            this.poissonsRatioLabel = new System.Windows.Forms.Label();
-            this.youngModulusTextBox = new System.Windows.Forms.TextBox();
-            this.poissonsRatioTextBox = new System.Windows.Forms.TextBox();
             this.gaugeParametersGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.gaugeBlockGroupBox.SuspendLayout();
             this.measurementGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // COMComboBox
@@ -272,7 +272,7 @@
             this.gaugeParametersGroupBox.Controls.Add(this.label15);
             this.gaugeParametersGroupBox.Controls.Add(this.suitableReferenceGaugesComboBox);
             this.gaugeParametersGroupBox.Controls.Add(this.label2);
-            this.gaugeParametersGroupBox.Controls.Add(this.calGaugeSizeTextBox);
+            this.gaugeParametersGroupBox.Controls.Add(this.calGaugeNominalTextBox);
             this.gaugeParametersGroupBox.Controls.Add(this.imperialCheckBox);
             this.gaugeParametersGroupBox.Controls.Add(this.metricCheckBox);
             this.gaugeParametersGroupBox.Controls.Add(this.referenceSetComboBox);
@@ -288,6 +288,102 @@
             this.gaugeParametersGroupBox.TabIndex = 14;
             this.gaugeParametersGroupBox.TabStop = false;
             this.gaugeParametersGroupBox.Text = "Gauge Parameters";
+            // 
+            // poissonsRatioTextBox
+            // 
+            this.poissonsRatioTextBox.Enabled = false;
+            this.poissonsRatioTextBox.Location = new System.Drawing.Point(160, 169);
+            this.poissonsRatioTextBox.Name = "poissonsRatioTextBox";
+            this.poissonsRatioTextBox.Size = new System.Drawing.Size(173, 20);
+            this.poissonsRatioTextBox.TabIndex = 50;
+            this.poissonsRatioTextBox.Text = "0.290";
+            this.poissonsRatioTextBox.TextChanged += new System.EventHandler(this.poissonsRatioTextBox_TextChanged);
+            // 
+            // youngModulusTextBox
+            // 
+            this.youngModulusTextBox.Enabled = false;
+            this.youngModulusTextBox.Location = new System.Drawing.Point(160, 143);
+            this.youngModulusTextBox.Name = "youngModulusTextBox";
+            this.youngModulusTextBox.Size = new System.Drawing.Size(173, 20);
+            this.youngModulusTextBox.TabIndex = 49;
+            this.youngModulusTextBox.Text = "205";
+            this.youngModulusTextBox.TextChanged += new System.EventHandler(this.youngModulusTextBox_TextChanged);
+            // 
+            // poissonsRatioLabel
+            // 
+            this.poissonsRatioLabel.AutoSize = true;
+            this.poissonsRatioLabel.Location = new System.Drawing.Point(16, 172);
+            this.poissonsRatioLabel.Name = "poissonsRatioLabel";
+            this.poissonsRatioLabel.Size = new System.Drawing.Size(77, 13);
+            this.poissonsRatioLabel.TabIndex = 48;
+            this.poissonsRatioLabel.Text = "Poissons Ratio";
+            // 
+            // youngsModulusLabel
+            // 
+            this.youngsModulusLabel.AutoSize = true;
+            this.youngsModulusLabel.Location = new System.Drawing.Point(16, 146);
+            this.youngsModulusLabel.Name = "youngsModulusLabel";
+            this.youngsModulusLabel.Size = new System.Drawing.Size(88, 13);
+            this.youngsModulusLabel.TabIndex = 47;
+            this.youngsModulusLabel.Text = "Young\'s Modulus";
+            // 
+            // materialComboBox
+            // 
+            this.materialComboBox.Enabled = false;
+            this.materialComboBox.FormattingEnabled = true;
+            this.materialComboBox.Items.AddRange(new object[] {
+            "steel",
+            "ceramic",
+            "tungsten carbide"});
+            this.materialComboBox.Location = new System.Drawing.Point(160, 116);
+            this.materialComboBox.Name = "materialComboBox";
+            this.materialComboBox.Size = new System.Drawing.Size(173, 21);
+            this.materialComboBox.TabIndex = 23;
+            this.materialComboBox.Text = "ceramic";
+            this.materialComboBox.SelectedIndexChanged += new System.EventHandler(this.materialComboBox_SelectedIndexChanged);
+            // 
+            // MaterialLabel
+            // 
+            this.MaterialLabel.AutoSize = true;
+            this.MaterialLabel.Location = new System.Drawing.Point(16, 119);
+            this.MaterialLabel.Name = "MaterialLabel";
+            this.MaterialLabel.Size = new System.Drawing.Size(44, 13);
+            this.MaterialLabel.TabIndex = 22;
+            this.MaterialLabel.Text = "Material";
+            // 
+            // CalGaugeExpCoeffLabel
+            // 
+            this.CalGaugeExpCoeffLabel.AutoSize = true;
+            this.CalGaugeExpCoeffLabel.Location = new System.Drawing.Point(16, 197);
+            this.CalGaugeExpCoeffLabel.Name = "CalGaugeExpCoeffLabel";
+            this.CalGaugeExpCoeffLabel.Size = new System.Drawing.Size(53, 13);
+            this.CalGaugeExpCoeffLabel.TabIndex = 21;
+            this.CalGaugeExpCoeffLabel.Text = "Exp Coeff";
+            // 
+            // expNumericUpDown
+            // 
+            this.expNumericUpDown.DecimalPlaces = 1;
+            this.expNumericUpDown.Enabled = false;
+            this.expNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.expNumericUpDown.Location = new System.Drawing.Point(160, 195);
+            this.expNumericUpDown.Maximum = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.expNumericUpDown.Name = "expNumericUpDown";
+            this.expNumericUpDown.Size = new System.Drawing.Size(173, 20);
+            this.expNumericUpDown.TabIndex = 20;
+            this.expNumericUpDown.Value = new decimal(new int[] {
+            95,
+            0,
+            0,
+            65536});
+            this.expNumericUpDown.ValueChanged += new System.EventHandler(this.expNumericUpDown_ValueChanged);
             // 
             // label15
             // 
@@ -313,18 +409,18 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(16, 251);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(114, 13);
+            this.label2.Size = new System.Drawing.Size(132, 13);
             this.label2.TabIndex = 15;
-            this.label2.Text = "Calibration Gauge Size";
+            this.label2.Text = "Calibration Gauge Nominal";
             // 
-            // calGaugeSizeTextBox
+            // calGaugeNominalTextBox
             // 
-            this.calGaugeSizeTextBox.Enabled = false;
-            this.calGaugeSizeTextBox.Location = new System.Drawing.Point(160, 248);
-            this.calGaugeSizeTextBox.Name = "calGaugeSizeTextBox";
-            this.calGaugeSizeTextBox.Size = new System.Drawing.Size(173, 20);
-            this.calGaugeSizeTextBox.TabIndex = 15;
-            this.calGaugeSizeTextBox.TextChanged += new System.EventHandler(this.calGaugeSizeTextBox_TextChanged);
+            this.calGaugeNominalTextBox.Enabled = false;
+            this.calGaugeNominalTextBox.Location = new System.Drawing.Point(160, 248);
+            this.calGaugeNominalTextBox.Name = "calGaugeNominalTextBox";
+            this.calGaugeNominalTextBox.Size = new System.Drawing.Size(173, 20);
+            this.calGaugeNominalTextBox.TabIndex = 15;
+            this.calGaugeNominalTextBox.TextChanged += new System.EventHandler(this.calGaugeSizeTextBox_TextChanged);
             // 
             // label1
             // 
@@ -676,6 +772,28 @@
             this.measurementGroupBox.TabStop = false;
             this.measurementGroupBox.Text = "Measurement";
             // 
+            // R2RadioButton
+            // 
+            this.R2RadioButton.AutoSize = true;
+            this.R2RadioButton.Location = new System.Drawing.Point(170, 309);
+            this.R2RadioButton.Name = "R2RadioButton";
+            this.R2RadioButton.Size = new System.Drawing.Size(14, 13);
+            this.R2RadioButton.TabIndex = 2;
+            this.R2RadioButton.TabStop = true;
+            this.R2RadioButton.UseVisualStyleBackColor = true;
+            this.R2RadioButton.CheckedChanged += new System.EventHandler(this.R2RadioButton_CheckedChanged);
+            // 
+            // R1RadioButton
+            // 
+            this.R1RadioButton.AutoSize = true;
+            this.R1RadioButton.Location = new System.Drawing.Point(170, 35);
+            this.R1RadioButton.Name = "R1RadioButton";
+            this.R1RadioButton.Size = new System.Drawing.Size(14, 13);
+            this.R1RadioButton.TabIndex = 1;
+            this.R1RadioButton.TabStop = true;
+            this.R1RadioButton.UseVisualStyleBackColor = true;
+            this.R1RadioButton.CheckedChanged += new System.EventHandler(this.R1RadioButton_CheckedChanged);
+            // 
             // saveGaugeData
             // 
             this.saveGaugeData.Location = new System.Drawing.Point(249, 330);
@@ -712,124 +830,6 @@
             this.label14.TabIndex = 46;
             this.label14.Text = "Messages";
             // 
-            // R1RadioButton
-            // 
-            this.R1RadioButton.AutoSize = true;
-            this.R1RadioButton.Location = new System.Drawing.Point(170, 35);
-            this.R1RadioButton.Name = "R1RadioButton";
-            this.R1RadioButton.Size = new System.Drawing.Size(14, 13);
-            this.R1RadioButton.TabIndex = 1;
-            this.R1RadioButton.TabStop = true;
-            this.R1RadioButton.UseVisualStyleBackColor = true;
-            this.R1RadioButton.CheckedChanged += new System.EventHandler(this.R1RadioButton_CheckedChanged);
-            // 
-            // R2RadioButton
-            // 
-            this.R2RadioButton.AutoSize = true;
-            this.R2RadioButton.Location = new System.Drawing.Point(170, 309);
-            this.R2RadioButton.Name = "R2RadioButton";
-            this.R2RadioButton.Size = new System.Drawing.Size(14, 13);
-            this.R2RadioButton.TabIndex = 2;
-            this.R2RadioButton.TabStop = true;
-            this.R2RadioButton.UseVisualStyleBackColor = true;
-            this.R2RadioButton.CheckedChanged += new System.EventHandler(this.R2RadioButton_CheckedChanged);
-            // 
-            // expNumericUpDown
-            // 
-            this.expNumericUpDown.DecimalPlaces = 1;
-            this.expNumericUpDown.Enabled = false;
-            this.expNumericUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.expNumericUpDown.Location = new System.Drawing.Point(160, 195);
-            this.expNumericUpDown.Maximum = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.expNumericUpDown.Name = "expNumericUpDown";
-            this.expNumericUpDown.Size = new System.Drawing.Size(173, 20);
-            this.expNumericUpDown.TabIndex = 20;
-            this.expNumericUpDown.Value = new decimal(new int[] {
-            95,
-            0,
-            0,
-            65536});
-            this.expNumericUpDown.ValueChanged += new System.EventHandler(this.expNumericUpDown_ValueChanged);
-            // 
-            // CalGaugeExpCoeffLabel
-            // 
-            this.CalGaugeExpCoeffLabel.AutoSize = true;
-            this.CalGaugeExpCoeffLabel.Location = new System.Drawing.Point(16, 197);
-            this.CalGaugeExpCoeffLabel.Name = "CalGaugeExpCoeffLabel";
-            this.CalGaugeExpCoeffLabel.Size = new System.Drawing.Size(53, 13);
-            this.CalGaugeExpCoeffLabel.TabIndex = 21;
-            this.CalGaugeExpCoeffLabel.Text = "Exp Coeff";
-            // 
-            // MaterialLabel
-            // 
-            this.MaterialLabel.AutoSize = true;
-            this.MaterialLabel.Location = new System.Drawing.Point(16, 119);
-            this.MaterialLabel.Name = "MaterialLabel";
-            this.MaterialLabel.Size = new System.Drawing.Size(44, 13);
-            this.MaterialLabel.TabIndex = 22;
-            this.MaterialLabel.Text = "Material";
-            // 
-            // materialComboBox
-            // 
-            this.materialComboBox.Enabled = false;
-            this.materialComboBox.FormattingEnabled = true;
-            this.materialComboBox.Items.AddRange(new object[] {
-            "steel",
-            "ceramic",
-            "tungsten carbide"});
-            this.materialComboBox.Location = new System.Drawing.Point(160, 116);
-            this.materialComboBox.Name = "materialComboBox";
-            this.materialComboBox.Size = new System.Drawing.Size(173, 21);
-            this.materialComboBox.TabIndex = 23;
-            this.materialComboBox.Text = "ceramic";
-            this.materialComboBox.SelectedIndexChanged += new System.EventHandler(this.materialComboBox_SelectedIndexChanged);
-            // 
-            // youngsModulusLabel
-            // 
-            this.youngsModulusLabel.AutoSize = true;
-            this.youngsModulusLabel.Location = new System.Drawing.Point(16, 146);
-            this.youngsModulusLabel.Name = "youngsModulusLabel";
-            this.youngsModulusLabel.Size = new System.Drawing.Size(88, 13);
-            this.youngsModulusLabel.TabIndex = 47;
-            this.youngsModulusLabel.Text = "Young\'s Modulus";
-            // 
-            // poissonsRatioLabel
-            // 
-            this.poissonsRatioLabel.AutoSize = true;
-            this.poissonsRatioLabel.Location = new System.Drawing.Point(16, 172);
-            this.poissonsRatioLabel.Name = "poissonsRatioLabel";
-            this.poissonsRatioLabel.Size = new System.Drawing.Size(77, 13);
-            this.poissonsRatioLabel.TabIndex = 48;
-            this.poissonsRatioLabel.Text = "Poissons Ratio";
-            // 
-            // youngModulusTextBox
-            // 
-            this.youngModulusTextBox.Enabled = false;
-            this.youngModulusTextBox.Location = new System.Drawing.Point(160, 143);
-            this.youngModulusTextBox.Name = "youngModulusTextBox";
-            this.youngModulusTextBox.Size = new System.Drawing.Size(173, 20);
-            this.youngModulusTextBox.TabIndex = 49;
-            this.youngModulusTextBox.Text = "205";
-            this.youngModulusTextBox.TextChanged += new System.EventHandler(this.youngModulusTextBox_TextChanged);
-            // 
-            // poissonsRatioTextBox
-            // 
-            this.poissonsRatioTextBox.Enabled = false;
-            this.poissonsRatioTextBox.Location = new System.Drawing.Point(160, 169);
-            this.poissonsRatioTextBox.Name = "poissonsRatioTextBox";
-            this.poissonsRatioTextBox.Size = new System.Drawing.Size(173, 20);
-            this.poissonsRatioTextBox.TabIndex = 50;
-            this.poissonsRatioTextBox.Text = "0.290";
-            this.poissonsRatioTextBox.TextChanged += new System.EventHandler(this.poissonsRatioTextBox_TextChanged);
-            // 
             // VerticalFedForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -861,11 +861,11 @@
             this.Text = "Vertical Federal App";
             this.gaugeParametersGroupBox.ResumeLayout(false);
             this.gaugeParametersGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).EndInit();
             this.gaugeBlockGroupBox.ResumeLayout(false);
             this.gaugeBlockGroupBox.PerformLayout();
             this.measurementGroupBox.ResumeLayout(false);
             this.measurementGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -889,7 +889,7 @@
         private System.Windows.Forms.Label refDeviationLabel;
         private System.Windows.Forms.GroupBox gaugeParametersGroupBox;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox calGaugeSizeTextBox;
+        private System.Windows.Forms.TextBox calGaugeNominalTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox C1TextBox;
         private System.Windows.Forms.GroupBox gaugeBlockGroupBox;

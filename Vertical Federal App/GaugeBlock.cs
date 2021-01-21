@@ -42,7 +42,7 @@ namespace Vertical_Federal_App
 
     public class GaugeBlock
     {
-        private double size;
+        private double nominal;
         private string serial_number;
         private bool metric;
         private double deviation;
@@ -51,7 +51,7 @@ namespace Vertical_Federal_App
         
         public GaugeBlock()
         {
-            size = 0;
+            nominal = 0;
             serial_number = "";
             metric = true;
             gauge_material = new Material();
@@ -60,10 +60,10 @@ namespace Vertical_Federal_App
             gauge_material.youngs_modulus = 205;
                 
         }
-        public double Size
+        public double Nominal
         {
-            get { return size; }
-            set { size = value; }
+            get { return nominal; }
+            set { nominal = value; }
         }
         public string SerialNumber
         {

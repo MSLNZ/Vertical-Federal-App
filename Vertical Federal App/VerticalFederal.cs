@@ -53,8 +53,9 @@ namespace Vertical_Federal_App
         {
             
             SerialPort sp = (SerialPort)sender;
+            System.Threading.Thread.Sleep(20);
             string indata = sp.ReadExisting();
-
+            if (indata.Contains("D")) indata = indata.Remove(0, 1);
             //invoke the gui to do something
             sdr_(indata);
         }

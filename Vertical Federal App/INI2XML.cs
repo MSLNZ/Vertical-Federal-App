@@ -43,10 +43,16 @@ namespace Vertical_Federal_App
 		private static XmlTextReader xmlreader;
 		private static string xmlfilename;
 		private static XmlReaderSettings settings;
+		private static bool conversion_succeeded = true;
 		/// 
 		/// </summary>
 		public INI2XML()
 		{
+		}
+
+		public static bool Converted
+		{
+			get { return conversion_succeeded; }
 		}
 
 		/// <summary>
@@ -159,9 +165,19 @@ namespace Vertical_Federal_App
 				catch (System.IO.IOException)
 				{
 
-					strXMLFileName = @"I:\MSL\Private\LENGTH\EQUIPREG\cal_data_" + System.DateTime.Now.Ticks.ToString() + ".xml";
+					strXMLFileName = @"G:\Shared drives\MSL - Shared\Length\Data\cal_data_" + System.DateTime.Now.Ticks.ToString() + ".xml";
 					//if the file is in use write it under another name
-					xw = new XmlTextWriter(strXMLFileName, Encoding.UTF8);
+					try
+					{
+						xw = new XmlTextWriter(strXMLFileName, Encoding.UTF8);
+                    }
+                    catch(System.IO.DirectoryNotFoundException) {
+						MessageBox.Show("Cannot Find .ini file");
+						Application.Exit();
+						conversion_succeeded = false;
+						return false;
+						
+					}
 					could_not_write = true;
 				}
 				// Write the opening xml
@@ -452,8 +468,8 @@ namespace Vertical_Federal_App
 		{
 			
 			
-			xmlfilename = @"I:\MSL\Private\LENGTH\EQUIPREG\XMLFiles\cal_data.xml";
-			string inifilename = @"I:\MSL\Private\LENGTH\EQUIPREG\cal_data.ini";
+			xmlfilename = @"G:\Shared drives\MSL - Shared\Length\Data\cal_data.xml";
+			string inifilename = @"G:\Shared drives\MSL - Shared\Length\Data\cal_data.ini";
 
 			if (INI2XML.Convert(inifilename, ref xmlfilename))
 			{
@@ -676,7 +692,7 @@ namespace Vertical_Federal_App
 
 								try
 								{
-									gauge.Size = System.Convert.ToDouble(gauge_data_nom);
+									gauge.Nominal = System.Convert.ToDouble(gauge_data_nom);
 							    }
                                 catch (FormatException)
                                 {
@@ -749,8 +765,8 @@ namespace Vertical_Federal_App
 						double ppr = 0.0;
 
 						if (double.TryParse(top_probe_f, out tpf)) vfed.TopProbeForce = tpf;
-						if (double.TryParse(bottom_probe_f, out bpf)) vfed.TopProbeForce = bpf;
-						if (double.TryParse(probe_dia, out dia)) vfed.TopProbeForce = dia;
+						if (double.TryParse(bottom_probe_f, out bpf)) vfed.BottomProbeForce = bpf;
+						if (double.TryParse(probe_dia, out dia)) vfed.ProbeDiameter = dia;
 						if (double.TryParse(probe_youngs_mod, out pym)) vfed.ProbeYoungsMod = pym;
 						if (double.TryParse(probe_poissons_ratio, out ppr)) vfed.ProbePoissonsRatio = ppr;
 

@@ -77,7 +77,7 @@ namespace Vertical_Federal_App
         {
             foreach(GaugeBlock g in gauges)
             {
-                b.AppendText(g.Size.ToString() + ", ");
+                b.AppendText(g.Nominal.ToString() + ", ");
                 b.AppendText(g.SerialNumber.ToString() + ", ");
                 b.AppendText(g.Deviation.ToString() + "\n");
                 b.ScrollToCaret();
