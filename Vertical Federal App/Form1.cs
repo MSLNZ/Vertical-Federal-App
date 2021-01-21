@@ -824,12 +824,23 @@ namespace Vertical_Federal_App
             if (!header_written)
             {
                 //write the header string of the output rich text box
-                gaugeResultsRichTextBox.Text = "Measurement No.  Nominal  Centre Dev  Extreme Dev  Variation";
+                gaugeResultsRichTextBox.Text = "Measurement No.  Units  Nominal  Centre Dev  Extreme Dev  Variation\n";
                 header_written = true;
             }
-                
-            
-            
+            string units = "mm";
+            if (!current_measurement.Metric)
+            {
+                units = "inch";
+            }
+            else {
+
+                gaugeResultsRichTextBox.Text = "      " + Measurement.Measurements.Count.ToString() + "         " +
+                    "  mm   "+ No.Units Nominal  Centre Dev  Extreme Dev  Variation\n";
+            }  
+
+
+
+
 
 
 

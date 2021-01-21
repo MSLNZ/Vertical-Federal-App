@@ -209,21 +209,34 @@ namespace Vertical_Federal_App
             double probe_youngs_mod = fed.ProbeYoungsMod*1000000000; //Pa
             double probe_poissons_ratio = fed.ProbePoissonsRatio;
 
-            double v_ball = (1 - Math.Pow(probe_poissons_ratio, 2)) / (Math.PI * probe_youngs_mod);
-            double v_plate_ref_gauge1 = (1 - Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus);
-            double v_plate_ref_gauge2 = (1 - Math.Pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.youngs_modulus);
-            double v_plate_ref_gauge3 = (1 - Math.Pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.youngs_modulus);
-            double v_plate_cal_gauge = (1 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus);
+            double v_ball = (1.0 - Math.Pow(probe_poissons_ratio, 2.0)) / (Math.PI * probe_youngs_mod);
+            double v_plate_ref_gauge1 = (1.0 - Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus * 1000000000);
 
-            double term1 = (Math.Pow(3 * Math.PI, 2 / 3) / 2);
-            double term2_top = Math.Pow(top_probe_force, 2 / 3);
-            double term2_bottom = Math.Pow(bottom_probe_force, 2 / 3);
-            double term3_ref_top = Math.Pow(v_ball + v_plate_ref_gauge1, 2/3);
-            double term3_ref_bot1 = Math.Pow(v_ball + v_plate_ref_gauge1, 2 / 3);
-            double term3_ref_bot2 = Math.Pow(v_ball + v_plate_ref_gauge2, 2 / 3);
-            double term3_ref_bot3 = Math.Pow(v_ball + v_plate_ref_gauge3, 2 / 3);
-            double term3_cal = Math.Pow(v_ball + v_plate_cal_gauge, 2 / 3);
-            double term4 = Math.Pow(1 / probe_d, 1 / 3);
+            double v_plate_ref_gauge2 = 0.0;
+            if (gauge_stack.Gauge2 != null)
+            {
+                v_plate_ref_gauge2 = (1.0 - Math.Pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.youngs_modulus * 1000000000);
+            }
+
+            double v_plate_ref_gauge3 = 0.0;
+            if (gauge_stack.Gauge3 != null)
+            {
+                v_plate_ref_gauge3 = (1.0 - Math.Pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.youngs_modulus * 1000000000);
+            }
+
+            
+            double v_plate_cal_gauge = (1.0 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus * 1000000000);
+            double tt =  2.0 / 3.0;
+            double tt2 = 1.0 / 3.0;
+            double term1 =  (Math.Pow(3 * Math.PI, tt) / 2.0);
+            double term2_top = Math.Pow(top_probe_force, tt);
+            double term2_bottom =  Math.Pow(bottom_probe_force, tt);
+            double term3_ref_top =  Math.Pow(v_ball + v_plate_ref_gauge1, tt);
+            double term3_ref_bot1 =  Math.Pow(v_ball + v_plate_ref_gauge1, tt);
+            double term3_ref_bot2 =  Math.Pow(v_ball + v_plate_ref_gauge2, tt);
+            double term3_ref_bot3 =  Math.Pow(v_ball + v_plate_ref_gauge3, tt);
+            double term3_cal =  Math.Pow(v_ball + v_plate_cal_gauge, tt);
+            double term4 = Math.Pow(1.0 / probe_d, tt2);
 
 
 
@@ -268,10 +281,10 @@ namespace Vertical_Federal_App
             }
 
                 //calculate the deviation of each point.
-                double A_dev = A - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
-                double B_dev = B - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
-                double D_dev = D - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
-                double E_dev = E - (R1 + R2) / 2 + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double A_dev = A - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double B_dev = B - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double D_dev = D - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
+                double E_dev = E - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
                 double[] values_array = new double[] { A_dev, B_dev, D_dev, E_dev, centre_deviation };
                 double max_dev = values_array.Max();
                 double min_dev = values_array.Min();
@@ -287,10 +300,6 @@ namespace Vertical_Federal_App
                     extreme_deviation = min_dev;
                     corrected_extreme_dev = min_dev;
                 }
-            
-            
-            
-            
         }
 
        
@@ -298,7 +307,7 @@ namespace Vertical_Federal_App
         {
             
             
-             elastic_correction = centre_deviation - CalculateMeasuredDiff_um_uinch() + RefDeviation_um_uinch;
+             elastic_correction = centre_deviation - (CalculateMeasuredDiff_um_uinch() + RefDeviation_um_uinch);
              return elastic_correction;
             
           
