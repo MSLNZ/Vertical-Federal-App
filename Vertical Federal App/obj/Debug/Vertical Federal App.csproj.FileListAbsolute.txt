@@ -18,3 +18,4 @@ C:\Users\LAB ACCOUNT\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\
 C:\Users\LAB ACCOUNT\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.csproj.CoreCompileInputs.cache
 C:\Users\LAB ACCOUNT\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.exe
 C:\Users\LAB ACCOUNT\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.pdb
+C:\Users\c.young\Documents\GitHub\Vertical Federal App\Vertical Federal App\obj\Debug\Vertical Federal App.csproj.ResolveComReference.cache

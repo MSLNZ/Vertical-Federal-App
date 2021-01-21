@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
+//using Microsoft.Office.Interop.Excel;
+
+
 
 namespace Vertical_Federal_App
 {
@@ -18,6 +21,7 @@ namespace Vertical_Federal_App
 
     public partial class VerticalFedForm : Form
     {
+        
         private SerialDataReveived sdr;
         private bool header_written;
         private VerticalFederal federal;
@@ -794,11 +798,11 @@ namespace Vertical_Federal_App
             }
             double r_dev = 0.0;
             double corr_centre_dev = 0.0;
-            double variation = 0.0;
             double corr_extreme_dev = 0.0;
             double corr_length = 0.0;
             Measurement current_measurement = new Measurement();
             if (!metricCheckBox.Checked) current_measurement.Metric = false;
+            current_measurement.Nominal = working_gauge.Nominal;
             current_measurement.A = A;
             current_measurement.B = B;
             current_measurement.C1 = C1;
@@ -819,34 +823,27 @@ namespace Vertical_Federal_App
             current_measurement.calculateElasticDeformations(federal);
             current_measurement.CalculateDeviations(ref corr_centre_dev,ref corr_extreme_dev,ref corr_length);
             
-
+            
 
             if (!header_written)
             {
                 //write the header string of the output rich text box
-                gaugeResultsRichTextBox.Text = "Measurement No.  Units  Nominal  Centre Dev  Extreme Dev  Variation\n";
+                gaugeResultsRichTextBox.SelectionTabs = new int[] { 100, 200, 300, 400, 500 };
+                gaugeResultsRichTextBox.Text = "Measurement No.\t Units\t Nominal\t Centre Dev\t  Extreme Dev\t  Variation\n";
                 header_written = true;
             }
-            string units = "mm";
+            string units = "mm µm";
             if (!current_measurement.Metric)
             {
-                units = "inch";
+                units = "inch µinch";
             }
-            else {
+            
+            gaugeResultsRichTextBox.Text = Measurement.Measurements.Count.ToString() + "\t" +
+                units+"\t" + current_measurement.Nominal.ToString() + "\t" + corr_centre_dev.ToString()+
+                "\t"+corr_extreme_dev.ToString()+"\t"+current_measurement.CalculateVariation().ToString()+"\n";
 
-                gaugeResultsRichTextBox.Text = "      " + Measurement.Measurements.Count.ToString() + "         " +
-                    "  mm   "+ No.Units Nominal  Centre Dev  Extreme Dev  Variation\n";
-            }  
-
-
-
-
-
-
-
-
-
-
+            //add the current measurement to the measurement list.
+            Measurement.Measurements.Add(current_measurement);
         }
     }
 }

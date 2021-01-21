@@ -46,6 +46,11 @@ namespace Vertical_Federal_App
         {
             metric = true;
         }
+        public double Nominal
+        {
+            get { return nominal; }
+            set { nominal = value; }
+        }
 
         public double R1
         {
