@@ -704,7 +704,7 @@ namespace Vertical_Federal_App
                                 try
                                 {
 									string deviation = gauge_data_val.Substring(index_of_comma +1, gauge_data_val.Length - (index_of_comma+1));
-									gauge.Deviation = System.Convert.ToDouble(deviation);
+									gauge.CentreDeviation = System.Convert.ToDouble(deviation);
                                 }
 								catch(FormatException e)
                                 {

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Vertical_Federal_App
 {
     public class Measurement
     {
-        private static List<Measurement> measurements;  
+        private static List<Measurement> measurements = new List<Measurement>();  
         private const double oz_f_to_n_f = 0.27801385;  //newtons
         private GaugeBlock calibration_gauge;
         private double reference_deformation_top_probe;
@@ -19,11 +20,7 @@ namespace Vertical_Federal_App
         private double elastic_correction;
         private Stack gauge_stack;
         private string cal_set_serial;
-        private string cal_gauge_serial;
         private double nominal;
-        private double cal_gauge_exp_coeff;
-        private double cal_gauge_youngs_mod;
-        private double cal_gauge_poissons_ratio;
         private double reference_deviation;
         private double variation;
         private double diff; //difference
@@ -45,12 +42,14 @@ namespace Vertical_Federal_App
         public Measurement()
         {
             metric = true;
+            
         }
         public double Nominal
         {
             get { return nominal; }
             set { nominal = value; }
         }
+       
 
         public double R1
         {
@@ -103,34 +102,12 @@ namespace Vertical_Federal_App
             get { return cal_set_serial; }
             set { cal_set_serial = value; }
         }
-        public string CalGaugeSerial
-        {
-            get { return cal_gauge_serial; }
-            set { cal_gauge_serial = value; }
-        }
+      
 
         public double RefDeviation_um_uinch
         {
             get { return reference_deviation; }
             set { reference_deviation = value; }
-        }
-       
-        public double CalGaugeExpCoeff
-        {
-            get { return cal_gauge_exp_coeff; }
-            set { cal_gauge_exp_coeff = value; }
-        }
-     
-        public double CalGaugeYoungMod
-        {
-            get { return cal_gauge_youngs_mod; }
-            set { cal_gauge_youngs_mod = value; }
-        }
-      
-        public double CalGaugePoissonRatio
-        {
-            get { return cal_gauge_poissons_ratio;}
-            set { cal_gauge_poissons_ratio = value; }
         }
 
         public double ExtremeDeviation_um_uinch
@@ -197,10 +174,14 @@ namespace Vertical_Federal_App
         }
         public void calculateElasticDeformations(VerticalFederal fed)
         {
+            if(ReferenceStack == null)
+            {
+                MessageBox.Show("please chose a reference gauge before saving");
+            }
             bool singleton = false;
             bool two_gauge_stack = false;
             bool three_gauge_stack = false;
-            if (ReferenceStack.Gauge1 == null) return ;  //this shouldn't happen
+            if (ReferenceStack.Gauge1== null) return ;  //this shouldn't happen
             else if (ReferenceStack.Gauge2 == null) singleton = true;
             else if (ReferenceStack.Gauge3 == null) two_gauge_stack = true;
             else three_gauge_stack = true;

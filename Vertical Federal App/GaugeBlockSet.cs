@@ -22,6 +22,7 @@ namespace Vertical_Federal_App
         private string report_date = "";
         private string equipment_id = "";
         private short unit;
+        private int num_gauges = 0;
         private string material = "ceramic";
         private Material gauge_set_material;
         
@@ -39,6 +40,11 @@ namespace Vertical_Federal_App
         {
             get { return gauge_set_name; }
             set { gauge_set_name = value; }
+        }
+        public int NumGauges
+        {
+            get { return num_gauges; }
+            set { num_gauges = value; }
         }
         public string ReportNumber
         {
@@ -79,7 +85,7 @@ namespace Vertical_Federal_App
             {
                 b.AppendText(g.Nominal.ToString() + ", ");
                 b.AppendText(g.SerialNumber.ToString() + ", ");
-                b.AppendText(g.Deviation.ToString() + "\n");
+                b.AppendText(g.CentreDeviation.ToString() + "\n");
                 b.ScrollToCaret();
             }
         }

@@ -30,14 +30,9 @@ namespace Vertical_Federal_App
         private List<GaugeBlockSet> reference_gauge_sets;
         private List<GaugeBlockSet> calibration_gauge_sets;
         private List<Stack> suitable_gauges;
-        private Material steel;
-        private Material tungsten_carbide;
-        private Material ceramic;
         private int rb_position;
-        private bool rb_C1;
-        private bool rb_C2;
-        private bool rb_C3;
         private bool radiobuttionclearcalled;
+    
         enum RadioButtonPos
         {
             R1, C1, A, B, C2, D, E, C3, R2
@@ -74,6 +69,8 @@ namespace Vertical_Federal_App
             materialComboBox.Enabled = true;
             youngModulusTextBox.Enabled = true;
             poissonsRatioTextBox.Enabled = true;
+            clientNameTextBox.Enabled = true;
+            Comopenbutton.Enabled = false;
 
         }
 
@@ -177,7 +174,7 @@ namespace Vertical_Federal_App
 
         private void imperialCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            //if this condition occurs the user has checked this button when it was already checked
+            //if this condition occurs the user has checked this checkbox when it was already checked
             if (!imperialCheckBox.Checked && !metricCheckBox.Checked)
             {
                 working_gauge.Metric = false;
@@ -187,16 +184,17 @@ namespace Vertical_Federal_App
             }
             else if (imperialCheckBox.Checked && metricCheckBox.Checked)
             {
-                working_gauge.Metric = true;
+                working_gauge.Metric = false;
                 metricCheckBox.Checked = false;
                 referenceSetComboBox.Items.Clear();
                 INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, false);
             }
+            ProcessSizeChangeEvent();
         }
 
         private void metricCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            //if this condition occurs the user has checked this button when it was already checked
+            //if this condition occurs the user has checked this checkbox when it was already checked
             if (!metricCheckBox.Checked && !imperialCheckBox.Checked)
             {
                 working_gauge.Metric = true;
@@ -206,42 +204,18 @@ namespace Vertical_Federal_App
             }
             else if (metricCheckBox.Checked && imperialCheckBox.Checked)
             {
-                working_gauge.Metric = false;
+                working_gauge.Metric = true;
                 imperialCheckBox.Checked = false;
                 referenceSetComboBox.Items.Clear();
                 INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);
             }
+            ProcessSizeChangeEvent();
         }
 
         private void setSerialTextBox_TextChanged(object sender, EventArgs e)
         {
-            //check if we have any calibration gauge sets in the list, if we don't then add a new set
-            if (calibration_gauge_sets.Count == 0)
-            {
-                GaugeBlockSet gauge_set = new GaugeBlockSet();
-                gauge_set.GaugeSetName = setSerialTextBox.Text.ToString();
-                calibration_gauge_sets.Add(gauge_set);
-            }
-            else
-            {
-                bool set_exists = false;
-                //if we have calibration gauge sets already in the list then see if the set has previously been added (i.e is this a unique serial number)
-
-                foreach (GaugeBlockSet cal_set in calibration_gauge_sets)
-                {
-                    if (cal_set.GaugeSetName.Equals(setSerialTextBox.Text.ToString()))
-                    {
-                        set_exists = true;
-                    }
-                }
-
-                if (!set_exists)
-                {
-                    GaugeBlockSet gauge_set = new GaugeBlockSet();
-                    gauge_set.GaugeSetName = setSerialTextBox.Text.ToString();
-                    calibration_gauge_sets.Add(gauge_set);
-                }
-            }
+            working_gauge.FromSet = setSerialTextBox.Text;
+            
 
         }
 
@@ -305,6 +279,12 @@ namespace Vertical_Federal_App
 
         private void calGaugeSizeTextBox_TextChanged(object sender, EventArgs e)
         {
+            ProcessSizeChangeEvent();
+            
+        }
+
+        private void ProcessSizeChangeEvent()
+        {
             DisableAllMeasurementRadioButton();
             DisableAllMeasurementTextBoxes();
 
@@ -332,30 +312,47 @@ namespace Vertical_Federal_App
             if (working_gauge.Metric && (working_gauge.Nominal < 0.5 || working_gauge.Nominal > 100))  //metric units
             {
                 MessageBox.Show("Gauge block size is not in the measuring range of the comparator");
+                working_gauge.IllegalSize = true;
                 return;
             }
-            if (!working_gauge.Metric && (working_gauge.Nominal < 0.01 || working_gauge.Nominal > 4))   //imperial units
+            else if (!working_gauge.Metric && (working_gauge.Nominal < 0.01 || working_gauge.Nominal > 4))   //imperial units
             {
                 MessageBox.Show("Gauge block size is not in the measuring range of the comparator");
+                working_gauge.IllegalSize = true;
                 return;
+            }
+            else
+            {
+                working_gauge.IllegalSize = false;
+                
             }
 
             //construct a list of all available reference gauges to use
+            //make all gauge block units in millimetres to avoid confusion
             List<GaugeBlock> all_ref_gauges = new List<GaugeBlock>();
+            all_ref_gauges.Clear();
+
+
 
             foreach (GaugeBlockSet g in reference_gauge_sets)
             {
                 foreach (GaugeBlock gb in g.GaugeList)
                 {
+                    if (!gb.Metric) gb.Nominal = Math.Round(gb.Nominal * 25.4, 5);
                     all_ref_gauges.Add(gb);
+
                 }
             }
+
+            //temporarily convert the working gauge to metric too.  The algorithm below is far more complicated in mixed units
+            if (!working_gauge.Metric) working_gauge.Nominal = Math.Round(working_gauge.Nominal * 25.4, 5);
+
 
             //create a list of possible reference stacks.
             suitable_gauges = new List<Stack>();
             int gauge_count1 = 0;
-            int gauge_count2 = 0;
-            int gauge_count3 = 0;
+
+
 
             foreach (GaugeBlock gb1 in all_ref_gauges)
             {
@@ -363,41 +360,96 @@ namespace Vertical_Federal_App
                 if (working_gauge.Nominal == gb1.Nominal)
                 {
                     Stack gauge_stack = new Stack();
+
+
+                    if (!working_gauge.Metric) working_gauge.Nominal = Math.Round(working_gauge.Nominal / 25.4, 5); //convert the working gauge nominal back to imperial    
+                    if (!gb1.Metric) gb1.Nominal = Math.Round(gb1.Nominal / 25.4, 5); //convert back to imperial units
+
                     gauge_stack.Gauge1 = gb1;
+
 
                     //if we have found a singleton gauge then it should be the gauge we use
                     suitable_gauges.Clear();
                     suitable_gauges.Add(gauge_stack);
 
+
                     suitableReferenceGaugesComboBox.Items.Clear();
-                    suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString());
-                    suitableReferenceGaugesComboBox.SelectedItem = gb1.Nominal.ToString();
+                    if (gb1.Metric) suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString() + " mm");
+                    else suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString() + " inch");
+                    suitableReferenceGaugesComboBox.SelectedIndex = 0;
+
+                    foreach (GaugeBlockSet g in reference_gauge_sets)
+                    {
+                        foreach (GaugeBlock gb in g.GaugeList)
+                        {
+                            //remember we already converted the working gauge back to imperial so don't do it again here
+                            if (!(working_gauge.Nominal == gb.Nominal))
+                            {
+                                if (!gb.Metric) gb.Nominal = Math.Round(gb.Nominal / 25.4, 5);
+                            }
+                        }
+                    }
                     return;
 
                 }
+                int gauge_count2 = 0;
+                //case for two gauges
                 foreach (GaugeBlock gb2 in all_ref_gauges)
                 {
 
+
                     //case for a two gauge stacked reference (don't compare the same gauge with itself)
-                    if ((working_gauge.Nominal == (gb1.Nominal + gb2.Nominal)) && (gauge_count1 != gauge_count2))
+                    if ((working_gauge.Nominal == Math.Round((gb1.Nominal + gb2.Nominal), 5)) && (gauge_count1 != gauge_count2))
                     {
                         Stack gauge_stack = new Stack();
                         gauge_stack.Gauge1 = gb1;
                         gauge_stack.Gauge2 = gb2;
+                        if (!gb1.Metric) gauge_stack.Gauge1.Nominal = Math.Round(gb1.Nominal / 25.4, 5); //convert the reference gauge block nominal back to imperial units. 
+                        if (!gb2.Metric) gauge_stack.Gauge2.Nominal = Math.Round(gb2.Nominal / 25.4, 5); //convert the reference gauge block nominal back to imperial units
+
                         suitable_gauges.Add(gauge_stack);
-                        suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString() + ",  " + gb2.Nominal.ToString());
+
+
+                        if (gb1.Metric && gb2.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " mm,  " + gauge_stack.Gauge2.Nominal.ToString() + " mm");
+                        else if (gb1.Metric && !gb2.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " mm,  " + gauge_stack.Gauge2.Nominal.ToString() + " inch");
+                        else if (!gb1.Metric && gb2.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " inch,  " + gauge_stack.Gauge2.Nominal.ToString() + " mm");
+                        else suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " inch,  " + gauge_stack.Gauge2.Nominal.ToString() + " inch");
+
+                        if (!gb1.Metric) gb1.Nominal = Math.Round(gb1.Nominal * 25.4, 5); //convert the reference gauge block nominal back to metric units. 
+                        if (!gb2.Metric) gb2.Nominal = Math.Round(gb2.Nominal * 25.4, 5); //convert the reference gauge block nominal back to metric units
+
                     }
+                    int gauge_count3 = 0;
                     foreach (GaugeBlock gb3 in all_ref_gauges)
                     {
                         //case for a three gauge stacked reference (don't compare the same gauge with itself)
-                        if ((working_gauge.Nominal == (gb1.Nominal + gb2.Nominal + gb3.Nominal)) && (gauge_count1 != gauge_count2) && (gauge_count2 != gauge_count3) && (gauge_count1 != gauge_count3))
+                        if ((working_gauge.Nominal == Math.Round((gb1.Nominal + gb2.Nominal + gb3.Nominal), 5)) && (gauge_count1 != gauge_count2) && (gauge_count2 != gauge_count3) && (gauge_count1 != gauge_count3))
                         {
                             Stack gauge_stack = new Stack();
                             gauge_stack.Gauge1 = gb1;
                             gauge_stack.Gauge2 = gb2;
                             gauge_stack.Gauge3 = gb3;
+
+                            if (!gb1.Metric) gauge_stack.Gauge1.Nominal = Math.Round(gb1.Nominal / 25.4, 5); //convert the reference gauge block nominal back to imperial units. 
+                            if (!gb2.Metric) gauge_stack.Gauge2.Nominal = Math.Round(gb2.Nominal / 25.4, 5); //convert the reference gauge block nominal back to imperial units
+                            if (!gb3.Metric) gauge_stack.Gauge3.Nominal = Math.Round(gb3.Nominal / 25.4, 5); //convert the reference gauge block nominal back to imperial units
+
+
+
                             suitable_gauges.Add(gauge_stack);
-                            suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString() + ",  " + gb2.Nominal.ToString() + ",  " + gb3.Nominal.ToString());
+
+                            if (gb1.Metric && gb2.Metric && gb3.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " mm,  " + gauge_stack.Gauge2.Nominal.ToString() + " mm,  " + Math.Round(gauge_stack.Gauge3.Nominal, 5).ToString() + " mm");
+                            else if (gb1.Metric && gb2.Metric && !gb3.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " mm,  " + gauge_stack.Gauge2.Nominal.ToString() + " mm,  " + Math.Round(gauge_stack.Gauge3.Nominal, 5).ToString() + " inch");
+                            else if (gb1.Metric && !gb2.Metric && gb3.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " mm,  " + gauge_stack.Gauge2.Nominal.ToString() + " inch,  " + Math.Round(gauge_stack.Gauge3.Nominal, 5).ToString() + " mm");
+                            else if (gb1.Metric && !gb2.Metric && !gb3.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " mm,  " + gauge_stack.Gauge2.Nominal.ToString() + " inch,  " + Math.Round(gauge_stack.Gauge3.Nominal, 5).ToString() + " inch");
+                            else if (!gb1.Metric && gb2.Metric && gb3.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " inch,  " + gauge_stack.Gauge2.Nominal.ToString() + " mm,  " + Math.Round(gauge_stack.Gauge3.Nominal, 5).ToString() + " mm");
+                            else if (!gb1.Metric && gb2.Metric && !gb3.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " inch,  " + gauge_stack.Gauge2.Nominal.ToString() + " mm,  " + Math.Round(gauge_stack.Gauge3.Nominal, 5).ToString() + " inch");
+                            else if (!gb1.Metric && !gb2.Metric && gb3.Metric) suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " inch,  " + gauge_stack.Gauge2.Nominal.ToString() + " inch  ," + Math.Round(gauge_stack.Gauge3.Nominal, 5).ToString() + " mm");
+                            else suitableReferenceGaugesComboBox.Items.Add(gauge_stack.Gauge1.Nominal.ToString() + " inch,  " + gauge_stack.Gauge2.Nominal.ToString() + " inch,  " + gauge_stack.Gauge3.Nominal.ToString() + " inch");
+
+                            if (!gb1.Metric) gb1.Nominal = Math.Round(gb1.Nominal * 25.4, 5); //convert the reference gauge block nominal back to metric units. 
+                            if (!gb2.Metric) gb2.Nominal = Math.Round(gb2.Nominal * 25.4, 5); //convert the reference gauge block nominal back to metric units
+                            if (!gb3.Metric) gb3.Nominal = Math.Round(gb3.Nominal * 25.4, 5); //convert the reference gauge block nominal back to metric units
                         }
 
                         gauge_count3++;
@@ -406,47 +458,43 @@ namespace Vertical_Federal_App
                 }
                 gauge_count1++;
             }
+            if (!working_gauge.Metric) working_gauge.Nominal = Math.Round(working_gauge.Nominal / 25.4, 5);
 
+            foreach (GaugeBlockSet g in reference_gauge_sets)
+            {
+                foreach (GaugeBlock gb in g.GaugeList)
+                {
+                    if (!gb.Metric) Math.Round(gb.Nominal = gb.Nominal / 25.4, 5);
+
+                }
+            }
 
         }
 
         private void suitableReferenceGaugesComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+
             int index = suitableReferenceGaugesComboBox.SelectedIndex;
             ref_g = suitable_gauges.ElementAt(index);
-            double refdev = 0.0;
 
-            GaugeBlock g1 = ref_g.Gauge1;
-            GaugeBlock g2 = ref_g.Gauge2;
-            GaugeBlock g3 = ref_g.Gauge3;
+            double refdev = GaugeBlock.calculateGaugeStackDeviation(ref_g, metricCheckBox.Checked);
 
-            if (g1 != null) refdev = g1.Deviation;
-            if (g2 != null) refdev += g2.Deviation;
-            if (g3 != null) refdev += g3.Deviation;
 
             //update the deviation field of the measurement group box
             try
             {
                 referenceDeviationTextBox.Text = refdev.ToString();
                 EnableAllMeasurementRadioButtions();
-                //EnableAllMeasurementTextBoxes();
                 ClearAllMeasurementRadioButtons();
                 rb_position = (int)RadioButtonPos.R1;
                 R1RadioButton.Checked = true;
                 radiobuttionclearcalled = false;
-
-
             }
             catch (FormatException)
             {
                 MessageBox.Show("Invalid deviation calculated");
             }
         }
-
-
-
-
-
 
         private void youngModulusTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -466,6 +514,10 @@ namespace Vertical_Federal_App
                 working_gauge.GaugeBlockMaterial.poissons_ratio = System.Convert.ToDouble(poissonsRatioTextBox.Text);
             }
             catch (FormatException) { }
+        }
+        private void clientNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            working_gauge.ClientName = clientNameTextBox.Text;
         }
 
         private void materialComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -726,19 +778,18 @@ namespace Vertical_Federal_App
 
         private void saveGaugeData_Click(object sender, EventArgs e)
         {
-
-            working_gauge.FromSet = setSerialTextBox.Text;
-            int index = 0;
-            bool set_found;
-            foreach(GaugeBlockSet s in calibration_gauge_sets)
+            if (working_gauge.IllegalSize)
             {
-                if (s.GaugeSetName.Equals(setSerialTextBox.Text))
-                {
-                    set_found = true;
-                }
-                else index++;
+                MessageBox.Show("Illegal gauge size!  Change size before continuing");
+                return;
             }
+            int set_index = 0;
+            if (!CreateNewCalSet(ref set_index)) return;
 
+            //add the gauge to the calibration gauge set
+            calibration_gauge_sets[set_index].GaugeList.Add(working_gauge);
+            calibration_gauge_sets[set_index].NumGauges++;
+            
             
             //first see if all measurement text field have been populated.
             double A = 0.0;
@@ -797,11 +848,12 @@ namespace Vertical_Federal_App
                 return;
             }
             double r_dev = 0.0;
+            double variation = 0.0;
             double corr_centre_dev = 0.0;
             double corr_extreme_dev = 0.0;
             double corr_length = 0.0;
             Measurement current_measurement = new Measurement();
-            if (!metricCheckBox.Checked) current_measurement.Metric = false;
+            current_measurement.Metric = working_gauge.Metric;
             current_measurement.Nominal = working_gauge.Nominal;
             current_measurement.A = A;
             current_measurement.B = B;
@@ -822,14 +874,21 @@ namespace Vertical_Federal_App
             current_measurement.RefLength();
             current_measurement.calculateElasticDeformations(federal);
             current_measurement.CalculateDeviations(ref corr_centre_dev,ref corr_extreme_dev,ref corr_length);
-            
-            
+            current_measurement.CalibrationGauge.CorrLength = Math.Round(corr_length, 7);
+            current_measurement.CalibrationGauge.CentreDeviation = Math.Round(corr_centre_dev, 5);
+            current_measurement.CalibrationGauge.ExtremeDeviation = Math.Round(corr_extreme_dev, 5);
+            current_measurement.CalibrationGauge.Variation = Math.Round(current_measurement.CalculateVariation(), 3);
+
 
             if (!header_written)
             {
                 //write the header string of the output rich text box
-                gaugeResultsRichTextBox.SelectionTabs = new int[] { 100, 200, 300, 400, 500 };
-                gaugeResultsRichTextBox.Text = "Measurement No.\t Units\t Nominal\t Centre Dev\t  Extreme Dev\t  Variation\n";
+                
+                gaugeResultsRichTextBox.Text = "Measurement No.\tUnits\tNominal\tCentre Dev\tExtreme Dev\tVariation\n";
+                gaugeResultsRichTextBox.SelectAll();
+                gaugeResultsRichTextBox.SelectionTabs = new int[] { 110, 210, 280, 350, 430 };
+                gaugeResultsRichTextBox.AcceptsTab = true;
+                gaugeResultsRichTextBox.Select(0, 0);
                 header_written = true;
             }
             string units = "mm µm";
@@ -838,12 +897,249 @@ namespace Vertical_Federal_App
                 units = "inch µinch";
             }
             
-            gaugeResultsRichTextBox.Text = Measurement.Measurements.Count.ToString() + "\t" +
-                units+"\t" + current_measurement.Nominal.ToString() + "\t" + corr_centre_dev.ToString()+
-                "\t"+corr_extreme_dev.ToString()+"\t"+current_measurement.CalculateVariation().ToString()+"\n";
+            gaugeResultsRichTextBox.AppendText(Measurement.Measurements.Count.ToString() + "\t" +
+                units+"\t" + current_measurement.Nominal.ToString() + "\t" + Math.Round(corr_centre_dev,5).ToString()+
+                "\t"+Math.Round(corr_extreme_dev,5).ToString()+"\t"+Math.Round(variation,5).ToString()+"\n");
+            gaugeResultsRichTextBox.SelectAll();
+            gaugeResultsRichTextBox.SelectionTabs = new int[] { 110, 210, 280, 350, 430 };
+            gaugeResultsRichTextBox.AcceptsTab = true;
+            gaugeResultsRichTextBox.Select(0, 0);
 
             //add the current measurement to the measurement list.
             Measurement.Measurements.Add(current_measurement);
+
+            StringBuilder line = new StringBuilder();
+            // Create a string array that consists of three lines.
+            line.Append(units+",");
+            line.Append(current_measurement.Nominal.ToString() + ",");
+            line.Append(current_measurement.CalibrationGauge.SerialNumber + ",");
+            if (current_measurement.Metric && !current_measurement.ReferenceStack.Gauge1.Metric)
+            {
+                line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.Nominal * 25.4), 5).ToString() + ",");
+                line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.CentreDeviation * 25.4 / 1000), 5).ToString() + ",");
+
+            }
+            else if (!current_measurement.Metric && current_measurement.ReferenceStack.Gauge1.Metric)
+            {
+                line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.Nominal / 25.4), 5).ToString() + ",");
+                line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.CentreDeviation * 1000 / 25.4), 5).ToString() + ",");
+            }
+            else
+            {
+                line.Append(Math.Round(current_measurement.ReferenceStack.Gauge1.Nominal,5).ToString() + ",");
+                line.Append(Math.Round(current_measurement.ReferenceStack.Gauge1.CentreDeviation,5).ToString() + ",");
+            }
+            line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.exp_coeff.ToString() + ",");
+            line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.youngs_modulus.ToString() + ",");
+            line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.poissons_ratio.ToString() + ",");
+
+            if (current_measurement.ReferenceStack.Gauge2 != null)
+            {
+                if (current_measurement.Metric && !current_measurement.ReferenceStack.Gauge2.Metric)
+                {
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.Nominal * 25.4), 5).ToString() + ",");
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.CentreDeviation * 25.4 / 1000), 5).ToString() + ",");
+
+                }
+                else if (!current_measurement.Metric && current_measurement.ReferenceStack.Gauge2.Metric)
+                {
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.Nominal / 25.4), 5).ToString() + ",");
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.CentreDeviation * 1000 / 25.4), 5).ToString() + ",");
+                }
+                else
+                {
+                    line.Append(Math.Round(current_measurement.ReferenceStack.Gauge2.Nominal,5).ToString() + ",");
+                    line.Append(Math.Round(current_measurement.ReferenceStack.Gauge2.CentreDeviation,5).ToString() + ",");
+                }
+            }
+            else line.Append(",,");
+
+            if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.GaugeBlockMaterial.exp_coeff.ToString() + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.GaugeBlockMaterial.youngs_modulus.ToString() + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.GaugeBlockMaterial.poissons_ratio.ToString() + ",");
+            else line.Append(",");
+
+            if (current_measurement.ReferenceStack.Gauge3 != null)
+            {
+                if (current_measurement.Metric && !current_measurement.ReferenceStack.Gauge3.Metric)
+                {
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.Nominal * 25.4), 5).ToString() + ",");
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.CentreDeviation * 25.4 / 1000), 5).ToString() + ",");
+
+                }
+                else if (!current_measurement.Metric && current_measurement.ReferenceStack.Gauge3.Metric)
+                {
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.Nominal / 25.4), 5).ToString() + ",");
+                    line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.CentreDeviation * 1000 / 25.4), 5).ToString() + ",");
+                }
+                else
+                {
+                    line.Append(Math.Round(current_measurement.ReferenceStack.Gauge3.Nominal,5).ToString() + ",");
+                    line.Append(Math.Round(current_measurement.ReferenceStack.Gauge3.CentreDeviation,5).ToString() + ",");
+                }
+            }
+            else line.Append(",,");
+
+            if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.GaugeBlockMaterial.exp_coeff.ToString() + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.GaugeBlockMaterial.youngs_modulus.ToString() + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.GaugeBlockMaterial.poissons_ratio.ToString() + ",");
+            else line.Append(",");
+
+            line.Append(GaugeBlock.calculateGaugeStackDeviation(current_measurement.ReferenceStack, current_measurement.Metric).ToString() + ",");
+            line.Append(current_measurement.R1.ToString() + ",");
+            line.Append(current_measurement.C1.ToString() + ",");
+            line.Append(current_measurement.A.ToString() + ",");
+            line.Append(current_measurement.B.ToString() + ",");
+            line.Append(current_measurement.C2.ToString() + ",");
+            line.Append(current_measurement.D.ToString() + ",");
+            line.Append(current_measurement.E.ToString() + ",");
+            line.Append(current_measurement.C3.ToString() + ",");
+            line.Append(current_measurement.R2.ToString() + ",");
+            variation = Math.Round(current_measurement.CalibrationGauge.Variation, 5);
+            corr_centre_dev = Math.Round(current_measurement.CalibrationGauge.CentreDeviation, 5);
+            corr_extreme_dev = Math.Round(current_measurement.CalibrationGauge.ExtremeDeviation, 7);
+            corr_length = Math.Round(current_measurement.CalibrationGauge.CorrLength, 5);
+            line.Append(corr_length.ToString() + ",");
+            line.Append(corr_centre_dev.ToString() + ",");
+            line.Append(corr_extreme_dev.ToString() + ",");
+            line.Append(variation.ToString() + ",");
+
+            //directory to write all measured a calculated data to.  Does not include averages of results.  I have put that in a seperate file below.
+            if (!System.IO.Directory.Exists(@"G:\Shared drives\MSL - Shared\Length\Data\FederalData"))
+            {
+                System.IO.Directory.CreateDirectory(@"G:\Shared drives\MSL - Shared\Length\Data\FederalData");
+            }
+            //Determine a suitable file name from metadata
+            string filename = "";
+            if(working_gauge.ClientName != null)  //base file name on the client nname
+            {
+                filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData" + Measurement.Measurements.Last().CalibrationGauge.ClientName + "_" + System.DateTime.Now.Year.ToString();
+            }
+            else filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData" + Measurement.Measurements.Last().CalibrationGauge.FromSet + "_" + System.DateTime.Now.Year.ToString();
+
+            System.IO.StreamWriter writer;
+            if (!System.IO.File.Exists(filename))
+            {
+                writer = System.IO.File.CreateText(filename);
+                writer.WriteLine("Units,Nominal,Gauge Serial No.,Ref Gauge 1 Nominal,Ref Gauge 1 Deviation,Ref Gauge 1 exp coeeff,Ref Gauge 1 Young's Modulus,Ref Gauge 1 Poisson Ratio," +
+                    "Ref Gauge 2 Nominal,Ref Gauge 2 Deviation,Ref Gauge 2 exp coeeff,Ref Gauge 2 Young's Modulus,Ref Gauge 2 Poisson Ratio," +
+                    "Ref Gauge 3 Nominal,Ref Gauge 3 Deviation,Ref Gauge 3 exp coeeff,Ref Gauge 3 Young's Modulus,Ref Gauge 3 Poisson Ratio," +
+                    "Reference Stack Deviation,R1,C1,A,B,C2,D,E,C3,R2,Measured Length,Centre Deviation,Extreme Deviation,Variation");
+            }
+            else writer = System.IO.File.AppendText(filename);
+
+            writer.WriteLine(line);
+
+
+            writer.Close();
+
+          
+            //Determine a suitable file name from metadata
+            filename = "";
+            if (working_gauge.ClientName != null)  //base file name on the client nname
+            {
+                filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData" + Measurement.Measurements.Last().CalibrationGauge.ClientName + "_summary" + System.DateTime.Now.Year.ToString();
+            }
+            else filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData" + Measurement.Measurements.Last().CalibrationGauge.FromSet + "_summary" + System.DateTime.Now.Year.ToString();
+
+            System.IO.StreamWriter writer2;
+            writer2 = System.IO.File.CreateText(filename);
+            writer2.WriteLine("Nominal,Serial Number,Measured Length,Centre Deviation,Extreme Deviation,Variation");
+           
+            
+
+            string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
+            List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
+
+            int count1 = 0;
+            foreach (Measurement m in Measurement.Measurements)
+            {
+                unique_id = m.Nominal + m.CalSetSerial + m.CalibrationGauge.SerialNumber;
+                if (!unique_ids_used.Contains(unique_id))
+                {
+                    //with the unique id loop through each measurement
+                    int count2 = 0;
+                    int num_id_matches = 0;
+                    double nominal = m.CalibrationGauge.Nominal;
+                    string ser_no = m.CalibrationGauge.SerialNumber;
+                    double sum_centre_dev = m.CalibrationGauge.CentreDeviation;
+                    double sum_extreme_dev = m.CalibrationGauge.ExtremeDeviation;
+                    double sum_variation = m.CalibrationGauge.Variation;
+
+                    foreach (Measurement k in Measurement.Measurements)
+                    {
+                        string unique_id_to_compare = k.Nominal + k.CalSetSerial + k.CalibrationGauge.SerialNumber;
+                        if (count2 > count1)
+                        {
+                            if (unique_id_to_compare.Equals(unique_id))
+                            {
+                                //we have a match
+                                num_id_matches++;
+                                sum_centre_dev += k.CalibrationGauge.CentreDeviation;
+                                sum_extreme_dev += k.CalibrationGauge.ExtremeDeviation;
+                                sum_variation += k.CalibrationGauge.Variation;
+                            }
+                        }
+                        count2++;
+                    }
+                    //compute the means
+                    sum_centre_dev /= (num_id_matches+1); 
+                    sum_extreme_dev /= (num_id_matches + 1);
+                    sum_variation /= (num_id_matches + 1);
+                    writer2.WriteLine(nominal + "," + ser_no + "," + sum_centre_dev + "," + sum_extreme_dev + "," + sum_variation);
+                    unique_ids_used.Add(unique_id);
+                }
+                count1++;
+            }
+            writer2.Close();
         }
+
+        private bool CreateNewCalSet(ref int set_index)
+        {
+            if (working_gauge.FromSet.Equals(""))
+            {
+                MessageBox.Show("Set serial number is blank.  This needs to be filled in");
+                return false;
+            }
+            //check if we have any calibration gauge sets in the list, if we don't then add a new set
+            if (calibration_gauge_sets.Count == 0)
+            {
+                GaugeBlockSet gauge_set = new GaugeBlockSet();
+                gauge_set.GaugeSetName = working_gauge.FromSet;
+                calibration_gauge_sets.Add(gauge_set);
+                return true;
+            }
+            else
+            {
+                bool set_exists = false;
+                //if we have calibration gauge sets already in the list then see if the set has previously been added (i.e is this a unique serial number)
+                foreach (GaugeBlockSet cal_set in calibration_gauge_sets)
+                {
+                    if (cal_set.GaugeSetName.Equals(working_gauge.FromSet))
+                    {
+                        set_exists = true;
+                        break;
+                    }
+                    set_index++;
+                   
+                }
+                if (set_exists) return true;
+                else
+                {
+                    GaugeBlockSet gauge_set = new GaugeBlockSet();
+                    gauge_set.GaugeSetName = working_gauge.FromSet;
+                    calibration_gauge_sets.Add(gauge_set);
+                    set_index++;
+                    return true;
+                }
+            }
+            
+        }
+
+        
     }
 }

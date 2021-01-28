@@ -95,6 +95,8 @@
             this.label13 = new System.Windows.Forms.Label();
             this.messagesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label14 = new System.Windows.Forms.Label();
+            this.clientNameTextBox = new System.Windows.Forms.TextBox();
+            this.clientNameLabel = new System.Windows.Forms.Label();
             this.gaugeParametersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.gaugeBlockGroupBox.SuspendLayout();
@@ -201,7 +203,7 @@
             // 
             this.imperialCheckBox.AutoSize = true;
             this.imperialCheckBox.Enabled = false;
-            this.imperialCheckBox.Location = new System.Drawing.Point(17, 36);
+            this.imperialCheckBox.Location = new System.Drawing.Point(17, 19);
             this.imperialCheckBox.Name = "imperialCheckBox";
             this.imperialCheckBox.Size = new System.Drawing.Size(62, 17);
             this.imperialCheckBox.TabIndex = 0;
@@ -234,7 +236,7 @@
             this.metricCheckBox.Checked = true;
             this.metricCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.metricCheckBox.Enabled = false;
-            this.metricCheckBox.Location = new System.Drawing.Point(81, 36);
+            this.metricCheckBox.Location = new System.Drawing.Point(81, 19);
             this.metricCheckBox.Name = "metricCheckBox";
             this.metricCheckBox.Size = new System.Drawing.Size(55, 17);
             this.metricCheckBox.TabIndex = 1;
@@ -261,6 +263,8 @@
             // 
             // gaugeParametersGroupBox
             // 
+            this.gaugeParametersGroupBox.Controls.Add(this.clientNameLabel);
+            this.gaugeParametersGroupBox.Controls.Add(this.clientNameTextBox);
             this.gaugeParametersGroupBox.Controls.Add(this.poissonsRatioTextBox);
             this.gaugeParametersGroupBox.Controls.Add(this.youngModulusTextBox);
             this.gaugeParametersGroupBox.Controls.Add(this.poissonsRatioLabel);
@@ -619,7 +623,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 146);
+            this.label5.Location = new System.Drawing.Point(16, 142);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(14, 13);
             this.label5.TabIndex = 28;
@@ -736,9 +740,9 @@
             // 
             // gaugeResultsRichTextBox
             // 
-            this.gaugeResultsRichTextBox.Location = new System.Drawing.Point(478, 385);
+            this.gaugeResultsRichTextBox.Location = new System.Drawing.Point(433, 401);
             this.gaugeResultsRichTextBox.Name = "gaugeResultsRichTextBox";
-            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(353, 355);
+            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(498, 369);
             this.gaugeResultsRichTextBox.TabIndex = 42;
             this.gaugeResultsRichTextBox.Text = "";
             // 
@@ -796,7 +800,7 @@
             // 
             // saveGaugeData
             // 
-            this.saveGaugeData.Location = new System.Drawing.Point(249, 330);
+            this.saveGaugeData.Location = new System.Drawing.Point(249, 316);
             this.saveGaugeData.Name = "saveGaugeData";
             this.saveGaugeData.Size = new System.Drawing.Size(107, 23);
             this.saveGaugeData.TabIndex = 0;
@@ -807,7 +811,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(475, 369);
+            this.label13.Location = new System.Drawing.Point(430, 382);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(77, 13);
             this.label13.TabIndex = 44;
@@ -815,26 +819,44 @@
             // 
             // messagesRichTextBox
             // 
-            this.messagesRichTextBox.Location = new System.Drawing.Point(478, 46);
+            this.messagesRichTextBox.Location = new System.Drawing.Point(433, 27);
             this.messagesRichTextBox.Name = "messagesRichTextBox";
-            this.messagesRichTextBox.Size = new System.Drawing.Size(353, 292);
+            this.messagesRichTextBox.Size = new System.Drawing.Size(498, 346);
             this.messagesRichTextBox.TabIndex = 45;
             this.messagesRichTextBox.Text = "";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(475, 30);
+            this.label14.Location = new System.Drawing.Point(430, 9);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(55, 13);
             this.label14.TabIndex = 46;
             this.label14.Text = "Messages";
             // 
+            // clientNameTextBox
+            // 
+            this.clientNameTextBox.Enabled = false;
+            this.clientNameTextBox.Location = new System.Drawing.Point(160, 38);
+            this.clientNameTextBox.Name = "clientNameTextBox";
+            this.clientNameTextBox.Size = new System.Drawing.Size(173, 20);
+            this.clientNameTextBox.TabIndex = 51;
+            this.clientNameTextBox.TextChanged += new System.EventHandler(this.clientNameTextBox_TextChanged);
+            // 
+            // clientNameLabel
+            // 
+            this.clientNameLabel.AutoSize = true;
+            this.clientNameLabel.Location = new System.Drawing.Point(16, 41);
+            this.clientNameLabel.Name = "clientNameLabel";
+            this.clientNameLabel.Size = new System.Drawing.Size(64, 13);
+            this.clientNameLabel.TabIndex = 52;
+            this.clientNameLabel.Text = "Client Name";
+            // 
             // VerticalFedForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(862, 782);
+            this.ClientSize = new System.Drawing.Size(943, 782);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.messagesRichTextBox);
             this.Controls.Add(this.label13);
@@ -940,6 +962,8 @@
         private System.Windows.Forms.TextBox youngModulusTextBox;
         private System.Windows.Forms.Label poissonsRatioLabel;
         private System.Windows.Forms.Label youngsModulusLabel;
+        private System.Windows.Forms.Label clientNameLabel;
+        private System.Windows.Forms.TextBox clientNameTextBox;
     }
 }
 
