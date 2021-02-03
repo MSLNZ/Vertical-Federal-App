@@ -662,7 +662,6 @@ namespace Vertical_Federal_App
 						string expcoeff = xmlreader.ReadElementString();
 						string ym = xmlreader.ReadElementString();
 						string pr = xmlreader.ReadElementString();
-						
 						xmlreader.ReadElementString();
 						string gauge_data_nom;
 						string gauge_data_val;

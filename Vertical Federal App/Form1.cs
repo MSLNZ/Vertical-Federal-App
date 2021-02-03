@@ -226,7 +226,7 @@ namespace Vertical_Federal_App
 
         private void referenceSetComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            
             //check if we have any reference gauge sets in the list, if we don't then add a new set
             if (reference_gauge_sets.Count == 0)
             {
@@ -239,6 +239,8 @@ namespace Vertical_Federal_App
                 //Add all gauges found in the xml file to the reference gauge set.
                 INI2XML.LoadReferenceGauges(ref gauge_set);
 
+                CheckBBFDate(gauge_set.ReportDate);
+                
                 foreach (GaugeBlockSet gbs in reference_gauge_sets)
                 {
                     gbs.PrintGaugeList(ref messagesRichTextBox);
@@ -267,6 +269,7 @@ namespace Vertical_Federal_App
                     INI2XML.GetReferenceSetMetaData(ref gauge_set);
                     //Add all gauges found in the xml file to the reference gauge set.
                     INI2XML.LoadReferenceGauges(ref gauge_set);
+                    CheckBBFDate(gauge_set.ReportDate);
 
                     foreach (GaugeBlockSet gbs in reference_gauge_sets)
                     {
@@ -277,6 +280,18 @@ namespace Vertical_Federal_App
 
         }
 
+        private void CheckBBFDate(string report_date)
+        {
+            DateTime r_date = Convert.ToDateTime(report_date);
+            DateTime now_date = DateTime.Now;
+            long ticks = now_date.Ticks - r_date.Ticks ;
+            long ticks_five_y = (long)(TimeSpan.TicksPerDay * 365.24219 * 5);
+            if (ticks > ticks_five_y)
+            {
+                MessageBox.Show("Warning - It has been over 5 years since this gauge block set has been calibrated!");
+            }
+
+        } 
         private void calGaugeSizeTextBox_TextChanged(object sender, EventArgs e)
         {
             ProcessSizeChangeEvent();
@@ -1009,9 +1024,9 @@ namespace Vertical_Federal_App
             line.Append(variation.ToString() + ",");
 
             //directory to write all measured a calculated data to.  Does not include averages of results.  I have put that in a seperate file below.
-            if (!System.IO.Directory.Exists(@"G:\Shared drives\MSL - Shared\Length\Data\FederalData"))
+            if (!System.IO.Directory.Exists(@"G:\Shared drives\MSL - Shared\Length\Data\FederalData\"))
             {
-                System.IO.Directory.CreateDirectory(@"G:\Shared drives\MSL - Shared\Length\Data\FederalData");
+                System.IO.Directory.CreateDirectory(@"G:\Shared drives\MSL - Shared\Length\Data\FederalData\");
             }
             //Determine a suitable file name from metadata
             string filename = "";
@@ -1042,9 +1057,9 @@ namespace Vertical_Federal_App
             filename = "";
             if (working_gauge.ClientName != null)  //base file name on the client nname
             {
-                filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData" + Measurement.Measurements.Last().CalibrationGauge.ClientName + "_summary" + System.DateTime.Now.Year.ToString();
+                filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData\" + Measurement.Measurements.Last().CalibrationGauge.ClientName + "_summary" + System.DateTime.Now.Year.ToString();
             }
-            else filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData" + Measurement.Measurements.Last().CalibrationGauge.FromSet + "_summary" + System.DateTime.Now.Year.ToString();
+            else filename = @"G:\Shared drives\MSL - Shared\Length\Data\FederalData\" + Measurement.Measurements.Last().CalibrationGauge.FromSet + "_summary" + System.DateTime.Now.Year.ToString();
 
             System.IO.StreamWriter writer2;
             writer2 = System.IO.File.CreateText(filename);

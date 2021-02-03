@@ -43,6 +43,8 @@
             this.referenceDeviationTextBox = new System.Windows.Forms.TextBox();
             this.refDeviationLabel = new System.Windows.Forms.Label();
             this.gaugeParametersGroupBox = new System.Windows.Forms.GroupBox();
+            this.clientNameLabel = new System.Windows.Forms.Label();
+            this.clientNameTextBox = new System.Windows.Forms.TextBox();
             this.poissonsRatioTextBox = new System.Windows.Forms.TextBox();
             this.youngModulusTextBox = new System.Windows.Forms.TextBox();
             this.poissonsRatioLabel = new System.Windows.Forms.Label();
@@ -95,8 +97,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.messagesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label14 = new System.Windows.Forms.Label();
-            this.clientNameTextBox = new System.Windows.Forms.TextBox();
-            this.clientNameLabel = new System.Windows.Forms.Label();
             this.gaugeParametersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.gaugeBlockGroupBox.SuspendLayout();
@@ -133,7 +133,7 @@
             this.COMComboBox.Name = "COMComboBox";
             this.COMComboBox.Size = new System.Drawing.Size(121, 21);
             this.COMComboBox.TabIndex = 2;
-            this.COMComboBox.Text = "COM11";
+            this.COMComboBox.Text = "COM4";
             // 
             // ComPortlabel
             // 
@@ -292,6 +292,24 @@
             this.gaugeParametersGroupBox.TabIndex = 14;
             this.gaugeParametersGroupBox.TabStop = false;
             this.gaugeParametersGroupBox.Text = "Gauge Parameters";
+            // 
+            // clientNameLabel
+            // 
+            this.clientNameLabel.AutoSize = true;
+            this.clientNameLabel.Location = new System.Drawing.Point(16, 41);
+            this.clientNameLabel.Name = "clientNameLabel";
+            this.clientNameLabel.Size = new System.Drawing.Size(64, 13);
+            this.clientNameLabel.TabIndex = 52;
+            this.clientNameLabel.Text = "Client Name";
+            // 
+            // clientNameTextBox
+            // 
+            this.clientNameTextBox.Enabled = false;
+            this.clientNameTextBox.Location = new System.Drawing.Point(160, 38);
+            this.clientNameTextBox.Name = "clientNameTextBox";
+            this.clientNameTextBox.Size = new System.Drawing.Size(173, 20);
+            this.clientNameTextBox.TabIndex = 51;
+            this.clientNameTextBox.TextChanged += new System.EventHandler(this.clientNameTextBox_TextChanged);
             // 
             // poissonsRatioTextBox
             // 
@@ -833,24 +851,6 @@
             this.label14.Size = new System.Drawing.Size(55, 13);
             this.label14.TabIndex = 46;
             this.label14.Text = "Messages";
-            // 
-            // clientNameTextBox
-            // 
-            this.clientNameTextBox.Enabled = false;
-            this.clientNameTextBox.Location = new System.Drawing.Point(160, 38);
-            this.clientNameTextBox.Name = "clientNameTextBox";
-            this.clientNameTextBox.Size = new System.Drawing.Size(173, 20);
-            this.clientNameTextBox.TabIndex = 51;
-            this.clientNameTextBox.TextChanged += new System.EventHandler(this.clientNameTextBox_TextChanged);
-            // 
-            // clientNameLabel
-            // 
-            this.clientNameLabel.AutoSize = true;
-            this.clientNameLabel.Location = new System.Drawing.Point(16, 41);
-            this.clientNameLabel.Name = "clientNameLabel";
-            this.clientNameLabel.Size = new System.Drawing.Size(64, 13);
-            this.clientNameLabel.TabIndex = 52;
-            this.clientNameLabel.Text = "Client Name";
             // 
             // VerticalFedForm
             // 
