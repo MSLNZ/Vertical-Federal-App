@@ -97,6 +97,10 @@
             this.label13 = new System.Windows.Forms.Label();
             this.messagesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label14 = new System.Windows.Forms.Label();
+            this.TemperatureTextBox = new System.Windows.Forms.TextBox();
+            this.TemperatureLabel = new System.Windows.Forms.Label();
+            this.DateTimeTextBox = new System.Windows.Forms.TextBox();
+            this.DateTimeLabel = new System.Windows.Forms.Label();
             this.gaugeParametersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.gaugeBlockGroupBox.SuspendLayout();
@@ -447,7 +451,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 90);
+            this.label1.Location = new System.Drawing.Point(16, 74);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(20, 13);
             this.label1.TabIndex = 15;
@@ -456,7 +460,7 @@
             // C1TextBox
             // 
             this.C1TextBox.Enabled = false;
-            this.C1TextBox.Location = new System.Drawing.Point(48, 87);
+            this.C1TextBox.Location = new System.Drawing.Point(48, 71);
             this.C1TextBox.Name = "C1TextBox";
             this.C1TextBox.Size = new System.Drawing.Size(116, 20);
             this.C1TextBox.TabIndex = 16;
@@ -614,7 +618,7 @@
             // ATextBox
             // 
             this.ATextBox.Enabled = false;
-            this.ATextBox.Location = new System.Drawing.Point(48, 113);
+            this.ATextBox.Location = new System.Drawing.Point(48, 97);
             this.ATextBox.Name = "ATextBox";
             this.ATextBox.Size = new System.Drawing.Size(116, 20);
             this.ATextBox.TabIndex = 27;
@@ -623,7 +627,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 116);
+            this.label4.Location = new System.Drawing.Point(16, 100);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(14, 13);
             this.label4.TabIndex = 26;
@@ -632,7 +636,7 @@
             // BTextBox
             // 
             this.BTextBox.Enabled = false;
-            this.BTextBox.Location = new System.Drawing.Point(48, 139);
+            this.BTextBox.Location = new System.Drawing.Point(48, 123);
             this.BTextBox.Name = "BTextBox";
             this.BTextBox.Size = new System.Drawing.Size(116, 20);
             this.BTextBox.TabIndex = 29;
@@ -641,7 +645,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 142);
+            this.label5.Location = new System.Drawing.Point(16, 126);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(14, 13);
             this.label5.TabIndex = 28;
@@ -650,7 +654,7 @@
             // C2TextBox
             // 
             this.C2TextBox.Enabled = false;
-            this.C2TextBox.Location = new System.Drawing.Point(48, 165);
+            this.C2TextBox.Location = new System.Drawing.Point(48, 149);
             this.C2TextBox.Name = "C2TextBox";
             this.C2TextBox.Size = new System.Drawing.Size(116, 20);
             this.C2TextBox.TabIndex = 31;
@@ -659,7 +663,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(15, 168);
+            this.label6.Location = new System.Drawing.Point(15, 152);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(20, 13);
             this.label6.TabIndex = 30;
@@ -668,7 +672,7 @@
             // DTextBox
             // 
             this.DTextBox.Enabled = false;
-            this.DTextBox.Location = new System.Drawing.Point(48, 191);
+            this.DTextBox.Location = new System.Drawing.Point(48, 175);
             this.DTextBox.Name = "DTextBox";
             this.DTextBox.Size = new System.Drawing.Size(116, 20);
             this.DTextBox.TabIndex = 33;
@@ -677,7 +681,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 194);
+            this.label7.Location = new System.Drawing.Point(14, 178);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(15, 13);
             this.label7.TabIndex = 32;
@@ -686,7 +690,7 @@
             // ETextBox
             // 
             this.ETextBox.Enabled = false;
-            this.ETextBox.Location = new System.Drawing.Point(48, 217);
+            this.ETextBox.Location = new System.Drawing.Point(48, 201);
             this.ETextBox.Name = "ETextBox";
             this.ETextBox.Size = new System.Drawing.Size(116, 20);
             this.ETextBox.TabIndex = 35;
@@ -695,7 +699,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(14, 220);
+            this.label8.Location = new System.Drawing.Point(14, 204);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(14, 13);
             this.label8.TabIndex = 34;
@@ -704,7 +708,7 @@
             // C3TextBox
             // 
             this.C3TextBox.Enabled = false;
-            this.C3TextBox.Location = new System.Drawing.Point(48, 243);
+            this.C3TextBox.Location = new System.Drawing.Point(48, 227);
             this.C3TextBox.Name = "C3TextBox";
             this.C3TextBox.Size = new System.Drawing.Size(116, 20);
             this.C3TextBox.TabIndex = 37;
@@ -713,7 +717,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(14, 246);
+            this.label10.Location = new System.Drawing.Point(14, 230);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(20, 13);
             this.label10.TabIndex = 36;
@@ -740,7 +744,7 @@
             // R2TextBox
             // 
             this.R2TextBox.Enabled = false;
-            this.R2TextBox.Location = new System.Drawing.Point(48, 306);
+            this.R2TextBox.Location = new System.Drawing.Point(48, 266);
             this.R2TextBox.Name = "R2TextBox";
             this.R2TextBox.Size = new System.Drawing.Size(116, 20);
             this.R2TextBox.TabIndex = 41;
@@ -749,7 +753,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(14, 309);
+            this.label12.Location = new System.Drawing.Point(14, 269);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(21, 13);
             this.label12.TabIndex = 40;
@@ -766,6 +770,10 @@
             // 
             // measurementGroupBox
             // 
+            this.measurementGroupBox.Controls.Add(this.DateTimeLabel);
+            this.measurementGroupBox.Controls.Add(this.DateTimeTextBox);
+            this.measurementGroupBox.Controls.Add(this.TemperatureLabel);
+            this.measurementGroupBox.Controls.Add(this.TemperatureTextBox);
             this.measurementGroupBox.Controls.Add(this.R2RadioButton);
             this.measurementGroupBox.Controls.Add(this.R1RadioButton);
             this.measurementGroupBox.Controls.Add(this.saveGaugeData);
@@ -797,7 +805,7 @@
             // R2RadioButton
             // 
             this.R2RadioButton.AutoSize = true;
-            this.R2RadioButton.Location = new System.Drawing.Point(170, 309);
+            this.R2RadioButton.Location = new System.Drawing.Point(170, 269);
             this.R2RadioButton.Name = "R2RadioButton";
             this.R2RadioButton.Size = new System.Drawing.Size(14, 13);
             this.R2RadioButton.TabIndex = 2;
@@ -851,6 +859,38 @@
             this.label14.Size = new System.Drawing.Size(55, 13);
             this.label14.TabIndex = 46;
             this.label14.Text = "Messages";
+            // 
+            // TemperatureTextBox
+            // 
+            this.TemperatureTextBox.Location = new System.Drawing.Point(121, 304);
+            this.TemperatureTextBox.Name = "TemperatureTextBox";
+            this.TemperatureTextBox.Size = new System.Drawing.Size(108, 20);
+            this.TemperatureTextBox.TabIndex = 42;
+            // 
+            // TemperatureLabel
+            // 
+            this.TemperatureLabel.AutoSize = true;
+            this.TemperatureLabel.Location = new System.Drawing.Point(14, 307);
+            this.TemperatureLabel.Name = "TemperatureLabel";
+            this.TemperatureLabel.Size = new System.Drawing.Size(101, 13);
+            this.TemperatureLabel.TabIndex = 43;
+            this.TemperatureLabel.Text = "CurrentTemperature";
+            // 
+            // DateTimeTextBox
+            // 
+            this.DateTimeTextBox.Location = new System.Drawing.Point(121, 330);
+            this.DateTimeTextBox.Name = "DateTimeTextBox";
+            this.DateTimeTextBox.Size = new System.Drawing.Size(108, 20);
+            this.DateTimeTextBox.TabIndex = 44;
+            // 
+            // DateTimeLabel
+            // 
+            this.DateTimeLabel.AutoSize = true;
+            this.DateTimeLabel.Location = new System.Drawing.Point(14, 333);
+            this.DateTimeLabel.Name = "DateTimeLabel";
+            this.DateTimeLabel.Size = new System.Drawing.Size(95, 13);
+            this.DateTimeLabel.TabIndex = 45;
+            this.DateTimeLabel.Text = "Current Date/Time";
             // 
             // VerticalFedForm
             // 
@@ -964,6 +1004,10 @@
         private System.Windows.Forms.Label youngsModulusLabel;
         private System.Windows.Forms.Label clientNameLabel;
         private System.Windows.Forms.TextBox clientNameTextBox;
+        private System.Windows.Forms.Label TemperatureLabel;
+        private System.Windows.Forms.TextBox TemperatureTextBox;
+        private System.Windows.Forms.Label DateTimeLabel;
+        private System.Windows.Forms.TextBox DateTimeTextBox;
     }
 }
 

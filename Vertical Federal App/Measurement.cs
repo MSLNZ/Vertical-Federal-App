@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
+using System.IO;
 
 namespace Vertical_Federal_App
 {
@@ -37,6 +39,8 @@ namespace Vertical_Federal_App
         private double d;
         private double e;
         private bool metric;
+        private static Thread tempRetriever;
+        private static bool log_temperatures = false;
         
         
         public Measurement()
@@ -49,8 +53,6 @@ namespace Vertical_Federal_App
             get { return nominal; }
             set { nominal = value; }
         }
-       
-
         public double R1
         {
             get { return r1; }
@@ -149,6 +151,86 @@ namespace Vertical_Federal_App
             get { return measurements; }
             set { measurements = value; }
         }
+        public static bool LogTemperatures
+        {
+            set { log_temperatures = value; }
+            get { return log_temperatures; }
+        }
+
+        public static void StartRetreivingTemperatures(ref TemperatureRetrieved tdr)
+        {
+            tempRetriever = new Thread(new ParameterizedThreadStart(LookUpTemperatures));
+            tempRetriever.Start(tdr);
+        }
+
+        private static void LookUpTemperatures(object tdr)
+        {
+            TemperatureRetrieved printData = (TemperatureRetrieved) tdr;
+            bool temperature_found;
+            while (LogTemperatures)
+            {
+                temperature_found = false;
+                DateTime now = DateTime.Now;
+                DateTime previous_interation_datetime = DateTime.MinValue;
+
+                string path = @"G:\Shared drives\MSL - Length\Length\Temperature Monitoring Data\Hilger Lab\"+ now.Year.ToString() + @"\" + now.Year.ToString() + "-" + now.Month.ToString() + @"\" + "Vertical Federal.txt";
+                if (!File.Exists(path))
+                {
+                    MessageBox.Show("Unable to get temperature.  Temperature data file expected, unable to find file at:\n" +
+                        path + "\nYou can enter temperatures into the box below manually each time you make a measurement");
+                    return;
+                }
+                
+                string line = GetLastLine(path);
+
+                if (line.Equals("")) continue;
+
+                //find the first comma
+                int indexofcomma1 = line.IndexOf(",");
+                string temperature = line.Remove(indexofcomma1);
+                string remainder = line.Substring(indexofcomma1 + 1);
+                int indexofcomma2 = remainder.IndexOf(",");
+                remainder = remainder.Substring(indexofcomma2 + 1);
+                int indexofcomma3 = remainder.IndexOf(",");
+                string datetime = remainder.Remove(indexofcomma3);
+                DateTime found = DateTime.MinValue;
+                double temperature_d = -1.0;
+
+                try
+                {
+                    found = Convert.ToDateTime(datetime);
+                    temperature_d = Convert.ToDouble(temperature);
+                }
+                catch (FormatException)
+                {
+                        continue;
+                }
+                printData(temperature_d, found);
+              
+                    
+               
+            }
+        }
+
+        public static String GetLastLine(String fileName)
+        {
+            try
+            {
+                using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                {
+                    string[] lines = File.ReadAllLines(fileName);
+                    if (lines.Length == 1 || lines.Length == 2) return "";
+                    else return lines[lines.Length - 1];
+                }
+            }
+            catch (System.IO.IOException)
+            {
+                return "";
+            }
+
+                
+        }
+
 
         public double CalculateVariation()
         {
@@ -291,12 +373,8 @@ namespace Vertical_Federal_App
        
         public double getCorrection_um_uinch()
         {
-            
-            
              elastic_correction = centre_deviation - (CalculateMeasuredDiff_um_uinch() + RefDeviation_um_uinch);
              return elastic_correction;
-            
-          
         }
     }
 }

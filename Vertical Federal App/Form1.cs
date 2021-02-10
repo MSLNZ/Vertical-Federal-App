@@ -15,7 +15,7 @@ using System.IO.Ports;
 namespace Vertical_Federal_App
 {
     public delegate void SerialDataReveived(string data);
-
+    public delegate void TemperatureRetrieved(double temperature, DateTime datetime_retreived);
 
 
 
@@ -23,6 +23,7 @@ namespace Vertical_Federal_App
     {
         
         private SerialDataReveived sdr;
+        private TemperatureRetrieved tdr;
         private bool header_written;
         private VerticalFederal federal;
         private GaugeBlock working_gauge;
@@ -42,6 +43,7 @@ namespace Vertical_Federal_App
         {
             InitializeComponent();
             sdr = new SerialDataReveived(DataReceived);
+            tdr = new TemperatureRetrieved(TemperatureReceived);
             working_gauge = new GaugeBlock();
             INI2XML.DoIni2XmlConversion(ref messagesRichTextBox);
             if(INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
@@ -49,6 +51,8 @@ namespace Vertical_Federal_App
             reference_gauge_sets = new List<GaugeBlockSet>();
             radiobuttionclearcalled = false;
             header_written = false;
+            Measurement.StartRetreivingTemperatures(ref tdr);
+            Measurement.LogTemperatures = true;
         }
 
         private void Comopenbutton_Click(object sender, EventArgs e)
@@ -169,6 +173,19 @@ namespace Vertical_Federal_App
             {
                 object[] textobj = { data };
                 this.BeginInvoke(new SerialDataReveived(DataReceived), textobj);
+            }
+        }
+        public void TemperatureReceived(double temperature, DateTime datetime)
+        {
+            if (this.InvokeRequired == false)
+            {
+                TemperatureTextBox.Text = Convert.ToString(temperature);
+                DateTimeTextBox.Text = Convert.ToString(datetime);
+            }
+            else
+            {
+                object[] textobj = { temperature,datetime };
+                this.BeginInvoke(new TemperatureRetrieved(TemperatureReceived), textobj);
             }
         }
 
