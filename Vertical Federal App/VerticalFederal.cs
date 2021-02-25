@@ -43,7 +43,7 @@ namespace Vertical_Federal_App
                 //register and event handler
                 s_port.DataReceived += new SerialDataReceivedEventHandler(DataReceviedEventHandler);
             }
-            catch(System.IO.IOException e)
+            catch(System.IO.IOException)
             {
 
             }

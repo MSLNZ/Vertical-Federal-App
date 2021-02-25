@@ -165,7 +165,7 @@ namespace Vertical_Federal_App
 				catch (System.IO.IOException)
 				{
 
-					strXMLFileName = @"G:\Shared drives\MSL - Shared\Length\Data\cal_data_" + System.DateTime.Now.Ticks.ToString() + ".xml";
+					strXMLFileName = @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data_" + System.DateTime.Now.Ticks.ToString() + ".xml";
 					//if the file is in use write it under another name
 					try
 					{
@@ -468,8 +468,8 @@ namespace Vertical_Federal_App
 		{
 			
 			
-			xmlfilename = @"G:\Shared drives\MSL - Shared\Length\Data\cal_data.xml";
-			string inifilename = @"G:\Shared drives\MSL - Shared\Length\Data\cal_data.ini";
+			xmlfilename = @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data.xml";
+			string inifilename = @"G:\Shared drives\MSL - Length\Length\EQUIPREG\cal_data.ini";
 
 			if (INI2XML.Convert(inifilename, ref xmlfilename))
 			{
@@ -592,7 +592,7 @@ namespace Vertical_Federal_App
 							poissons_ratio_ = System.Convert.ToDouble(poissons_ratio);
 							valid = true;
 						}
-                        catch(FormatException e)
+                        catch(FormatException)
                         {
 							MessageBox.Show("Invalid expansion coefficient or youngs modulus or poissons ratio.. value should be numberic - check ini file");
                         }
@@ -610,6 +610,7 @@ namespace Vertical_Federal_App
 								mtrl.exp_coeff= expcoeff_;
 								mtrl.youngs_modulus = youngs_modulus_;
 								mtrl.poissons_ratio = poissons_ratio_;
+								mtrl.material = material;
 								gauge_set.GaugeSetMaterial = mtrl; 
 							}
 							
@@ -679,7 +680,7 @@ namespace Vertical_Federal_App
 
 							if (gauge_block_set.Equals(gauge_set.GaugeSetName))
 							{
-								GaugeBlock gauge = new GaugeBlock();
+								GaugeBlock gauge = new GaugeBlock(true);
 								if(gauge_set.Unit== Units.Metric)
                                 {
 									gauge.Metric = true;
@@ -705,13 +706,19 @@ namespace Vertical_Federal_App
 									string deviation = gauge_data_val.Substring(index_of_comma +1, gauge_data_val.Length - (index_of_comma+1));
 									gauge.CentreDeviation = System.Convert.ToDouble(deviation);
                                 }
-								catch(FormatException e)
+								catch(FormatException)
                                 {
 									MessageBox.Show("invalid gauge block deviation, check .ini file");
 								}
 								string serial = gauge_data_val.Remove(index_of_comma);
 								gauge.SerialNumber = serial;
 								gauge.FromSet = gauge_block_set;
+								gauge.GaugeBlockMaterial.youngs_modulus = System.Convert.ToDouble(ym);
+								gauge.GaugeBlockMaterial.poissons_ratio = System.Convert.ToDouble(pr);
+								gauge.GaugeBlockMaterial.exp_coeff = System.Convert.ToDouble(expcoeff);
+								gauge.GaugeBlockMaterial.material = material;
+								if (unit.Equals("METRIC")) gauge.Metric = true;
+								else  gauge.Metric = false; 
 								gauge_set.AddGauge(gauge);
 							}
 

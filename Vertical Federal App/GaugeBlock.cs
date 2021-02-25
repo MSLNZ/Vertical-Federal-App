@@ -3,20 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Vertical_Federal_App
 {
     public class Stack
     {
-        GaugeBlock gauge1;
-        GaugeBlock gauge2;
-        GaugeBlock gauge3;
+        private GaugeBlock gauge1;
+        private GaugeBlock gauge2;
+        private GaugeBlock gauge3;
 
-        public Stack()
+        public Stack(short num_gauges_in_stack)
         {
-            gauge1 = new GaugeBlock();
-            gauge2 = new GaugeBlock();
-            gauge3 = new GaugeBlock();
+            switch (num_gauges_in_stack) {
+                case 1:
+                    gauge1 = new GaugeBlock(true);
+                    gauge2 = null;
+                    gauge3 = null;
+                    break;
+                case 2:
+                    gauge1 = new GaugeBlock(true);
+                    gauge2 = new GaugeBlock(false); 
+                    gauge3 = null;
+                    break;
+                case 3:
+                    gauge1 = new GaugeBlock(true);
+                    gauge2 = new GaugeBlock(false); 
+                    gauge3 = new GaugeBlock(false);
+                    break;
+            }
+            
+        }
+        public Stack Clone()
+        {
+            Stack stk = new Stack(1);
+            stk.Gauge1 = Gauge1.Clone();
+            if (Gauge2 == null) stk.Gauge2 = null;
+            else stk.Gauge2 = Gauge2.Clone();
+            if (Gauge3 == null) stk.Gauge3 = null;
+            else stk.Gauge3 = Gauge3.Clone();
+            return stk;
         }
         public GaugeBlock Gauge1
         {
@@ -37,6 +64,7 @@ namespace Vertical_Federal_App
 
     public class Material
     {
+        public string material;
         public double poissons_ratio;
         public double youngs_modulus;
         public double exp_coeff;
@@ -50,22 +78,68 @@ namespace Vertical_Federal_App
         private bool metric;
         private double deviation;
         private double extreme_deviation;
+        private double min_deviation;
+        private double max_deviation;
         private double corrected_length;
         private double variation;
         private string from_set; //the name of the reference set this gauge belongs to
         private Material gauge_material;
         private bool illegal_size;
-        public GaugeBlock()
+        public GaugeBlock(bool with_values)
         {
+
             nominal = 0;
             serial_number = "";
             metric = true;
             gauge_material = new Material();
-            gauge_material.exp_coeff = 9.5;
-            gauge_material.poissons_ratio = 0.290;
-            gauge_material.youngs_modulus = 205;
+            if (with_values)
+            {
+                gauge_material.exp_coeff = 9.5;
+                gauge_material.poissons_ratio = 0.290;
+                gauge_material.youngs_modulus = 205;
+                gauge_material.material = "ceramic";
+            }
+            else
+            {
+                gauge_material.exp_coeff = 0;
+                gauge_material.poissons_ratio = 0;
+                gauge_material.youngs_modulus = 0;
+                gauge_material.material = "";
+            }
             illegal_size = false;
                 
+        }
+
+        public GaugeBlock Clone()
+        {
+            //make a new gauge block
+            GaugeBlock gb = new GaugeBlock(false);
+            gb.nominal = nominal;
+            if (serial_number == null) gb.serial_number = null;
+            else gb.serial_number = (string) serial_number.Clone();
+            if (client_name == null) gb.client_name = null;
+            else gb.client_name = (string) client_name.Clone();
+            gb.metric = metric;
+            gb.deviation = deviation;
+            gb.extreme_deviation = extreme_deviation;
+            gb.min_deviation = min_deviation;
+            gb.max_deviation = max_deviation;
+            gb.corrected_length = corrected_length;
+            gb.variation = variation;
+            if (from_set == null) gb.from_set = null;
+            else gb.from_set = (string)from_set.Clone();
+            gb.illegal_size = illegal_size;
+
+            Material mtrl = new Material();
+            //does the gauge block have a material allocated? if it doesn't then the gauge is not in use.
+            if (gauge_material.material == null) mtrl.material = "";
+            else mtrl.material = (string) gauge_material.material.Clone();
+
+            mtrl.exp_coeff = gauge_material.exp_coeff;
+            mtrl.poissons_ratio = gauge_material.poissons_ratio;
+            mtrl.youngs_modulus = gauge_material.youngs_modulus;
+            gb.GaugeBlockMaterial = mtrl;
+            return gb;
         }
         public double Nominal
         {
@@ -107,6 +181,16 @@ namespace Vertical_Federal_App
         {
             get { return variation; }
             set { variation = value; }
+        }
+        public double MinDev
+        {
+            get { return min_deviation; }
+            set { min_deviation = value; }
+        }
+        public double MaxDev
+        {
+            get { return max_deviation; }
+            set { max_deviation = value; }
         }
         public double ExtremeDeviation
         {
