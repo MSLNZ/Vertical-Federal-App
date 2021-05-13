@@ -91,6 +91,8 @@
             this.label12 = new System.Windows.Forms.Label();
             this.gaugeResultsRichTextBox = new System.Windows.Forms.RichTextBox();
             this.measurementGroupBox = new System.Windows.Forms.GroupBox();
+            this.DeleteLastButton = new System.Windows.Forms.Button();
+            this.LoadMeasurementButton = new System.Windows.Forms.Button();
             this.DateTimeLabel = new System.Windows.Forms.Label();
             this.DateTimeTextBox = new System.Windows.Forms.TextBox();
             this.TemperatureLabel = new System.Windows.Forms.Label();
@@ -100,9 +102,9 @@
             this.label13 = new System.Windows.Forms.Label();
             this.messagesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label14 = new System.Windows.Forms.Label();
-            this.LoadMeasurementButton = new System.Windows.Forms.Button();
-            this.DeleteLastButton = new System.Windows.Forms.Button();
             this.MeasurementOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.Compliance_label = new System.Windows.Forms.Label();
+            this.ComplianceComboBox = new System.Windows.Forms.ComboBox();
             this.gaugeParametersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.gaugeBlockGroupBox.SuspendLayout();
@@ -221,7 +223,7 @@
             // 
             this.referenceSetComboBox.Enabled = false;
             this.referenceSetComboBox.FormattingEnabled = true;
-            this.referenceSetComboBox.Location = new System.Drawing.Point(160, 221);
+            this.referenceSetComboBox.Location = new System.Drawing.Point(160, 248);
             this.referenceSetComboBox.Name = "referenceSetComboBox";
             this.referenceSetComboBox.Size = new System.Drawing.Size(173, 21);
             this.referenceSetComboBox.TabIndex = 10;
@@ -230,7 +232,7 @@
             // referenceGaugeSetLabel
             // 
             this.referenceGaugeSetLabel.AutoSize = true;
-            this.referenceGaugeSetLabel.Location = new System.Drawing.Point(16, 224);
+            this.referenceGaugeSetLabel.Location = new System.Drawing.Point(16, 251);
             this.referenceGaugeSetLabel.Name = "referenceGaugeSetLabel";
             this.referenceGaugeSetLabel.Size = new System.Drawing.Size(111, 13);
             this.referenceGaugeSetLabel.TabIndex = 11;
@@ -269,6 +271,8 @@
             // 
             // gaugeParametersGroupBox
             // 
+            this.gaugeParametersGroupBox.Controls.Add(this.ComplianceComboBox);
+            this.gaugeParametersGroupBox.Controls.Add(this.Compliance_label);
             this.gaugeParametersGroupBox.Controls.Add(this.clientNameLabel);
             this.gaugeParametersGroupBox.Controls.Add(this.clientNameTextBox);
             this.gaugeParametersGroupBox.Controls.Add(this.poissonsRatioTextBox);
@@ -294,7 +298,7 @@
             this.gaugeParametersGroupBox.Enabled = false;
             this.gaugeParametersGroupBox.Location = new System.Drawing.Point(12, 83);
             this.gaugeParametersGroupBox.Name = "gaugeParametersGroupBox";
-            this.gaugeParametersGroupBox.Size = new System.Drawing.Size(435, 312);
+            this.gaugeParametersGroupBox.Size = new System.Drawing.Size(435, 339);
             this.gaugeParametersGroupBox.TabIndex = 14;
             this.gaugeParametersGroupBox.TabStop = false;
             this.gaugeParametersGroupBox.Text = "Gauge Parameters";
@@ -320,7 +324,7 @@
             // poissonsRatioTextBox
             // 
             this.poissonsRatioTextBox.Enabled = false;
-            this.poissonsRatioTextBox.Location = new System.Drawing.Point(160, 169);
+            this.poissonsRatioTextBox.Location = new System.Drawing.Point(160, 196);
             this.poissonsRatioTextBox.Name = "poissonsRatioTextBox";
             this.poissonsRatioTextBox.Size = new System.Drawing.Size(173, 20);
             this.poissonsRatioTextBox.TabIndex = 50;
@@ -330,7 +334,7 @@
             // youngModulusTextBox
             // 
             this.youngModulusTextBox.Enabled = false;
-            this.youngModulusTextBox.Location = new System.Drawing.Point(160, 143);
+            this.youngModulusTextBox.Location = new System.Drawing.Point(160, 170);
             this.youngModulusTextBox.Name = "youngModulusTextBox";
             this.youngModulusTextBox.Size = new System.Drawing.Size(173, 20);
             this.youngModulusTextBox.TabIndex = 49;
@@ -340,7 +344,7 @@
             // poissonsRatioLabel
             // 
             this.poissonsRatioLabel.AutoSize = true;
-            this.poissonsRatioLabel.Location = new System.Drawing.Point(16, 172);
+            this.poissonsRatioLabel.Location = new System.Drawing.Point(16, 199);
             this.poissonsRatioLabel.Name = "poissonsRatioLabel";
             this.poissonsRatioLabel.Size = new System.Drawing.Size(77, 13);
             this.poissonsRatioLabel.TabIndex = 48;
@@ -349,7 +353,7 @@
             // youngsModulusLabel
             // 
             this.youngsModulusLabel.AutoSize = true;
-            this.youngsModulusLabel.Location = new System.Drawing.Point(16, 146);
+            this.youngsModulusLabel.Location = new System.Drawing.Point(16, 173);
             this.youngsModulusLabel.Name = "youngsModulusLabel";
             this.youngsModulusLabel.Size = new System.Drawing.Size(88, 13);
             this.youngsModulusLabel.TabIndex = 47;
@@ -363,7 +367,7 @@
             "steel",
             "ceramic",
             "tungsten carbide"});
-            this.materialComboBox.Location = new System.Drawing.Point(160, 116);
+            this.materialComboBox.Location = new System.Drawing.Point(160, 143);
             this.materialComboBox.Name = "materialComboBox";
             this.materialComboBox.Size = new System.Drawing.Size(173, 21);
             this.materialComboBox.TabIndex = 23;
@@ -373,7 +377,7 @@
             // MaterialLabel
             // 
             this.MaterialLabel.AutoSize = true;
-            this.MaterialLabel.Location = new System.Drawing.Point(16, 119);
+            this.MaterialLabel.Location = new System.Drawing.Point(16, 146);
             this.MaterialLabel.Name = "MaterialLabel";
             this.MaterialLabel.Size = new System.Drawing.Size(44, 13);
             this.MaterialLabel.TabIndex = 22;
@@ -382,7 +386,7 @@
             // CalGaugeExpCoeffLabel
             // 
             this.CalGaugeExpCoeffLabel.AutoSize = true;
-            this.CalGaugeExpCoeffLabel.Location = new System.Drawing.Point(16, 197);
+            this.CalGaugeExpCoeffLabel.Location = new System.Drawing.Point(16, 224);
             this.CalGaugeExpCoeffLabel.Name = "CalGaugeExpCoeffLabel";
             this.CalGaugeExpCoeffLabel.Size = new System.Drawing.Size(53, 13);
             this.CalGaugeExpCoeffLabel.TabIndex = 21;
@@ -397,7 +401,7 @@
             0,
             0,
             65536});
-            this.expNumericUpDown.Location = new System.Drawing.Point(160, 195);
+            this.expNumericUpDown.Location = new System.Drawing.Point(160, 222);
             this.expNumericUpDown.Maximum = new decimal(new int[] {
             25,
             0,
@@ -416,7 +420,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(16, 277);
+            this.label15.Location = new System.Drawing.Point(16, 304);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(138, 13);
             this.label15.TabIndex = 17;
@@ -426,7 +430,7 @@
             // 
             this.suitableReferenceGaugesComboBox.Enabled = false;
             this.suitableReferenceGaugesComboBox.FormattingEnabled = true;
-            this.suitableReferenceGaugesComboBox.Location = new System.Drawing.Point(160, 274);
+            this.suitableReferenceGaugesComboBox.Location = new System.Drawing.Point(160, 301);
             this.suitableReferenceGaugesComboBox.Name = "suitableReferenceGaugesComboBox";
             this.suitableReferenceGaugesComboBox.Size = new System.Drawing.Size(173, 21);
             this.suitableReferenceGaugesComboBox.TabIndex = 16;
@@ -435,7 +439,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 251);
+            this.label2.Location = new System.Drawing.Point(16, 278);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(132, 13);
             this.label2.TabIndex = 15;
@@ -444,7 +448,7 @@
             // calGaugeNominalTextBox
             // 
             this.calGaugeNominalTextBox.Enabled = false;
-            this.calGaugeNominalTextBox.Location = new System.Drawing.Point(160, 248);
+            this.calGaugeNominalTextBox.Location = new System.Drawing.Point(160, 275);
             this.calGaugeNominalTextBox.Name = "calGaugeNominalTextBox";
             this.calGaugeNominalTextBox.Size = new System.Drawing.Size(173, 20);
             this.calGaugeNominalTextBox.TabIndex = 15;
@@ -764,9 +768,10 @@
             // 
             // gaugeResultsRichTextBox
             // 
+            this.gaugeResultsRichTextBox.HideSelection = false;
             this.gaugeResultsRichTextBox.Location = new System.Drawing.Point(466, 417);
             this.gaugeResultsRichTextBox.Name = "gaugeResultsRichTextBox";
-            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(560, 403);
+            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(560, 430);
             this.gaugeResultsRichTextBox.TabIndex = 42;
             this.gaugeResultsRichTextBox.Text = "";
             // 
@@ -809,12 +814,32 @@
             this.measurementGroupBox.Controls.Add(this.BTextBox);
             this.measurementGroupBox.Controls.Add(this.C2TextBox);
             this.measurementGroupBox.Controls.Add(this.label1);
-            this.measurementGroupBox.Location = new System.Drawing.Point(12, 401);
+            this.measurementGroupBox.Location = new System.Drawing.Point(12, 428);
             this.measurementGroupBox.Name = "measurementGroupBox";
             this.measurementGroupBox.Size = new System.Drawing.Size(435, 419);
             this.measurementGroupBox.TabIndex = 43;
             this.measurementGroupBox.TabStop = false;
             this.measurementGroupBox.Text = "Measurement";
+            // 
+            // DeleteLastButton
+            // 
+            this.DeleteLastButton.Location = new System.Drawing.Point(286, 382);
+            this.DeleteLastButton.Name = "DeleteLastButton";
+            this.DeleteLastButton.Size = new System.Drawing.Size(108, 22);
+            this.DeleteLastButton.TabIndex = 47;
+            this.DeleteLastButton.Text = "Delete Last";
+            this.DeleteLastButton.UseVisualStyleBackColor = true;
+            this.DeleteLastButton.Click += new System.EventHandler(this.DeleteLastButton_Click);
+            // 
+            // LoadMeasurementButton
+            // 
+            this.LoadMeasurementButton.Location = new System.Drawing.Point(287, 342);
+            this.LoadMeasurementButton.Name = "LoadMeasurementButton";
+            this.LoadMeasurementButton.Size = new System.Drawing.Size(107, 23);
+            this.LoadMeasurementButton.TabIndex = 46;
+            this.LoadMeasurementButton.Text = "Load Measurements";
+            this.LoadMeasurementButton.UseVisualStyleBackColor = true;
+            this.LoadMeasurementButton.Click += new System.EventHandler(this.LoadMeasurementButton_Click);
             // 
             // DateTimeLabel
             // 
@@ -847,6 +872,7 @@
             this.TemperatureTextBox.Name = "TemperatureTextBox";
             this.TemperatureTextBox.Size = new System.Drawing.Size(140, 20);
             this.TemperatureTextBox.TabIndex = 42;
+            this.TemperatureTextBox.TextChanged += new System.EventHandler(this.TemperatureTextBox_TextChanged);
             // 
             // R2RadioButton
             // 
@@ -896,37 +922,54 @@
             this.label14.TabIndex = 46;
             this.label14.Text = "Messages";
             // 
-            // LoadMeasurementButton
-            // 
-            this.LoadMeasurementButton.Location = new System.Drawing.Point(287, 342);
-            this.LoadMeasurementButton.Name = "LoadMeasurementButton";
-            this.LoadMeasurementButton.Size = new System.Drawing.Size(107, 23);
-            this.LoadMeasurementButton.TabIndex = 46;
-            this.LoadMeasurementButton.Text = "Load Measurements";
-            this.LoadMeasurementButton.UseVisualStyleBackColor = true;
-            this.LoadMeasurementButton.Click += new System.EventHandler(this.LoadMeasurementButton_Click);
-            // 
-            // DeleteLastButton
-            // 
-            this.DeleteLastButton.Location = new System.Drawing.Point(286, 382);
-            this.DeleteLastButton.Name = "DeleteLastButton";
-            this.DeleteLastButton.Size = new System.Drawing.Size(108, 22);
-            this.DeleteLastButton.TabIndex = 47;
-            this.DeleteLastButton.Text = "Delete Last";
-            this.DeleteLastButton.UseVisualStyleBackColor = true;
-            this.DeleteLastButton.Click += new System.EventHandler(this.DeleteLastButton_Click);
-            // 
             // MeasurementOpenFileDialog
             // 
             this.MeasurementOpenFileDialog.DefaultExt = "txt";
             this.MeasurementOpenFileDialog.Filter = "txt files (*.txt)|*.txt";
             this.MeasurementOpenFileDialog.InitialDirectory = "G:\\Shared drives\\MSL - Length\\Length\\Federal\\FederalData";
             // 
+            // Compliance_label
+            // 
+            this.Compliance_label.AutoSize = true;
+            this.Compliance_label.Location = new System.Drawing.Point(16, 119);
+            this.Compliance_label.Name = "Compliance_label";
+            this.Compliance_label.Size = new System.Drawing.Size(74, 13);
+            this.Compliance_label.TabIndex = 54;
+            this.Compliance_label.Text = "Compliance to";
+            // 
+            // ComplianceComboBox
+            // 
+            this.ComplianceComboBox.Enabled = false;
+            this.ComplianceComboBox.FormattingEnabled = true;
+            this.ComplianceComboBox.Items.AddRange(new object[] {
+            "BS EN ISO 3650:1999 Grade 00",
+            "BS EN ISO3650:1999 Grade 0",
+            "BS EN ISO3650:1999 Grade 1",
+            "BS EN ISO3650:1999 Grade 2",
+            "JIS B 7506 : 2004 Grade K",
+            "JIS B 7506 : 2004 Grade 0",
+            "JIS B 7506 : 2004 Grade 1",
+            "JIS B 7506 : 2004 Grade 2",
+            "AS 1457 - 1999 Grade K",
+            "AS 1457 - 1999 Grade 0",
+            "AS 1457 - 1999 Grade 1",
+            "AS 1457 - 1999 Grade 2",
+            "ASME B89.1.9-2002 Grade K",
+            "ASME B89.1.9-2002 Grade 00",
+            "ASME B89.1.9-2002 Grade 0",
+            "ASME B89.1.9-2002 Grade AS-1",
+            "ASME B89.1.9-2002 Grade AS-2"});
+            this.ComplianceComboBox.Location = new System.Drawing.Point(160, 116);
+            this.ComplianceComboBox.Name = "ComplianceComboBox";
+            this.ComplianceComboBox.Size = new System.Drawing.Size(173, 21);
+            this.ComplianceComboBox.TabIndex = 55;
+            this.ComplianceComboBox.SelectedIndexChanged += new System.EventHandler(this.ComplianceComboBox_SelectedIndexChanged);
+            // 
             // VerticalFedForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1038, 832);
+            this.ClientSize = new System.Drawing.Size(1038, 859);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.messagesRichTextBox);
             this.Controls.Add(this.label13);
@@ -1030,6 +1073,8 @@
         private System.Windows.Forms.Button DeleteLastButton;
         private System.Windows.Forms.Button LoadMeasurementButton;
         private System.Windows.Forms.OpenFileDialog MeasurementOpenFileDialog;
+        private System.Windows.Forms.ComboBox ComplianceComboBox;
+        private System.Windows.Forms.Label Compliance_label;
     }
 }
 

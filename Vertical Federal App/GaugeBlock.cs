@@ -13,10 +13,20 @@ namespace Vertical_Federal_App
         private GaugeBlock gauge1;
         private GaugeBlock gauge2;
         private GaugeBlock gauge3;
+        private static double single_gauge_wringing_std_uncertainty;
+        private static double ref_gauge_std_uncertainty_dependent;
+        private static double ref_gauge_std_uncertainty_independent;
+        private double stack_wringing_std_uncertainty;
+        private double stack_ref_gauge_std_uncertainty_independent;
+        private short count = 1;
 
         public Stack(short num_gauges_in_stack)
         {
-            switch (num_gauges_in_stack) {
+            count = num_gauges_in_stack;
+            stack_wringing_std_uncertainty = single_gauge_wringing_std_uncertainty * Math.Sqrt(count);
+            stack_ref_gauge_std_uncertainty_independent = ref_gauge_std_uncertainty_independent * Math.Sqrt(count);
+
+            switch (count) {
                 case 1:
                     gauge1 = new GaugeBlock(true);
                     gauge2 = null;
@@ -24,16 +34,16 @@ namespace Vertical_Federal_App
                     break;
                 case 2:
                     gauge1 = new GaugeBlock(true);
-                    gauge2 = new GaugeBlock(false); 
+                    gauge2 = new GaugeBlock(false);
                     gauge3 = null;
                     break;
                 case 3:
                     gauge1 = new GaugeBlock(true);
-                    gauge2 = new GaugeBlock(false); 
+                    gauge2 = new GaugeBlock(false);
                     gauge3 = new GaugeBlock(false);
                     break;
             }
-            
+
         }
         public Stack Clone()
         {
@@ -48,7 +58,7 @@ namespace Vertical_Federal_App
         public GaugeBlock Gauge1
         {
             set { gauge1 = value; }
-            get { return gauge1;  }
+            get { return gauge1; }
         }
         public GaugeBlock Gauge2
         {
@@ -60,6 +70,11 @@ namespace Vertical_Federal_App
             set { gauge3 = value; }
             get { return gauge3; }
         }
+
+        public short Count
+        {
+            get { return count; }
+        }
     }
 
     public class Material
@@ -69,9 +84,23 @@ namespace Vertical_Federal_App
         public double youngs_modulus;
         public double exp_coeff;
     }
+    public enum ComplianceMetric
+    {
+        BS_EN_ISO_3650_1999_Grade_K = 0, BS_EN_ISO_3650_1999_Grade_0, BS_EN_ISO_3650_1999_Grade_1, BS_EN_ISO_3650_1999_Grade_2,
+        JIS_B_7506_2004_Grade_K, JIS_B_7506_2004_Grade_0, JIS_B_7506_2004_Grade_1, JIS_B_7506_2004_Grade_2,
+        AS_1457_1999_Grade_K, AS_1457_1999_Grade_0, AS_1457_1999_Grade_1, AS_1457_1999_Grade_2,
+        ASME_B89_1_9_2002_Grade_K, ASME_B89_1_9_2002_Grade_00, ASME_B89_1_9_2002_Grade_0, ASME_B89_1_9_2002_Grade_AS1, ASME_B89_1_9_2002_Grade_AS2
+    }
+    public enum ComplianceImperial
+    {
+        BS_4311_1_2007_Grade_K, BS_4311_1_2007_Grade_0, BS_4311_1_2007_Grade_1, BS_4311_1_2007_Grade_2
+    }
 
     public class GaugeBlock
     {
+        private int chosen_compliance = -1;
+        private string deviation_compliance = "";
+        private string variation_compliance = "";
         private double nominal;
         private string serial_number;
         private string client_name;
@@ -82,9 +111,20 @@ namespace Vertical_Federal_App
         private double max_deviation;
         private double corrected_length;
         private double variation;
+        private double limit_deviation;
+        private double tolerance_on_variation;
+        private double expanded_uncertainty_dev;
+        private double expanded_uncertainty_var;
+        private double temperature;
         private string from_set; //the name of the reference set this gauge belongs to
         private Material gauge_material;
         private bool illegal_size;
+        private double gauge_std_uncertainty_dependent;
+        private double gauge_std_uncertainty_independent;
+        private double wringing_film_thickness;
+        private double cmc_dev;
+        private double cmc_var;
+
         public GaugeBlock(bool with_values)
         {
 
@@ -126,9 +166,22 @@ namespace Vertical_Federal_App
             gb.max_deviation = max_deviation;
             gb.corrected_length = corrected_length;
             gb.variation = variation;
+            gb.ComplianceStandard = chosen_compliance;
             if (from_set == null) gb.from_set = null;
             else gb.from_set = (string)from_set.Clone();
             gb.illegal_size = illegal_size;
+            gb.WringingFilm = WringingFilm;
+            gb.GaugeStdU_Dep = GaugeStdU_Dep;
+            gb.GaugeStdU_Indp = GaugeStdU_Indp;
+            gb.DeviationOutcome = DeviationOutcome;
+            gb.LimitDeviation = LimitDeviation;
+            gb.ExpandedUncertaintyDev = ExpandedUncertaintyDev;
+            gb.ExpandedUncertaintyVar = ExpandedUncertaintyVar;
+            gb.Temperature = Temperature;
+            gb.ToleranceVariation = ToleranceVariation;
+            gb.VariationOutcome = VariationOutcome;
+            gb.DeviationCMC = DeviationCMC;
+            gb.VariationCMC = VariationCMC;
 
             Material mtrl = new Material();
             //does the gauge block have a material allocated? if it doesn't then the gauge is not in use.
@@ -141,6 +194,72 @@ namespace Vertical_Federal_App
             gb.GaugeBlockMaterial = mtrl;
             return gb;
         }
+
+        public int ComplianceStandard
+        {
+            get { return chosen_compliance; }
+            set { chosen_compliance = value; }
+        }
+
+        public string DeviationOutcome
+        {
+            get { return deviation_compliance; }
+            set { deviation_compliance = value; }
+        }
+
+        public string VariationOutcome
+        {
+            get { return variation_compliance; }
+            set { variation_compliance = value; }
+        }
+        public double LimitDeviation
+        {
+            get { return limit_deviation; }
+            set { limit_deviation = value; }
+        }
+        public double ToleranceVariation
+        {
+            get { return tolerance_on_variation; }
+            set { tolerance_on_variation = value; }
+        }
+        public double DeviationCMC
+        {
+            get { return cmc_dev; }
+            set { cmc_dev = value; }
+        }
+        public double VariationCMC
+        {
+            get { return cmc_var; }
+            set { cmc_var = value; }
+        }
+        public double ExpandedUncertaintyDev
+        {
+            get { return expanded_uncertainty_dev; }
+            set { expanded_uncertainty_dev = value; }
+        }
+        public double ExpandedUncertaintyVar
+        {
+            get { return expanded_uncertainty_var; }
+            set { expanded_uncertainty_var = value; }
+        }
+
+        public double GaugeStdU_Indp
+        {
+            set { gauge_std_uncertainty_independent = value; }
+            get { return gauge_std_uncertainty_independent; }
+        }
+        public double GaugeStdU_Dep
+        {
+            set { gauge_std_uncertainty_dependent = value; }
+            get { return gauge_std_uncertainty_dependent; }
+        }
+
+        public double WringingFilm
+        {
+            get { return wringing_film_thickness; }
+            set { wringing_film_thickness = value; }
+        }
+
         public double Nominal
         {
             get { return nominal; }
@@ -150,6 +269,11 @@ namespace Vertical_Federal_App
         {
             get { return serial_number; }
             set { serial_number = value; }
+        }
+        public double Temperature
+        {
+            get { return temperature; }
+            set { temperature = value; }
         }
         public bool IllegalSize
         {

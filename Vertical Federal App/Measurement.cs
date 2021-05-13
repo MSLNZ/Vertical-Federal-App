@@ -9,31 +9,25 @@ using System.IO;
 
 namespace Vertical_Federal_App
 {
+    
     public class Measurement
     {
+
+
+        private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
         private GaugeBlock calibration_gauge;
         private string date_time;
-        private string temperature;
         private double reference_deformation_top_probe;
         private double reference_deformation_bottom_probe;
         private double bottom_probe_deformation_cal_gauge;
         private double top_probe_deformation_cal_gauge;
-        private double corrected_length;
         private double elastic_correction;
         private Stack gauge_stack;
-        private string cal_set_serial;
-        private double nominal;
         private double reference_deviation;
-        private double variation;
         private double diff; //difference
-        private double extreme_deviation;
-        private double limit_deviation;
-        private double centre_deviation;
-        private double min_deviation;
-        private double max_deviation;
         private double r1;
         private double r2;
         private double c1;
@@ -43,23 +37,30 @@ namespace Vertical_Federal_App
         private double b;
         private double d;
         private double e;
-        private bool metric;
         private static Thread tempRetriever;
         private static bool log_temperatures = false;
+        private static double rep_d;
+        private static double rep_v;
+        private static double rms_theta_s;
+
         public static string measurement_file_header = "DateTime,Temperature,Units,Cal Nominal,Gauge Set Serial No,Gauge Serial No,Cal Gauge Material,Cal Gauge Exp Coeff, Cal Gauge Young's Modulus," +
                         "Cal Gauge Poisson Ratio,Ref Gauge 1 Nominal,Ref Gauge 1 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No, Ref Gauge 1 Material,Ref Gauge 1 exp coeeff,Ref Gauge 1 Young's Modulus,Ref Gauge 1 Poisson Ratio," +
                         "Ref Gauge 2 Nominal,Ref Gauge 2 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No,Ref Gauge 2 Material,Ref Gauge 2 exp coeeff,Ref Gauge 2 Young's Modulus,Ref Gauge 2 Poisson Ratio," +
                         "Ref Gauge 3 Nominal,Ref Gauge 3 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No,Ref Gauge 3 Material,Ref Gauge 3 exp coeeff,Ref Gauge 3 Young's Modulus,Ref Gauge 3 Poisson Ratio," +
-                        "Reference Stack Deviation,R1,C1,A,B,C2,D,E,C3,R2,Measured Length,Centre Deviation,Extreme Deviation,Variation";
-        public static string filename="";
+                        "Reference Stack Deviation,R1,C1,A,B,C2,D,E,C3,R2,Measured Length,Centre Deviation,Min Deviation,Max Deviation,Extreme Deviation,Variation,Compliance Standard";
+        public static string filename ="";
+        public static string filename_sum = "";
+        public static string filename_U95_sum = "";
         public static List<GaugeBlockSet> calibration_gauge_sets;
         public static GaugeBlock working_gauge;
-
+        
+        
         public Measurement()
         {
-            metric = true;
+            //metric = true;
 
         }
+        
         public object Clone(){
             return MemberwiseClone();
         }
@@ -73,16 +74,7 @@ namespace Vertical_Federal_App
             get { return date_time; }
             set { date_time = value; }
         }
-        public string Temperature
-        {
-            get { return temperature; }
-            set { temperature = value; }
-        }
-        public double Nominal
-        {
-            get { return nominal; }
-            set { nominal = value; }
-        }
+        
         public double R1
         {
             get { return r1; }
@@ -128,59 +120,18 @@ namespace Vertical_Federal_App
             get { return e; }
             set { e = value; }
         }
-        public double MinDev
-        {
-            get { return min_deviation; }
-            set { min_deviation = value; }
-        }
-        public double MaxDev
-        {
-            get { return max_deviation; }
-            set { max_deviation = value; }
-        }
-
-        public string CalSetSerial
-        {
-            get { return cal_set_serial; }
-            set { cal_set_serial = value; }
-        }
-      
 
         public double RefDeviation_um_uinch
         {
             get { return reference_deviation; }
             set { reference_deviation = value; }
         }
-
-        public double ExtremeDeviation_um_uinch
-        {
-            get { return extreme_deviation; }
-            set { extreme_deviation = value; }
-        }
-
-        public double limitDeviation_um_uinch
-        {
-            get { return limit_deviation; }
-            set { limit_deviation = value; }
-        }
-        
-        public double CentreDeviation_um_uinch
-        {
-            get { return centre_deviation; }
-            set { centre_deviation = value; }
-        }
-
+ 
         public Stack ReferenceStack
         {
             get { return gauge_stack; }
             set { gauge_stack = value; }
         }
-        public bool Metric
-        {
-            get { return metric; }
-            set { metric = value; }
-        }
-
         public GaugeBlock CalibrationGauge
         {
             get { return calibration_gauge; }
@@ -206,10 +157,8 @@ namespace Vertical_Federal_App
         private static void LookUpTemperatures(object tdr)
         {
             TemperatureRetrieved printData = (TemperatureRetrieved) tdr;
-            bool temperature_found;
             while (LogTemperatures)
             {
-                temperature_found = false;
                 DateTime now = DateTime.Now;
                 DateTime previous_interation_datetime = DateTime.MinValue;
 
@@ -218,7 +167,7 @@ namespace Vertical_Federal_App
                 {
                     MessageBox.Show("Unable to get temperature.  Temperature data file expected, unable to find file at:\n" +
                         path + "\nYou can enter temperatures into the box below manually each time you make a measurement");
-                    return;
+                    continue;
                 }
                 
                 //get the latest temperature from the temperature file.  This should be the last line of the file.
@@ -235,7 +184,7 @@ namespace Vertical_Federal_App
                 int indexofcomma3 = remainder.IndexOf(",");
                 string datetime = remainder.Remove(indexofcomma3);
                 DateTime found = DateTime.MinValue;
-                double temperature_d = -1.0;
+                double temperature_d = -273.14;
 
                 try
                 {
@@ -280,8 +229,8 @@ namespace Vertical_Federal_App
 
         public double CalculateVariation()
         {
-            double mean_of_centre_value =  (C1+C2+C3)/3;
-
+            double mean_of_centre_value =  (C1+C2+C3)/3.0;
+            double variation = 0.0;
             //put the results in an array so they are easier to do math on.
             double[] result_array = new double[] {A, B, mean_of_centre_value, D, E };
             variation = result_array.Max() - result_array.Min();
@@ -290,15 +239,15 @@ namespace Vertical_Federal_App
 
         public double CalculateMeasuredDiff_um_uinch()
         {
-            double mean_of_centre_value = (C1 + C2 + C3) / 3;
-            double average_ref = (R1 + R2) / 2;
+            double mean_of_centre_value = (C1 + C2 + C3) / 3.0;
+            double average_ref = (R1 + R2) / 2.0;
             diff = mean_of_centre_value - average_ref;
             return diff;
         }
         public double RefLength()
         {
-            if (metric) return ( CalibrationGauge.Nominal + RefDeviation_um_uinch / 1000);
-            else return (CalibrationGauge.Nominal + RefDeviation_um_uinch / 1000000);
+            if (CalibrationGauge.Metric) return ( CalibrationGauge.Nominal + RefDeviation_um_uinch / 1000.0);
+            else return (CalibrationGauge.Nominal + RefDeviation_um_uinch / 1000000.0);
         }
         public void calculateElasticDeformations(VerticalFederal fed)
         {
@@ -342,7 +291,7 @@ namespace Vertical_Federal_App
             double v_plate_cal_gauge = (1.0 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus * 1000000000);
             double tt =  2.0 / 3.0;
             double tt2 = 1.0 / 3.0;
-            double term1 =  (Math.Pow(3 * Math.PI, tt) / 2.0);
+            double term1 =  (Math.Pow(3.0 * Math.PI, tt) / 2.0);
             double term2_top = Math.Pow(top_probe_force, tt);
             double term2_bottom =  Math.Pow(bottom_probe_force, tt);
             double term3_ref_top =  Math.Pow(v_ball + v_plate_ref_gauge1, tt);
@@ -377,37 +326,35 @@ namespace Vertical_Federal_App
             bottom_probe_deformation_cal_gauge = term1 * term2_bottom * term3_cal * term4;
 
         }
-        public void CalculateDeviations(ref double corrected_centre_dev, ref double corrected_extreme_dev, ref double corrected_length_mm_inch, ref double maxd, ref double mind)
+        public void CalculateDeviations()
         {
-            if (metric)
+            double corr_centre_dev = 0.0;
+            double corr_extreme_dev = 0.0;
+            double corr_length = 0.0;
+
+            if (CalibrationGauge.Metric)
             {
-                corrected_length_mm_inch = (bottom_probe_deformation_cal_gauge * 1000) - (reference_deformation_bottom_probe * 1000) + RefLength() - (reference_deformation_top_probe * 1000) + CalculateMeasuredDiff_um_uinch() / 1000 + (top_probe_deformation_cal_gauge * 1000);
-                corrected_length = corrected_length_mm_inch;
-                centre_deviation = (corrected_length - CalibrationGauge.Nominal) * 1000; //centre deviation is in um
-                corrected_centre_dev = centre_deviation;
+                corr_length = (bottom_probe_deformation_cal_gauge * 1000) - (reference_deformation_bottom_probe * 1000) + RefLength() - (reference_deformation_top_probe * 1000) + CalculateMeasuredDiff_um_uinch() / 1000 + (top_probe_deformation_cal_gauge * 1000);
+                corr_centre_dev = (corr_length - CalibrationGauge.Nominal) * 1000; //centre deviation is in um
             }
             else
             {
-                corrected_length_mm_inch = (bottom_probe_deformation_cal_gauge * 1000 / 25.4) - (reference_deformation_bottom_probe * 1000 / 25.4) + RefLength() - (reference_deformation_top_probe * 1000 / 25.4) + CalculateMeasuredDiff_um_uinch() / 1000000 + (top_probe_deformation_cal_gauge * 1000 / 25.4);
-                corrected_length = corrected_length_mm_inch;
-                centre_deviation = (corrected_length - CalibrationGauge.Nominal) * 1000000; //centre deviation is in uinch
-                corrected_centre_dev = centre_deviation;
+                corr_length = (bottom_probe_deformation_cal_gauge * 1000 / 25.4) - (reference_deformation_bottom_probe * 1000 / 25.4) + RefLength() - (reference_deformation_top_probe * 1000 / 25.4) + CalculateMeasuredDiff_um_uinch() / 1000000 + (top_probe_deformation_cal_gauge * 1000 / 25.4);
+                corr_centre_dev = (corr_length - CalibrationGauge.Nominal) * 1000000; //centre deviation is in uinch
             }
-
+            CalibrationGauge.CentreDeviation = Math.Round(corr_centre_dev, 5);
+            CalibrationGauge.CorrLength = Math.Round(corr_length, 7);
+           
             //calculate the deviation of each point.
-            double A_dev = A - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
-            double B_dev = B - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
-            double D_dev = D - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
-            double E_dev = E - ((R1 + R2) / 2) + RefDeviation_um_uinch + getCorrection_um_uinch();
-            double[] values_array = new double[] { A_dev, B_dev, D_dev, E_dev, centre_deviation };
-            max_deviation = values_array.Max();
-            double min_deviation = values_array.Min();
-            mind = min_deviation;
-            maxd = max_deviation;
-
-            corrected_extreme_dev = CalculateExtremeDeviation(min_deviation, max_deviation);
-            extreme_deviation = corrected_extreme_dev;
-      
+            double A_dev = A - ((R1 + R2) / 2.0) + RefDeviation_um_uinch + getCorrection_um_uinch();
+            double B_dev = B - ((R1 + R2) / 2.0) + RefDeviation_um_uinch + getCorrection_um_uinch();
+            double D_dev = D - ((R1 + R2) / 2.0) + RefDeviation_um_uinch + getCorrection_um_uinch();
+            double E_dev = E - ((R1 + R2) / 2.0) + RefDeviation_um_uinch + getCorrection_um_uinch();
+            double[] values_array = new double[] { A_dev, B_dev, D_dev, E_dev, corr_centre_dev };
+            CalibrationGauge.MaxDev = Math.Round(values_array.Max(),5);
+            CalibrationGauge.MinDev = Math.Round(values_array.Min(),5);
+            corr_extreme_dev = CalculateExtremeDeviation(CalibrationGauge.MinDev, CalibrationGauge.MaxDev);
+            CalibrationGauge.ExtremeDeviation = Math.Round(corr_extreme_dev, 5);
         }
 
         public static double CalculateExtremeDeviation(double min, double max)
@@ -419,19 +366,1052 @@ namespace Vertical_Federal_App
 
         public double getCorrection_um_uinch()
         {
-             elastic_correction = centre_deviation - (CalculateMeasuredDiff_um_uinch() + RefDeviation_um_uinch);
+             elastic_correction = CalibrationGauge.CentreDeviation - (CalculateMeasuredDiff_um_uinch() + RefDeviation_um_uinch);
              return elastic_correction;
+        }
+        /// <summary>
+        /// Calculates the reproducability for deviation and variation in length measurement.  
+        /// </summary>
+        public static void CalculateReproducibility()
+        {
+            List<double> found = new List<double>();
+            List<double> stdev_dev = new List<double>();
+            List<double> stdev_var = new List<double>();
+
+            //determine the standard deviations of all repeat measurements for deviation and variation
+            foreach (Measurement m in measurements)
+            {
+                double find = 0.0;
+                if (found.Contains(m.calibration_gauge.Nominal)) continue; 
+                else find = m.CalibrationGauge.Nominal;
+
+                found.Add(m.CalibrationGauge.Nominal);
+                
+                List<double> occurences_dev = new List<double>();
+                List<double> occurences_var = new List<double>();
+                foreach (Measurement n in measurements)
+                {
+                    if (n.CalibrationGauge.Nominal == find) //we have a match
+                    {
+                        if (n.CalibrationGauge.Metric)
+                        {
+                            occurences_dev.Add(n.CalibrationGauge.CentreDeviation);
+                            occurences_var.Add(n.CalibrationGauge.Variation);
+                        }
+                        else //it's imperial so the deviations and variations will be in micro inches - convert them to micrometres for the u95 calculations
+                        {
+                            occurences_dev.Add(n.CalibrationGauge.CentreDeviation * 0.0254);
+                            occurences_var.Add(n.CalibrationGauge.Variation * 0.0254);
+                        }
+                    }
+                }
+                stdev_dev.Add(getStandardDeviation(occurences_dev));
+                stdev_var.Add(getStandardDeviation(occurences_var));
+            }
+
+            //now pool all the standard deviations
+            double sumsq_d = 0.0;
+            double sumsq_v = 0.0;
+            foreach(double stdev_d in stdev_dev)
+            {
+                sumsq_d += (stdev_d * stdev_d);
+            }
+            foreach(double stdev_v in stdev_var)
+            {
+                sumsq_v += (stdev_v * stdev_v);
+            }
+
+            rep_d = Math.Sqrt(sumsq_d / stdev_dev.Count);
+            rep_v = Math.Sqrt(sumsq_v / stdev_var.Count);
+        }
+        private static double getStandardDeviation(List<double> doubleList)
+        {
+            if (doubleList.Count <= 1) return 0.0;
+
+            double average = doubleList.Average();
+            double sumOfDeviation = 0;
+            foreach (double value in doubleList)
+            {
+                sumOfDeviation += Math.Pow((average - value), 2);
+            }
+            sumOfDeviation /= (doubleList.Count-1);
+            return Math.Sqrt(sumOfDeviation);
+        }
+        /// <summary>
+        /// Calculates the expanded uncertainty for this measurement for deviation measurements  
+        /// </summary>
+        /// /// <param name="vfed">A reference to the vertical federal object</param>
+        public void CalculateExpandedUncertaintyDeviation(ref VerticalFederal vfed)
+        {
+            double s_d = 0.0;
+            double s_inp = 0.0;
+            u_of_g_s(this, ref s_d, ref s_inp);
+
+            //independent terms
+            CalculateReproducibility();
+            double stdu_reproducability = rep_d*1000;
+            double stdu_scale_resolution = vfed.ScaleResStduIndependent; //in micrometers
+            double stdu_scale_calibration = vfed.ScaleCalStduIndependent; //in micrometers
+            double stdu_length_of_standard_i = s_inp;
+
+            double delta = 0.0;
+            u_of_g_ForDeltaIndependent(ref delta,ref vfed);
+
+            double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2) + Math.Pow(stdu_length_of_standard_i, 2) + Math.Pow(delta, 2));
+
+            //dependent terms
+            double stdu_length_of_standard_d = s_d;
+            double stdu_alpha_g = 0.0;
+            double stdu_delta_theta = 0.0;
+            double stdu_delta_alpha = 0.0;
+            double stdu_theta_s = 0.0;
+
+            u_of_g_ForAlphag(this, ref stdu_alpha_g, ref vfed);
+            u_of_g_ForDeltaAlpha(this, ref stdu_delta_alpha, ref vfed);
+            u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed);
+            u_of_g_ForDeltaTheta(this, ref stdu_delta_theta, ref vfed);
+
+            double combined_dependent = Math.Sqrt(Math.Pow(stdu_length_of_standard_d, 2) + Math.Pow(stdu_alpha_g, 2) + Math.Pow(stdu_delta_theta, 2) + Math.Pow(stdu_delta_alpha, 2) + Math.Pow(stdu_theta_s, 2));
+
+            double combined_standard_uncertainty = 0.0;
+            if (CalibrationGauge.Metric) combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal, 2));
+            else combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal*25.4, 2));
+
+            CalibrationGauge.ExpandedUncertaintyDev = combined_standard_uncertainty * 2;
+
+        }
+
+        public void CalculateExpandedUncertaintyVariation(ref VerticalFederal vfed)
+        {
+            //independent terms
+            CalculateReproducibility();
+            double stdu_reproducability = rep_v*1000;
+            double stdu_scale_resolution = vfed.ScaleResStduIndependent;
+            double stdu_scale_calibration = vfed.ScaleCalStduIndependent;
+     
+
+            double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2));
+
+            //dependent terms
+            double repro_d = rep_v;
+            double delta_theta_v = 0.0;
+            u_of_g_ForDeltaThetaVar(this, ref delta_theta_v, ref vfed);
+
+            double combined_dependent = Math.Sqrt(Math.Pow(repro_d, 2) + Math.Pow(delta_theta_v, 2));
+
+            double combined_standard_uncertainty = 0.0;
+            if (CalibrationGauge.Metric)
+            {
+                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(repro_d * CalibrationGauge.Nominal, 2));
+            }
+            else
+            {
+                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(repro_d * CalibrationGauge.Nominal*25.5, 2));
+            }
+            CalibrationGauge.ExpandedUncertaintyVar = combined_standard_uncertainty * 2;
+
+        }
+
+        public void CalculateCMCs(VerticalFederal vfed)
+        {
+            double dev_dep = vfed.ExpanedUncertaintyCMCDevDep;
+            double dev_indep = vfed.ExpanedUncertaintyCMCDevIndep;
+            double var_dep = vfed.ExpanedUncertaintyCMCVarDep;
+            double var_indep = vfed.ExpanedUncertaintyCMCVarIndep;
+            double cmc_dev = 0.0;
+            double cmc_var = 0.0;
+            CalibrationGauge.DeviationCMC = Math.Sqrt(Math.Pow(dev_dep * CalibrationGauge.Nominal, 2) + Math.Pow(dev_indep, 2));
+            CalibrationGauge.VariationCMC = Math.Sqrt(Math.Pow(var_dep * CalibrationGauge.Nominal, 2) + Math.Pow(var_indep, 2));
+        }
+
+        public void CalculateComplianceLimits()
+        {
+            
+            //determine the category row
+            nom category = 0;
+            
+            double limit_deviation = 0;
+            double tolerance_variation = 0;
+            //Determine what standard we are using to assess compliance (this is chosen by the user)
+            if (CalibrationGauge.Metric)
+            {
+                if (CalibrationGauge.Nominal <= 10) category = nom.category1;
+                else if (CalibrationGauge.Nominal > 10.0 && CalibrationGauge.Nominal <= 25.0) category = nom.category2;
+                else if (CalibrationGauge.Nominal > 25.0 && CalibrationGauge.Nominal <= 50.0) category = nom.category3;
+                else if (CalibrationGauge.Nominal > 50.0 && CalibrationGauge.Nominal <= 75.0) category = nom.category4;
+                else if (CalibrationGauge.Nominal > 75.0 && CalibrationGauge.Nominal <= 100.0) category = nom.category5;
+
+                switch (CalibrationGauge.ComplianceStandard)
+                {
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_K:
+                        FetchDevVarMetric(category, ComplianceMetric.BS_EN_ISO_3650_1999_Grade_K, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_0:
+                        FetchDevVarMetric(category, ComplianceMetric.BS_EN_ISO_3650_1999_Grade_0, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_1:
+                        FetchDevVarMetric(category, ComplianceMetric.BS_EN_ISO_3650_1999_Grade_1, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_2:
+                        FetchDevVarMetric(category, ComplianceMetric.BS_EN_ISO_3650_1999_Grade_2, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_K:
+                        FetchDevVarMetric(category, ComplianceMetric.JIS_B_7506_2004_Grade_K, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_0:
+                        FetchDevVarMetric(category, ComplianceMetric.JIS_B_7506_2004_Grade_0, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_1:
+                        FetchDevVarMetric(category, ComplianceMetric.JIS_B_7506_2004_Grade_1, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_2:
+                        FetchDevVarMetric(category, ComplianceMetric.JIS_B_7506_2004_Grade_2, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_K:
+                        FetchDevVarMetric(category, ComplianceMetric.AS_1457_1999_Grade_K, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_0:
+                        FetchDevVarMetric(category, ComplianceMetric.AS_1457_1999_Grade_0, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_1:
+                        FetchDevVarMetric(category, ComplianceMetric.AS_1457_1999_Grade_1, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_2:
+                        FetchDevVarMetric(category, ComplianceMetric.AS_1457_1999_Grade_2, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_K:
+                        FetchDevVarMetric(category, ComplianceMetric.ASME_B89_1_9_2002_Grade_K, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_0:
+                        FetchDevVarMetric(category, ComplianceMetric.ASME_B89_1_9_2002_Grade_00, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_00:
+                        FetchDevVarMetric(category, ComplianceMetric.ASME_B89_1_9_2002_Grade_0, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_AS1:
+                        FetchDevVarMetric(category, ComplianceMetric.ASME_B89_1_9_2002_Grade_AS1, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_AS2:
+                        FetchDevVarMetric(category, ComplianceMetric.ASME_B89_1_9_2002_Grade_AS2, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                if (CalibrationGauge.Nominal <= 0.4) category = nom.category1;
+                else if (CalibrationGauge.Nominal > 0.4 && CalibrationGauge.Nominal <= 1.0) category = nom.category2;
+                else if (CalibrationGauge.Nominal > 1.0 && CalibrationGauge.Nominal <= 2.0) category = nom.category3;
+                else if (CalibrationGauge.Nominal > 2.0 && CalibrationGauge.Nominal <= 3.0) category = nom.category4;
+                else if (CalibrationGauge.Nominal > 3.0 && CalibrationGauge.Nominal <= 4.0) category = nom.category5;
+                switch (CalibrationGauge.ComplianceStandard)
+                {
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_K:
+                        FetchDevVarImperial(category, ComplianceImperial.BS_4311_1_2007_Grade_K, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_0:
+                        FetchDevVarImperial(category, ComplianceImperial.BS_4311_1_2007_Grade_0, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_1:
+                        FetchDevVarImperial(category, ComplianceImperial.BS_4311_1_2007_Grade_1, ref limit_deviation, ref tolerance_variation);
+                        break;
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_2:
+                        FetchDevVarImperial(category, ComplianceImperial.BS_4311_1_2007_Grade_2, ref limit_deviation, ref tolerance_variation);
+                        break;
+                }
+            }
+            CalibrationGauge.LimitDeviation = limit_deviation;
+            CalibrationGauge.ToleranceVariation = tolerance_variation;
+        }
+
+        /// <summary>
+        /// fetches the allowable deviation and variation for imperial gauges
+        /// </summary>
+        /// <param name="l">enum representing the length range of the calibration gauge block</param>
+        /// <param name="st">enum representing the chosen documentary standard and grade</param>
+        /// <param name="ld">the limit deviation fetched</param>
+        /// <param name="vr">the variation fetched</param>
+        private static void FetchDevVarImperial(nom l, ComplianceImperial st, ref double ld, ref double vr)
+        {
+            switch (st)
+            {
+                case ComplianceImperial.BS_4311_1_2007_Grade_K:
+                    switch (l)
+                    {
+
+                        case nom.category0:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceImperial.BS_4311_1_2007_Grade_0:
+                    switch (l)
+                    {
+
+                        case nom.category0:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceImperial.BS_4311_1_2007_Grade_1:
+                    switch (l)
+                    {
+
+                        case nom.category0:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceImperial.BS_4311_1_2007_Grade_2:
+                    switch (l)
+                    {
+
+                        case nom.category0:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// fetches the allowable deviation and variation for metric gauges
+        /// </summary>
+        /// <param name="l">enum representing the length range of the calibration gauge block</param>
+        /// <param name="st">enum representing the chosen documentary standard and grade</param>
+        /// <param name="ld">the limit deviation fetched</param>
+        /// <param name="vr">the variation fetched</param>
+        private static void FetchDevVarMetric(nom l, ComplianceMetric st, ref double ld, ref double vr)
+        {
+            switch (st)
+            {
+                case ComplianceMetric.ASME_B89_1_9_2002_Grade_K:
+                    switch(l){
+
+                        case nom.category0:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.ASME_B89_1_9_2002_Grade_00:
+                    switch (l)
+                    {
+                        case nom.category0:
+                            ld = 0.1;
+                            vr = 0.05;
+                            break;
+                        case nom.category1:
+                            ld = 0.07;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.07;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.1;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.12;
+                            vr = 0.07;
+                            break;
+                        case nom.category5:
+                            ld = 0.15;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.ASME_B89_1_9_2002_Grade_0:
+                    switch (l)
+                    {
+                        case nom.category0:
+                            ld = 0.14;
+                            vr = 0.1;
+                            break;
+                        case nom.category1:
+                            ld = 0.12;
+                            vr = 0.1;
+                            break;
+                        case nom.category2:
+                            ld = 0.14;
+                            vr = 0.1;
+                            break;
+                        case nom.category3:
+                            ld = 0.20;
+                            vr = 0.1;
+                            break;
+                        case nom.category4:
+                            ld = 0.25;
+                            vr = 0.12;
+                            break;
+                        case nom.category5:
+                            ld = 0.30;
+                            vr = 0.12;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.ASME_B89_1_9_2002_Grade_AS1:
+                    switch (l)
+                    {
+                        case nom.category0:
+                            ld = 0.3;
+                            vr = 0.16;
+                            break;
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.16;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.16;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.18;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.18;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.20;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.ASME_B89_1_9_2002_Grade_AS2:
+                    switch (l)
+                    {
+                        case nom.category0:
+                            ld = 0.6;
+                            vr = 0.3;
+                            break;
+                        case nom.category1:
+                            ld = 0.45;
+                            vr = 0.3;
+                            break;
+                        case nom.category2:
+                            ld = 0.60;
+                            vr = 0.3;
+                            break;
+                        case nom.category3:
+                            ld = 0.80;
+                            vr = 0.3;
+                            break;
+                        case nom.category4:
+                            ld = 1.0;
+                            vr = 0.35;
+                            break;
+                        case nom.category5:
+                            ld = 1.2;
+                            vr = 0.35;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.AS_1457_1999_Grade_K:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.AS_1457_1999_Grade_0:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.12;
+                            vr = 0.1;
+                            break;
+                        case nom.category2:
+                            ld = 0.14;
+                            vr = 0.1;
+                            break;
+                        case nom.category3:
+                            ld = 0.2;
+                            vr = 0.1;
+                            break;
+                        case nom.category4:
+                            ld = 0.25;
+                            vr = 0.12;
+                            break;
+                        case nom.category5:
+                            ld = 0.30;
+                            vr = 0.12;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.AS_1457_1999_Grade_1:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.16;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.16;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.18;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.18;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.2;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.AS_1457_1999_Grade_2:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.45;
+                            vr = 0.3;
+                            break;
+                        case nom.category2:
+                            ld = 0.6;
+                            vr = 0.3;
+                            break;
+                        case nom.category3:
+                            ld = 0.8;
+                            vr = 0.3;
+                            break;
+                        case nom.category4:
+                            ld = 1.0;
+                            vr = 0.35;
+                            break;
+                        case nom.category5:
+                            ld = 1.2;
+                            vr = 0.35;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_K:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_0:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.12;
+                            vr = 0.1;
+                            break;
+                        case nom.category2:
+                            ld = 0.14;
+                            vr = 0.1;
+                            break;
+                        case nom.category3:
+                            ld = 0.2;
+                            vr = 0.1;
+                            break;
+                        case nom.category4:
+                            ld = 0.25;
+                            vr = 0.12;
+                            break;
+                        case nom.category5:
+                            ld = 0.30;
+                            vr = 0.12;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_1:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.16;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.16;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.18;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.18;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.2;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_2:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.45;
+                            vr = 0.3;
+                            break;
+                        case nom.category2:
+                            ld = 0.6;
+                            vr = 0.3;
+                            break;
+                        case nom.category3:
+                            ld = 0.8;
+                            vr = 0.3;
+                            break;
+                        case nom.category4:
+                            ld = 1.0;
+                            vr = 0.35;
+                            break;
+                        case nom.category5:
+                            ld = 1.2;
+                            vr = 0.35;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.JIS_B_7506_2004_Grade_K:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.05;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.06;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.06;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.07;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.JIS_B_7506_2004_Grade_0:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.12;
+                            vr = 0.1;
+                            break;
+                        case nom.category2:
+                            ld = 0.14;
+                            vr = 0.1;
+                            break;
+                        case nom.category3:
+                            ld = 0.20;
+                            vr = 0.1;
+                            break;
+                        case nom.category4:
+                            ld = 0.25;
+                            vr = 0.12;
+                            break;
+                        case nom.category5:
+                            ld = 0.3;
+                            vr = 0.12;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.JIS_B_7506_2004_Grade_1:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.2;
+                            vr = 0.16;
+                            break;
+                        case nom.category2:
+                            ld = 0.3;
+                            vr = 0.16;
+                            break;
+                        case nom.category3:
+                            ld = 0.4;
+                            vr = 0.18;
+                            break;
+                        case nom.category4:
+                            ld = 0.5;
+                            vr = 0.18;
+                            break;
+                        case nom.category5:
+                            ld = 0.6;
+                            vr = 0.2;
+                            break;
+                    }
+                    break;
+                case ComplianceMetric.JIS_B_7506_2004_Grade_2:
+                    switch (l)
+                    {
+                        case nom.category1:
+                            ld = 0.45;
+                            vr = 0.3;
+                            break;
+                        case nom.category2:
+                            ld = 0.6;
+                            vr = 0.3;
+                            break;
+                        case nom.category3:
+                            ld = 0.8;
+                            vr = 0.3;
+                            break;
+                        case nom.category4:
+                            ld = 1.0;
+                            vr = 0.35;
+                            break;
+                        case nom.category5:
+                            ld = 1.2;
+                            vr = 0.35;
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        
+
+        /// <summary>
+        /// Determines the standard uncertainty component u(g) for s
+        /// </summary>
+        /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
+        /// <param name="u_g_s_dependent">The component to be calculated</param>
+        /// <param name="u_g_s_independent">The component to be calculated</param>
+        private void u_of_g_s(Measurement m, ref double u_g_s_dependent, ref double u_g_s_independent)
+        {
+
+            //case1 (singleton ref gauge) 
+            if (m.ReferenceStack.Count == 1)
+            {
+                u_g_s_dependent = ReferenceStack.Gauge1.GaugeStdU_Dep;
+                u_g_s_independent = ReferenceStack.Gauge1.GaugeStdU_Indp;
+            }
+            //case2 (two wrung ref gauges) 
+            else if (m.ReferenceStack.Count == 2)
+            {
+                double max_wringing_film = 0.0;
+                //determine which gauge in the stack has the uncertainty for the wringing film.
+                if (m.ReferenceStack.Gauge1.WringingFilm >= m.ReferenceStack.Gauge2.WringingFilm) max_wringing_film = m.ReferenceStack.Gauge1.WringingFilm;
+                else max_wringing_film = m.ReferenceStack.Gauge1.WringingFilm;
+                
+
+                //compute the  weighted mean of the standard uncertainties that make up the gauge block stack.  The weighting is done via nominal length
+                u_g_s_dependent = ((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Dep) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Dep)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal);
+                double standard_gauge_calibration_indp = Math.Sqrt(2) * (((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Indp) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Indp)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal));
+                u_g_s_independent = Math.Sqrt(Math.Pow(standard_gauge_calibration_indp, 2) + Math.Pow(max_wringing_film, 2));
+            }
+            //case3 (three wrung ref gauges) 
+            else if (m.ReferenceStack.Count == 3)
+            {
+                double max_wringing_film = 0.0;
+                //determine which gauge in the stack has the uncertainty for the wringing film.
+                if (m.ReferenceStack.Gauge1.WringingFilm >= m.ReferenceStack.Gauge2.WringingFilm)
+                {
+                    if (m.ReferenceStack.Gauge1.WringingFilm >= m.ReferenceStack.Gauge3.WringingFilm) max_wringing_film = m.ReferenceStack.Gauge1.WringingFilm;
+                    else max_wringing_film = m.ReferenceStack.Gauge3.WringingFilm;
+                }
+                else
+                {
+                    if (m.ReferenceStack.Gauge2.WringingFilm >= m.ReferenceStack.Gauge3.WringingFilm) max_wringing_film = m.ReferenceStack.Gauge2.WringingFilm;
+                    else max_wringing_film = m.ReferenceStack.Gauge3.WringingFilm;
+                }
+
+                //compute the  weighted mean of the standard uncertainties that make up the gauge block stack.  The weighting is done via nominal length
+                u_g_s_dependent = ((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Dep) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Dep) + (m.ReferenceStack.Gauge3.Nominal * m.ReferenceStack.Gauge3.GaugeStdU_Dep)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal + m.ReferenceStack.Gauge3.Nominal);
+                double standard_gauge_calibration_indp = Math.Sqrt(3) * (((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Indp) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Indp) + (m.ReferenceStack.Gauge3.Nominal * m.ReferenceStack.Gauge3.GaugeStdU_Indp)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal + m.ReferenceStack.Gauge3.Nominal));
+                max_wringing_film = max_wringing_film * Math.Sqrt(2);
+                u_g_s_independent = Math.Sqrt(Math.Pow(standard_gauge_calibration_indp, 2) + Math.Pow(max_wringing_film, 2));
+            }
+        }
+
+        /// <summary>
+        /// Determines the standard uncertainty component u(g) for Delta
+        /// </summary>
+        /// <param name="u_g_delta_independent">The component to be calculated</param>
+        /// <param name="vfederal">The vertical federal object which contains the uncertainty in alpha g</param> 
+        private double u_of_g_ForDeltaIndependent(ref double u_g_delta_independent, ref VerticalFederal vfederal)
+        {
+            u_g_delta_independent = vfederal.u_Delta;
+            return u_g_delta_independent;
+        }
+        /// <summary>
+        /// Determines the standard uncertainty component u(g) for alpha g
+        /// </summary>
+        /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
+        /// <param name="u_g_alpha_g">The component to be calculated</param>
+        /// <param name="vfederal">The vertical federal object which contains the uncertainty in alpha g</param> 
+        private double u_of_g_ForAlphag(Measurement m, ref double u_g_alpha_g, ref VerticalFederal vfederal)
+        {
+
+            if (m.CalibrationGauge.Metric) u_g_alpha_g = vfederal.u_AlphaG * vfederal.u_DeltaTheta * Math.Round(m.CalibrationGauge.Nominal/1000, 8);
+            else u_g_alpha_g = vfederal.u_AlphaG * vfederal.u_DeltaTheta * Math.Round(m.CalibrationGauge.Nominal * 25.4, 8);
+
+            return u_g_alpha_g;
+        }
+
+        /// <summary>
+        /// Determines the standard uncertainty component u(g) for delta alpha
+        /// </summary>
+        /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
+        /// <param name="u_g_delta_alpha">The component to be calculated</param>
+        /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta alpha</param> 
+        private double u_of_g_ForDeltaAlpha(Measurement m, ref double u_g_delta_alpha, ref VerticalFederal vfederal)
+        {
+            double utheta_s = RMS_Theta_S();
+            if (m.CalibrationGauge.Metric) u_g_delta_alpha = vfederal.u_DeltaAlpha * utheta_s * Math.Round(m.CalibrationGauge.Nominal/1000, 8);
+            else u_g_delta_alpha = vfederal.u_DeltaAlpha * utheta_s * Math.Round(m.CalibrationGauge.Nominal/1000 * 25.4, 8);
+
+            return u_g_delta_alpha;
+        }
+
+        /// <summary>
+        /// Determines the standard uncertainty component u(g) for theta_s
+        /// </summary>
+        /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
+        /// <param name="u_g_theta_s">The component to be calculated</param>
+        /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta alpha</param> 
+        private double u_of_g_ForThetaS(Measurement m, ref double u_g_theta_s, ref VerticalFederal vfederal)
+        {
+            double delta_alpha = 0.0;
+            //case1 (singleton ref gauge) 
+            if (m.ReferenceStack.Count == 1)
+            {
+                delta_alpha = Math.Abs(Math.Round(m.CalibrationGauge.GaugeBlockMaterial.exp_coeff, 2) - Math.Round(m.ReferenceStack.Gauge1.GaugeBlockMaterial.exp_coeff, 2));
+            }
+            //case2 (two wrung ref gauges) 
+            else if (m.ReferenceStack.Count == 2)
+            {
+                //compute the  weighted mean of the expansion coefficient for gauges that make up the stack.  The weighting is done via nominal length
+                double ref_g_exp_c = 0.0;
+                delta_alpha = 0.0;
+                ref_g_exp_c = ((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeBlockMaterial.exp_coeff) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeBlockMaterial.exp_coeff)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal);
+
+                delta_alpha = Math.Abs(Math.Round(m.CalibrationGauge.GaugeBlockMaterial.exp_coeff, 2) - Math.Round(ref_g_exp_c, 2));
+
+            }
+            //case3 (three wrung ref gauges) 
+            else if (m.ReferenceStack.Count == 3)
+            {
+                //compute the  weighted mean of the expansion coefficient for gauges that make up the stack.  The weighting is done via nominal length
+                double ref_g_exp_c = 0.0;
+                ref_g_exp_c = ((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeBlockMaterial.exp_coeff) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeBlockMaterial.exp_coeff) + (m.ReferenceStack.Gauge3.Nominal * m.ReferenceStack.Gauge3.GaugeBlockMaterial.exp_coeff)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal + m.ReferenceStack.Gauge3.Nominal);
+                delta_alpha = Math.Abs(Math.Round(m.CalibrationGauge.GaugeBlockMaterial.exp_coeff, 2) - Math.Round(ref_g_exp_c, 2));
+            }
+
+            if (delta_alpha == 0.0)
+            {
+                if (m.CalibrationGauge.Metric) u_g_theta_s = RMS_Theta_S()*vfederal.u_DeltaAlpha * (Math.Round(m.CalibrationGauge.Nominal / 1000, 8));
+                else u_g_theta_s = RMS_Theta_S() * vfederal.u_DeltaAlpha * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
+            }
+            else
+            {
+                if (m.CalibrationGauge.Metric) u_g_theta_s = RMS_Theta_S() * delta_alpha * (Math.Round(m.CalibrationGauge.Nominal / 1000, 8));
+                else u_g_theta_s = RMS_Theta_S() * delta_alpha * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
+            }
+
+            return u_g_theta_s;
+        }
+
+        /// <summary>
+        /// Determines the standard uncertainty component u(g) for delta theta
+        /// </summary>
+        /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
+        /// <param name="u_g_delta_theta">The component to be calculated</param>
+        /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta theta</param> 
+        private double u_of_g_ForDeltaTheta(Measurement m, ref double u_g_delta_theta, ref VerticalFederal vfederal)
+        {
+            if (m.CalibrationGauge.Metric) u_g_delta_theta = vfederal.u_DeltaTheta * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal / 1000, 8);
+            else u_g_delta_theta = vfederal.u_DeltaTheta * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
+
+            return u_g_delta_theta;
+        }
+
+        /// <summary>
+        /// Determines the standard uncertainty component u(g) for delta theta
+        /// </summary>
+        /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
+        /// <param name="u_g_delta_theta">The component to be calculated</param>
+        /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta theta</param> 
+        private double u_of_g_ForDeltaThetaVar(Measurement m, ref double u_g_delta_theta_var, ref VerticalFederal vfederal)
+        {
+            if (m.CalibrationGauge.Metric) u_g_delta_theta_var = vfederal.u_DeltaThetaVar * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal / 1000, 8);
+            else u_g_delta_theta_var = vfederal.u_DeltaThetaVar * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
+
+            return u_g_delta_theta_var;
+        }
+
+        /// <summary>
+        /// Determines the root mean square of the departure from 20 degrees for all measurements
+        /// </summary>
+        private static double RMS_Theta_S()
+        {
+            double sumsq_theta_s = 0.0;
+            int count_theta_s = 0;
+
+            foreach(Measurement m in measurements)
+            {  
+                sumsq_theta_s += Math.Pow(m.CalibrationGauge.Temperature - 20.000,2);
+                count_theta_s++; 
+            }
+            return Math.Sqrt(sumsq_theta_s / count_theta_s);
         }
 
         /// <summary>
         /// Parse the file opened by the user line by line while updating the gui
         /// </summary>
         /// <param name="lines">A string array containing lines of the measurement file</param>
-        /// <param name="gaugeResultsRichTextBox">A reference to the gauge results rich text box</param>
-        /// <param name="clientNameTextBox">A reference to the client name text box</param>
-        /// <param name="gaugeSerialTextBox">A reference to the gauge serial text box</param>
         /// <param name="writer">A reference to the stream writer for the measurement data file</param>
-        public static bool ParseFile(string[] lines,ref RichTextBox gaugeResultsRichTextBox, ref TextBox clientNameTextBox, ref TextBox gaugeSerialTextBox ,ref System.IO.StreamWriter writer)
+        /// <param name="verticalFederal">A reference to the vertical federal object</param>
+        public static bool ParseFile(string[] lines, ref System.IO.StreamWriter writer, ref VerticalFederal verticalFederal)
         {
             bool first_line = true;
             string line_read;
@@ -448,14 +1428,34 @@ namespace Vertical_Federal_App
 
                 Measurement meas = new Measurement();
 
-                ParseLine(ref line_read, ref meas);
-                working_gauge = meas.CalibrationGauge;
+                ParseLine(ref line_read, ref meas, ref verticalFederal);
+
+
                 int set_index = 0;
+
+                working_gauge.Nominal = meas.CalibrationGauge.Nominal;
+                working_gauge.CentreDeviation = meas.CalibrationGauge.CentreDeviation;
+                working_gauge.ClientName = meas.CalibrationGauge.ClientName;
+                working_gauge.CorrLength = meas.CalibrationGauge.CorrLength;
+                working_gauge.ExtremeDeviation = meas.CalibrationGauge.ExtremeDeviation;
+                working_gauge.FromSet = meas.CalibrationGauge.FromSet;
+                working_gauge.GaugeBlockMaterial.exp_coeff = meas.CalibrationGauge.GaugeBlockMaterial.exp_coeff;
+                working_gauge.GaugeBlockMaterial.poissons_ratio = meas.CalibrationGauge.GaugeBlockMaterial.poissons_ratio;
+                working_gauge.GaugeBlockMaterial.youngs_modulus = meas.CalibrationGauge.GaugeBlockMaterial.youngs_modulus;
+                working_gauge.GaugeBlockMaterial.material = (string)meas.CalibrationGauge.GaugeBlockMaterial.material.Clone();
+                working_gauge.IllegalSize = false;
+                working_gauge.MaxDev = meas.CalibrationGauge.MaxDev;
+                working_gauge.Metric = meas.CalibrationGauge.Metric;
+                working_gauge.MinDev = meas.CalibrationGauge.MinDev;
+                working_gauge.SerialNumber = meas.CalibrationGauge.SerialNumber;
+                working_gauge.Variation = meas.CalibrationGauge.Variation;
+                working_gauge.Temperature = meas.CalibrationGauge.Temperature;
+                working_gauge.DeviationCMC = meas.CalibrationGauge.DeviationCMC;
+                working_gauge.VariationCMC = meas.CalibrationGauge.VariationCMC;
                 CreateNewCalSet(ref set_index);
-                
+
                 //add the working gauge to its calibration gauge set
-                GaugeBlock working_gauge_clone = working_gauge.Clone();
-                calibration_gauge_sets[set_index].GaugeList.Add(working_gauge_clone);
+                calibration_gauge_sets[set_index].GaugeList.Add(meas.CalibrationGauge);
                 calibration_gauge_sets[set_index].NumGauges++;
             }
             return true;
@@ -466,21 +1466,30 @@ namespace Vertical_Federal_App
         /// </summary>
         /// <param name="line">A string containing meta data for a single measurement object</param>
         /// <param name="meas">A to the measurement object to be updated with meta data</param>
-        private static void ParseLine(ref string line, ref Measurement meas)
+        /// <param name="verticalFederal">A reference to the vertical federal object</param>
+        private static void ParseLine(ref string line, ref Measurement meas, ref VerticalFederal verticalFederal)
         {
-            //create a new measurement and populate it with data we find in this files current line
-            
+            //Populate the measurement with data we find in this files current line
             Stack ref_stack = new Stack(1);
             GaugeBlock calibration_gauge = new GaugeBlock(false);
             meas.CalibrationGauge = calibration_gauge;
             meas.ReferenceStack = ref_stack;
-            
+
+
             string[] strings = line.Split(',');
             meas.Datetime = strings[0];
-            meas.Temperature = strings[1];
-            if (strings[2].Equals("mm µm")) meas.Metric = true;
-            else meas.Metric = false;
-            double.TryParse(strings[3], out meas.nominal);
+
+            double m = 0.0;
+            double.TryParse(strings[1], out m);
+            meas.CalibrationGauge.Temperature = m;
+
+            if (strings[2].Contains("mm")) meas.CalibrationGauge.Metric = true;
+            else meas.CalibrationGauge.Metric = false;
+
+            double n = 0.0;
+            double.TryParse(strings[3], out n);
+            meas.CalibrationGauge.Nominal = n;
+
             meas.CalibrationGauge.FromSet = strings[4];
             meas.CalibrationGauge.SerialNumber = strings[5];
             meas.CalibrationGauge.GaugeBlockMaterial.material = strings[6];
@@ -535,17 +1544,37 @@ namespace Vertical_Federal_App
             double.TryParse(strings[42], out meas.c3);
             double.TryParse(strings[43], out meas.r2);
 
-            double.TryParse(strings[44], out meas.corrected_length);
-            double.TryParse(strings[45], out meas.centre_deviation);
-            double.TryParse(strings[46], out meas.extreme_deviation);
-            double.TryParse(strings[47], out meas.variation);
-            
-            
+            double c_length = 0.0;
+            double centre_d = 0.0;
+            double min_d = 0.0;
+            double max_d = 0.0;
+            double ext_d = 0.0;
+            double v = 0.0;
+
+            double.TryParse(strings[44], out c_length);
+            double.TryParse(strings[45], out centre_d);
+            double.TryParse(strings[46], out min_d);
+            double.TryParse(strings[47], out max_d);
+            double.TryParse(strings[48], out ext_d);
+            double.TryParse(strings[49], out v);
+
+            meas.CalibrationGauge.CorrLength = c_length;
+            meas.CalibrationGauge.CentreDeviation = centre_d;
+            meas.CalibrationGauge.MinDev = min_d;
+            meas.CalibrationGauge.MaxDev = max_d;
+            meas.CalibrationGauge.ExtremeDeviation = ext_d;
+            meas.CalibrationGauge.Variation = v;
+
+            int comp_std = 0;
+            int.TryParse(strings[50], out comp_std);
+            meas.CalibrationGauge.ComplianceStandard = comp_std;
+            meas.CalculateCMCs(verticalFederal);
+            meas.CalculateComplianceLimits();
 
             //Save a copy of the current measurement to the measurement list.
             Measurement.Measurements.Add(meas);
 
-            
+
 
         }
         /// <summary>
@@ -555,59 +1584,54 @@ namespace Vertical_Federal_App
         /// <param name="units">the unit string, metric or imperial</param>
         /// <param name="gaugeResultsRichTextBox">a reference to the gauge results rich text box</param>
         /// <param name="measurement_number">the nth measurement number</param> 
-        public static void writeRichTBLine(Measurement current_measurement, string units, ref RichTextBox gaugeResultsRichTextBox, int measurement_number)
+        public static string writeRichTBLine(Measurement current_measurement, string units, int measurement_number)
         {
+            string rtb_line = "";
             if (!Measurement.HeaderWritten)
             {
                 //write the header string of the output rich text box
-
-                gaugeResultsRichTextBox.Text = "Measurement No.\tUnits\tNominal\tCentre Dev\tExtreme Dev\tVariation\n";
-                gaugeResultsRichTextBox.SelectAll();
-                gaugeResultsRichTextBox.SelectionTabs = new int[] { 110, 210, 280, 350, 430 };
-                gaugeResultsRichTextBox.AcceptsTab = true;
-                gaugeResultsRichTextBox.Select(0, 0);
+                rtb_line = "Measurement No.\tUnits\tNominal\tCentre Dev\tExtreme Dev\tVariation\n";
                 Measurement.HeaderWritten = true;
             }
 
-            gaugeResultsRichTextBox.AppendText(measurement_number.ToString() + "\t" +
-                units + "\t" + current_measurement.Nominal.ToString() + "\t" + Math.Round(current_measurement.centre_deviation, 5).ToString() +
-                "\t" + Math.Round(current_measurement.extreme_deviation, 5).ToString() + "\t" + Math.Round(current_measurement.variation, 5).ToString() + "\n");
-            gaugeResultsRichTextBox.SelectAll();
-            gaugeResultsRichTextBox.SelectionTabs = new int[] { 110, 210, 280, 350, 430 };
-            gaugeResultsRichTextBox.AcceptsTab = true;
-            gaugeResultsRichTextBox.Select(0, 0);
+            rtb_line = String.Concat(rtb_line, measurement_number.ToString(), "\t",
+                units, "\t", current_measurement.CalibrationGauge.Nominal.ToString(), "\t", Math.Round(current_measurement.CalibrationGauge.CentreDeviation, 5).ToString(),
+                "\t", Math.Round(current_measurement.CalibrationGauge.ExtremeDeviation, 5).ToString(), "\t" + Math.Round(current_measurement.CalibrationGauge.Variation, 5).ToString(), "\n");
+            return rtb_line;
         }
+
+
         /// <summary>
         /// Make a string which has all measurement data delimited by commas, each measurement is recorded as a line in the file
         /// </summary>
         /// <param name="current_measurement">The current measurement object</param>
         /// <param name="line_to_write">a reference to the line string</param>
-        /// <param name="gaugeResultsRichTextBox">a reference to units string, either metric or imperial</param> 
+        /// <param name="units">a reference to units string, either metric or imperial</param> 
         public static void PrepareLineForWrite(Measurement current_measurement, ref string line_to_write, string units)
         {
 
-            
+
             //build the measurement data string, each parameter is seperated by commas 
             StringBuilder line = new StringBuilder();
             // Create a string array that consists of three lines.
             line.Append(current_measurement.Datetime + ",");
-            line.Append(current_measurement.Temperature + ",");
+            line.Append(current_measurement.CalibrationGauge.Temperature + ",");
             line.Append(units + ",");
-            line.Append(current_measurement.Nominal.ToString() + ",");
+            line.Append(current_measurement.CalibrationGauge.Nominal.ToString() + ",");
             line.Append(current_measurement.CalibrationGauge.FromSet + ",");
             line.Append(current_measurement.CalibrationGauge.SerialNumber + ",");
             line.Append(current_measurement.CalibrationGauge.GaugeBlockMaterial.material.ToString() + ",");
             line.Append(current_measurement.CalibrationGauge.GaugeBlockMaterial.exp_coeff.ToString() + ",");
             line.Append(current_measurement.CalibrationGauge.GaugeBlockMaterial.youngs_modulus.ToString() + ",");
             line.Append(current_measurement.CalibrationGauge.GaugeBlockMaterial.poissons_ratio.ToString() + ",");
-            if (current_measurement.Metric && !current_measurement.ReferenceStack.Gauge1.Metric)
+            if (current_measurement.CalibrationGauge.Metric && !current_measurement.ReferenceStack.Gauge1.Metric)
             {
                 line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.Nominal * 25.4), 5).ToString() + ",");
                 line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.CentreDeviation * 25.4 / 1000), 5).ToString() + ",");
-                
+
 
             }
-            else if (!current_measurement.Metric && current_measurement.ReferenceStack.Gauge1.Metric)
+            else if (!current_measurement.CalibrationGauge.Metric && current_measurement.ReferenceStack.Gauge1.Metric)
             {
                 line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.Nominal / 25.4), 5).ToString() + ",");
                 line.Append(Math.Round((current_measurement.ReferenceStack.Gauge1.CentreDeviation * 1000 / 25.4), 5).ToString() + ",");
@@ -617,22 +1641,22 @@ namespace Vertical_Federal_App
                 line.Append(Math.Round(current_measurement.ReferenceStack.Gauge1.Nominal, 5).ToString() + ",");
                 line.Append(Math.Round(current_measurement.ReferenceStack.Gauge1.CentreDeviation, 5).ToString() + ",");
             }
-            line.Append(current_measurement.ReferenceStack.Gauge1.SerialNumber+",");
-            line.Append(current_measurement.ReferenceStack.Gauge1.FromSet+",");
-            line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.material.ToString()+",");
+            line.Append(current_measurement.ReferenceStack.Gauge1.FromSet + ",");
+            line.Append(current_measurement.ReferenceStack.Gauge1.SerialNumber + ",");
+            line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.material.ToString() + ",");
             line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.exp_coeff.ToString() + ",");
             line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.youngs_modulus.ToString() + ",");
             line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.poissons_ratio.ToString() + ",");
 
             if (current_measurement.ReferenceStack.Gauge2 != null)
             {
-                if (current_measurement.Metric && !current_measurement.ReferenceStack.Gauge2.Metric)
+                if (current_measurement.CalibrationGauge.Metric && !current_measurement.ReferenceStack.Gauge2.Metric)
                 {
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.Nominal * 25.4), 5).ToString() + ",");
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.CentreDeviation * 25.4 / 1000), 5).ToString() + ",");
 
                 }
-                else if (!current_measurement.Metric && current_measurement.ReferenceStack.Gauge2.Metric)
+                else if (!current_measurement.CalibrationGauge.Metric && current_measurement.ReferenceStack.Gauge2.Metric)
                 {
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.Nominal / 25.4), 5).ToString() + ",");
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge2.CentreDeviation * 1000 / 25.4), 5).ToString() + ",");
@@ -645,9 +1669,9 @@ namespace Vertical_Federal_App
             }
             else line.Append(",,");
 
-            if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.SerialNumber + ",");
-            else line.Append(",");
             if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.FromSet + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.SerialNumber + ",");
             else line.Append(",");
             if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.GaugeBlockMaterial.material.ToString() + ",");
             else line.Append(",");
@@ -660,13 +1684,13 @@ namespace Vertical_Federal_App
 
             if (current_measurement.ReferenceStack.Gauge3 != null)
             {
-                if (current_measurement.Metric && !current_measurement.ReferenceStack.Gauge3.Metric)
+                if (current_measurement.CalibrationGauge.Metric && !current_measurement.ReferenceStack.Gauge3.Metric)
                 {
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.Nominal * 25.4), 5).ToString() + ",");
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.CentreDeviation * 25.4 / 1000), 5).ToString() + ",");
 
                 }
-                else if (!current_measurement.Metric && current_measurement.ReferenceStack.Gauge3.Metric)
+                else if (!current_measurement.CalibrationGauge.Metric && current_measurement.ReferenceStack.Gauge3.Metric)
                 {
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.Nominal / 25.4), 5).ToString() + ",");
                     line.Append(Math.Round((current_measurement.ReferenceStack.Gauge3.CentreDeviation * 1000 / 25.4), 5).ToString() + ",");
@@ -679,9 +1703,9 @@ namespace Vertical_Federal_App
             }
 
             else line.Append(",,");
-            if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.SerialNumber + ",");
-            else line.Append(",");
             if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.FromSet + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.SerialNumber + ",");
             else line.Append(",");
             if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.GaugeBlockMaterial.material.ToString() + ",");
             else line.Append(",");
@@ -692,7 +1716,7 @@ namespace Vertical_Federal_App
             if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.GaugeBlockMaterial.poissons_ratio.ToString() + ",");
             else line.Append(",");
 
-            line.Append(GaugeBlock.calculateGaugeStackDeviation(current_measurement.ReferenceStack, current_measurement.Metric).ToString() + ",");
+            line.Append(GaugeBlock.calculateGaugeStackDeviation(current_measurement.ReferenceStack, current_measurement.CalibrationGauge.Metric).ToString() + ",");
             line.Append(current_measurement.R1.ToString() + ",");
             line.Append(current_measurement.C1.ToString() + ",");
             line.Append(current_measurement.A.ToString() + ",");
@@ -704,79 +1728,66 @@ namespace Vertical_Federal_App
             line.Append(current_measurement.R2.ToString() + ",");
             line.Append(Math.Round(current_measurement.CalibrationGauge.CorrLength, 7).ToString() + ",");
             line.Append(Math.Round(current_measurement.CalibrationGauge.CentreDeviation, 5).ToString() + ",");
+            line.Append(Math.Round(current_measurement.CalibrationGauge.MinDev, 5).ToString() + ",");
+            line.Append(Math.Round(current_measurement.CalibrationGauge.MaxDev, 5).ToString() + ",");
             line.Append(Math.Round(current_measurement.CalibrationGauge.ExtremeDeviation, 5).ToString() + ",");
-            line.Append(Math.Round(current_measurement.CalibrationGauge.Variation, 5).ToString());
+            line.Append(Math.Round(current_measurement.CalibrationGauge.Variation, 5).ToString()+ "," );
+            line.Append(current_measurement.CalibrationGauge.ComplianceStandard.ToString());
             line_to_write = line.ToString();
         }
 
         /// <summary>
         /// processes all measurements and summarises all data into required parameters for reporting purposes
         /// </summary>
-        /// <param name="clientNameTextBox">reference to the client name text box</param>
-        /// <param name="gaugeSerialTextBox">a reference to the gauge serial text box</param>
-        public static void writeSummaryToFile(ref TextBox clientNameTextBox, ref TextBox gaugeSerialTextBox)
+        public static void writeSummaryToFile()
         {
-           
-            if (clientNameTextBox.Text.Equals(""))
-            {
-                MessageBox.Show("Cannot determine a filename as the client name text box is empty.  Please enter a client name");
-                return;
-            } 
-            //Determine a suitable file name from metadata
-            string summaryfilename = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + clientNameTextBox.Text + "_summary" + System.DateTime.Now.Year.ToString();
-            
-
-            if (System.IO.File.Exists(summaryfilename)) System.IO.File.Delete(summaryfilename);
+            if (System.IO.File.Exists(filename_sum)) System.IO.File.Delete(filename_sum);
             System.IO.StreamWriter writer2;
-            writer2 = System.IO.File.CreateText(summaryfilename);
-            writer2.WriteLine("DateTime,Temperature,Nominal,Serial Number,Centre Deviation,Extreme Deviation,Variation");
-           
-            
+            writer2 = System.IO.File.CreateText(filename_sum);
+            writer2.WriteLine("DateTime,Temperature,Nominal,Serial Number,Centre Deviation,Extreme Deviation,Variation,Count");
+
+
 
             string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
             List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
-            
-            
+
             foreach (Measurement m in Measurement.Measurements)
             {
-                
-                unique_id = m.Nominal + m.CalSetSerial + m.CalibrationGauge.SerialNumber;
+                unique_id = m.CalibrationGauge.Nominal + m.CalibrationGauge.FromSet + m.CalibrationGauge.SerialNumber;
                 if (!unique_ids_used.Contains(unique_id))
                 {
                     int num_id_matches = 0;
                     bool this_is_first_match = true;
-                    double t = Convert.ToDouble(m.Temperature);
-                    long date_time = Convert.ToDateTime(m.Datetime).Ticks;
+                    double t = 0.0;
+                    long date_time = 0;
                     double nominal = m.CalibrationGauge.Nominal;
                     string ser_no = m.CalibrationGauge.SerialNumber;
-                    double sum_centre_dev = m.CalibrationGauge.CentreDeviation;
-                    double sum_min_dev = m.CalibrationGauge.MinDev;
-                    double sum_max_dev = m.CalibrationGauge.MaxDev;
-                    double sum_variation = m.CalibrationGauge.Variation;
+                    double sum_centre_dev = 0.0;
+                    double sum_min_dev = 0.0;
+                    double sum_max_dev = 0.0;
+                    double sum_variation = 0.0;
 
                     //with the unique id loop through each measurement
                     foreach (Measurement k in Measurement.Measurements)
                     {
-                        string unique_id_to_compare = k.Nominal + k.CalSetSerial + k.CalibrationGauge.SerialNumber;
+                        string unique_id_to_compare = k.CalibrationGauge.Nominal + k.CalibrationGauge.FromSet + k.CalibrationGauge.SerialNumber;
                         if (unique_id_to_compare.Equals(unique_id))
                         {
                             num_id_matches++;
                             //we have a match but if it's the first match then ignore doing the sums
-                            if (!this_is_first_match)
-                            {
-                                t += Convert.ToDouble(k.Temperature);
-                                //we need the date time to be represented as a double to do averaging math on
-                                date_time += Convert.ToDateTime(k.Datetime).Ticks;
-                                sum_centre_dev += k.CalibrationGauge.CentreDeviation;
-                                sum_min_dev += k.CalibrationGauge.MinDev;
-                                sum_max_dev += k.CalibrationGauge.MaxDev;
-                                sum_variation += k.CalibrationGauge.Variation;
-                            }
-                            this_is_first_match = false;
+                         
+                            t += Convert.ToDouble(k.CalibrationGauge.Temperature);
+                            //we need the date time to be represented as a double to do averaging math on
+                            date_time += Convert.ToDateTime(k.Datetime).Ticks;
+                            sum_centre_dev += k.CalibrationGauge.CentreDeviation;
+                            sum_min_dev += k.CalibrationGauge.MinDev;
+                            sum_max_dev += k.CalibrationGauge.MaxDev;
+                            sum_variation += k.CalibrationGauge.Variation;
+                            
                         }
                     }
                     //compute the means
-                    sum_centre_dev /= num_id_matches; 
+                    sum_centre_dev /= num_id_matches;
                     sum_min_dev /= num_id_matches;
                     sum_max_dev /= num_id_matches;
                     t /= num_id_matches;
@@ -784,12 +1795,115 @@ namespace Vertical_Federal_App
                     var a_dt = new DateTime(date_time);
                     double corr_extreme_dev = Measurement.CalculateExtremeDeviation(sum_min_dev, sum_max_dev);
                     sum_variation /= (num_id_matches);
-                    writer2.WriteLine(a_dt.ToString()+"," + t.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + corr_extreme_dev + "," + sum_variation);
+                    writer2.WriteLine(a_dt.ToString() + "," + t.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + corr_extreme_dev + "," + sum_variation + "," + num_id_matches.ToString());
                     unique_ids_used.Add(unique_id);
                 }
-                
+
             }
             writer2.Close();
+        }
+
+        /// <summary>
+        /// processes all measurements and summarises all data into required parameters for reporting purposes
+        /// </summary>
+        public static void WriteUncertaintyAndComplianceToFile(ref VerticalFederal vfederal)
+        {
+            if (System.IO.File.Exists(filename_U95_sum)) System.IO.File.Delete(filename_U95_sum);
+            System.IO.StreamWriter writer3;
+            writer3 = System.IO.File.CreateText(filename_U95_sum);
+            writer3.WriteLine("DateTime,Nominal,Serial Number,Centre Deviation,U95 Centre Deviation As Calculated,U95 Centre Deviation CMC,CMC U95 Centre Deviation As Reported,Extreme Deviation,U95 Extreme Deviation As Calculated,U95 Extreme Deviation CMC,U95 Extreme Deviation As Reported,Variation,U95 Variation As Calculated,U95 Variation CMC,U95 Variation As Reported,Compliance Deviation, Compliance Variation");
+
+            string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
+            List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
+
+            foreach (Measurement m in Measurement.Measurements)
+            {
+                unique_id = m.CalibrationGauge.Nominal + m.CalibrationGauge.FromSet + m.CalibrationGauge.SerialNumber;
+
+                if (!unique_ids_used.Contains(unique_id))
+                {
+                    int num_id_matches = 0;
+
+                    long date_time = 0;
+                    double nominal = m.CalibrationGauge.Nominal;
+                    string ser_no = m.CalibrationGauge.SerialNumber;
+         
+                    double sum_variation = 0.0;
+                    double sum_centre_dev = 0.0;
+                    double U95_centre_dev = 0.0;
+                    double U95_extreme_dev = 0.0;
+                    double U95_variation = 0.0;
+                    double sum_min_dev = 0.0;
+                    double sum_max_dev = 0.0;
+                    double tolerance_variation = 0.0;
+                    double limit_deviation = 0.0;
+                    double cmc_d = 0.0;
+                    double cmc_v = 0.0;
+
+                    //with the unique id loop through each measurement
+                    foreach (Measurement k in Measurement.Measurements)
+                    {
+                        string unique_id_to_compare = k.CalibrationGauge.Nominal + k.CalibrationGauge.FromSet + k.CalibrationGauge.SerialNumber;
+
+                        if (unique_id_to_compare.Equals(unique_id))
+                        {
+                            num_id_matches++;
+                            k.CalculateExpandedUncertaintyDeviation(ref vfederal);
+                            U95_centre_dev = k.CalibrationGauge.ExpandedUncertaintyDev;
+                            U95_extreme_dev = U95_centre_dev * Math.Sqrt(2.000);
+                            k.CalculateExpandedUncertaintyVariation(ref vfederal);
+                            U95_variation = k.CalibrationGauge.ExpandedUncertaintyVar;
+                            limit_deviation = k.CalibrationGauge.LimitDeviation;
+                            tolerance_variation = k.CalibrationGauge.ToleranceVariation;
+                            cmc_d = k.CalibrationGauge.DeviationCMC;
+                            cmc_v = k.CalibrationGauge.VariationCMC;
+                            //we need the date time to be represented as a double to do averaging math on
+                            date_time += Convert.ToDateTime(k.Datetime).Ticks;
+                            
+                        
+                            sum_variation += k.CalibrationGauge.Variation;
+                            sum_centre_dev += k.CalibrationGauge.CentreDeviation;
+                            sum_min_dev += k.CalibrationGauge.MinDev;
+                            sum_max_dev += k.CalibrationGauge.MaxDev;
+                        }
+                    }
+
+                    //compute the means
+                    date_time /= num_id_matches;
+                    var a_dt = new DateTime(date_time);
+                    sum_centre_dev /= num_id_matches;
+       
+                    sum_variation /= num_id_matches;
+                    double corr_extreme_dev = Measurement.CalculateExtremeDeviation(sum_min_dev, sum_max_dev);
+
+                    string compliance_d = "";
+                    if ((corr_extreme_dev + U95_extreme_dev/1000) < limit_deviation) compliance_d = "P";
+                    else if (corr_extreme_dev > (limit_deviation + U95_extreme_dev/1000)) compliance_d = "F";
+                    else compliance_d = "U";
+
+                    string compliance_v ="";
+                    if ((sum_variation + U95_variation/1000) < tolerance_variation) compliance_v = "P";
+                    else if (sum_variation > (tolerance_variation + U95_variation/1000)) compliance_v = "F";
+                    else compliance_v = "U";
+
+                    double reported_U95_dev = 0.0;
+                    double reported_U95_ext_dev = 0.0;
+                    double reported_U95_var = 0.0;
+
+                    if (U95_centre_dev <= cmc_d) reported_U95_dev = cmc_d;
+                    else reported_U95_dev = U95_centre_dev;
+                    if (U95_extreme_dev <= cmc_d) reported_U95_ext_dev = cmc_d;
+                    else reported_U95_ext_dev = U95_extreme_dev;
+                    if (U95_variation < cmc_v) reported_U95_var = cmc_v;
+                    else reported_U95_var = U95_variation;
+
+
+                    writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev + "," + cmc_d + "," + reported_U95_dev + "," + corr_extreme_dev + "," + U95_extreme_dev + "," + cmc_d + "," + reported_U95_ext_dev + "," + sum_variation + "," + U95_variation + "," + cmc_v + "," + reported_U95_var + "," + compliance_d + "," + compliance_v);
+                    unique_ids_used.Add(unique_id);
+                }
+
+            }
+            writer3.Close();
         }
 
         public static bool CreateNewCalSet(ref int set_index)

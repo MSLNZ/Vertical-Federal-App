@@ -10,7 +10,7 @@ namespace Vertical_Federal_App
 {
     public class VerticalFederal
     {
-        
+
         private SerialPort s_port;
         private SerialDataReveived sdr_;
         private double top_probe_force;
@@ -18,6 +18,21 @@ namespace Vertical_Federal_App
         private double probe_diameter;
         private double youngs_mod;
         private double poissons_ratio;
+        private string tp;
+        private string tp_expiry;
+        private double reproducibility_std_u_independent;
+        private double scale_resolution_std_u_independent;
+        private double scale_calibration_std_u_independent;
+        private double delta;
+        private double alpha_g;
+        private double delta_alpha;
+        private double theta_s;
+        private double delta_theta;
+        private double delta_theta_var;
+        private double exp_u_dev_indep = 0.0;
+        private double exp_u_dev_dep = 0.0;
+        private double exp_u_var_indep = 0.0;
+        private double exp_u_var_dep = 0.0;
         public VerticalFederal(ref SerialDataReveived x)
         {
             sdr_ = x;
@@ -43,15 +58,15 @@ namespace Vertical_Federal_App
                 //register and event handler
                 s_port.DataReceived += new SerialDataReceivedEventHandler(DataReceviedEventHandler);
             }
-            catch(System.IO.IOException)
+            catch (System.IO.IOException)
             {
 
             }
         }
 
-        private void DataReceviedEventHandler(object sender,SerialDataReceivedEventArgs e)
+        private void DataReceviedEventHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            
+
             SerialPort sp = (SerialPort)sender;
             System.Threading.Thread.Sleep(20);
             string indata = sp.ReadExisting();
@@ -98,6 +113,85 @@ namespace Vertical_Federal_App
             return result;
         }
 
+        public string TechnicalProcedure
+        {
+            set { tp = value; }
+            get { return tp; }
+        }
+
+        public string TechnicalProcedureExpiry
+        {
+            set { tp_expiry = value; }
+            get { return tp_expiry; }
+        }
+
+        public double ReproducibilityStduIndependent
+        {
+            set { reproducibility_std_u_independent = value; }
+            get { return reproducibility_std_u_independent; }
+        }
+        public double ScaleResStduIndependent
+        {
+            set { scale_resolution_std_u_independent = value; }
+            get { return scale_resolution_std_u_independent; }
+        }
+        public double ScaleCalStduIndependent
+        {
+            set { scale_calibration_std_u_independent = value; }
+            get { return scale_calibration_std_u_independent; }
+        }
+
+        public double u_Delta
+        {
+            set { delta = value; }
+            get { return delta; }
+        }
+        public double u_AlphaG
+        {
+            set { alpha_g = value; }
+            get { return alpha_g; }
+        }
+        public double u_DeltaAlpha
+        {
+            set { delta_alpha = value; }
+            get { return delta_alpha; }
+        }
+        public double u_ThetaS
+        {
+            set { theta_s = value; }
+            get { return theta_s; }
+        }
+        public double u_DeltaTheta
+        {
+            set { delta_theta = value; }
+            get { return delta_theta; }
+        }
+        public double u_DeltaThetaVar
+        {
+            set { delta_theta_var = value; }
+            get { return delta_theta_var; }
+        }
+
+        public double ExpanedUncertaintyCMCDevIndep
+        {
+            set { exp_u_dev_indep = value; }
+            get { return exp_u_dev_indep; }
+        }
+        public double ExpanedUncertaintyCMCDevDep
+        {
+            set { exp_u_dev_dep = value; }
+            get { return exp_u_dev_dep; }
+        }
+        public double ExpanedUncertaintyCMCVarIndep
+        {
+            set { exp_u_var_indep = value; }
+            get { return exp_u_var_indep; }
+        }
+        public double ExpanedUncertaintyCMCVarDep
+        {
+            set { exp_u_var_dep = value; }
+            get { return exp_u_var_dep; }
+        }
         public double TopProbeForce
         {
             get { return top_probe_force; }

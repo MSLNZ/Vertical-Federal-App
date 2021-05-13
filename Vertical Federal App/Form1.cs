@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
+using System.Threading;
 //using Microsoft.Office.Interop.Excel;
 
 
@@ -16,6 +17,8 @@ namespace Vertical_Federal_App
 {
     public delegate void SerialDataReveived(string data);
     public delegate void TemperatureRetrieved(double temperature, DateTime datetime_retreived);
+    public delegate void PrintGaugeResultsToRichTextbox(string data);
+  
 
 
 
@@ -24,6 +27,7 @@ namespace Vertical_Federal_App
         
         private SerialDataReveived sdr;
         private TemperatureRetrieved tdr;
+        private PrintGaugeResultsToRichTextbox pgr;
         private VerticalFederal federal;
         private Stack ref_g;
         private List<GaugeBlockSet> reference_gauge_sets;
@@ -41,19 +45,23 @@ namespace Vertical_Federal_App
             InitializeComponent();
             sdr = new SerialDataReveived(DataReceived);
             tdr = new TemperatureRetrieved(TemperatureReceived);
+            pgr = new PrintGaugeResultsToRichTextbox(PrintGaugeResults);
             Measurement.working_gauge = new GaugeBlock(true);
-            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox);
-            if(INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
+            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data.xml", @"G:\Shared drives\MSL - Length\Length\EQUIPREG\cal_data.ini",false);
+            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"G:\Shared drives\MSL - Length\Length\Technical Procedures\XML Files\config_uncertainty.xml", @"G:\Shared drives\MSL - Length\Length\Technical Procedures\config_uncertainty.ini", true);
+            if (INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             Measurement.calibration_gauge_sets = new List<GaugeBlockSet>();  //make a new list for calibration gauge sets
             reference_gauge_sets = new List<GaugeBlockSet>();
             radiobuttionclearcalled = false;
             Measurement.StartRetreivingTemperatures(ref tdr);
             Measurement.LogTemperatures = true;
+            Measurement.working_gauge.Metric = true;
         }
 
         private void Comopenbutton_Click(object sender, EventArgs e)
         {
             federal = new VerticalFederal(ref sdr);
+            INI2XML.LoadUncertaintyMetaData(ref federal);
             INI2XML.LoadVerticalFederalMetaData(ref federal);
             federal.COMInit(COMComboBox.Text.ToString());
 
@@ -71,6 +79,7 @@ namespace Vertical_Federal_App
             poissonsRatioTextBox.Enabled = true;
             clientNameTextBox.Enabled = true;
             Comopenbutton.Enabled = false;
+            ComplianceComboBox.Enabled = true;
 
         }
 
@@ -169,7 +178,7 @@ namespace Vertical_Federal_App
             else
             {
                 object[] textobj = { data };
-                this.BeginInvoke(new SerialDataReveived(DataReceived), textobj);
+                this.BeginInvoke(sdr, textobj);
             }
         }
         public void TemperatureReceived(double temperature, DateTime datetime)
@@ -182,7 +191,28 @@ namespace Vertical_Federal_App
             else
             {
                 object[] textobj = { temperature,datetime };
-                this.BeginInvoke(new TemperatureRetrieved(TemperatureReceived), textobj);
+                this.BeginInvoke(tdr, textobj);
+            }
+        }
+
+        public void PrintGaugeResults(string data)
+        {
+            if (this.InvokeRequired == false)
+            {
+               
+                    gaugeResultsRichTextBox.AppendText(data);
+                    gaugeResultsRichTextBox.SelectAll();
+                    gaugeResultsRichTextBox.SelectionTabs = new int[] { 110, 210, 280, 350, 430 };
+                    gaugeResultsRichTextBox.AcceptsTab = true;
+                    gaugeResultsRichTextBox.Select(0, 0);
+                    gaugeResultsRichTextBox.ScrollToCaret();
+                
+                
+            }
+            else
+            {
+                object[] textobj = { data };
+                this.BeginInvoke(pgr, textobj);
             }
         }
 
@@ -222,6 +252,36 @@ namespace Vertical_Federal_App
                 imperialCheckBox.Checked = false;
                 referenceSetComboBox.Items.Clear();
                 INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);
+            }
+
+            ComplianceComboBox.Items.Clear();
+            //populate the compliance combo box.
+            if (metricCheckBox.Checked)
+            {
+                ComplianceComboBox.Items.Add("BS EN ISO 3650:1999 Grade 00");
+                ComplianceComboBox.Items.Add("BS EN ISO 3650:1999 Grade 0");
+                ComplianceComboBox.Items.Add("BS EN ISO 3650:1999 Grade 1");
+                ComplianceComboBox.Items.Add("BS EN ISO 3650:1999 Grade 2");
+                ComplianceComboBox.Items.Add("JIS B 7506 : 2004 Grade K");
+                ComplianceComboBox.Items.Add("JIS B 7506 : 2004 Grade 0");
+                ComplianceComboBox.Items.Add("JIS B 7506 : 2004 Grade 1");
+                ComplianceComboBox.Items.Add("JIS B 7506 : 2004 Grade 2");
+                ComplianceComboBox.Items.Add("AS 1457 - 1999 Grade K");
+                ComplianceComboBox.Items.Add("AS 1457 - 1999 Grade 0");
+                ComplianceComboBox.Items.Add("AS 1457 - 1999 Grade 1");
+                ComplianceComboBox.Items.Add("AS 1457 - 1999 Grade 2");
+                ComplianceComboBox.Items.Add("ASME B89.1.9 - 2002 Grade K");
+                ComplianceComboBox.Items.Add("ASME B89.1.9 - 2002 Grade 00");
+                ComplianceComboBox.Items.Add("ASME B89.1.9 - 2002 Grade 0");
+                ComplianceComboBox.Items.Add("ASME B89.1.9 - 2002 Grade AS-1");
+                ComplianceComboBox.Items.Add("ASME B89.1.9 - 2002 Grade AS-2");
+            }
+            else
+            {
+                ComplianceComboBox.Items.Add("BS4311:2007 Grade K");
+                ComplianceComboBox.Items.Add("BS4311:2007 Grade 0");
+                ComplianceComboBox.Items.Add("BS4311:2007 Grade 1");
+                ComplianceComboBox.Items.Add("BS4311:2007 Grade 2");
             }
             ProcessSizeChangeEvent();
         }
@@ -338,7 +398,7 @@ namespace Vertical_Federal_App
                 return;
             }
 
-            if (Measurement.working_gauge.Metric && (Measurement.working_gauge.Nominal < 0.5 || Measurement.working_gauge.Nominal > 100))  //metric units
+            if (Measurement.working_gauge.Metric && (Measurement.working_gauge.Nominal < 0.5 || Measurement.working_gauge.Nominal > 102))  //metric units
             {
                 MessageBox.Show("Gauge block size is not in the measuring range of the comparator");
                 Measurement.working_gauge.IllegalSize = true;
@@ -496,8 +556,10 @@ namespace Vertical_Federal_App
                 MessageBox.Show("In the case where the reference gauge is formed from wrung " +
                   "gauges made from difference materials the gauge that appears first in " +
                   "the \"Suitable Gauges\" dropdown menu should be placed at the top of the stack. " +
-                  "This is important as the vertical federal has different probing forces for the " +
+                  "This is important as the vertical federal has different probing forces for the top " +
                   "and bottom anvil");
+                suitableReferenceGaugesComboBox.Text = "";
+                referenceDeviationTextBox.Text = "";
             }
             message_shown = true;
             if (!Measurement.working_gauge.Metric) Measurement.working_gauge.Nominal = Math.Round(Measurement.working_gauge.Nominal / 25.4, 5);
@@ -515,7 +577,6 @@ namespace Vertical_Federal_App
 
         private void suitableReferenceGaugesComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             int index = suitableReferenceGaugesComboBox.SelectedIndex;
             ref_g = suitable_gauges.ElementAt(index);
 
@@ -561,6 +622,8 @@ namespace Vertical_Federal_App
         {
             Measurement.working_gauge.ClientName = clientNameTextBox.Text;
             Measurement.filename = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + clientNameTextBox.Text + "_" + DateTime.Today.Year + ".txt";
+            Measurement.filename_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + clientNameTextBox.Text + "_summary" + DateTime.Today.Year + ".txt";
+            Measurement.filename_U95_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + clientNameTextBox.Text + "_U95_Compliance_summary" + DateTime.Today.Year + ".txt";
         }
 
         private void materialComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -829,6 +892,17 @@ namespace Vertical_Federal_App
                 MessageBox.Show("Illegal gauge size!  Change size before continuing");
                 return;
             }
+
+            if (clientNameTextBox.Text.Equals(""))
+            {
+                MessageBox.Show("The filenames are determined from the Client Name field, but nothing has been entered.  " +
+                    "Please enter a client name before continuing");
+                return;
+            }
+            else
+            {
+                Measurement.working_gauge.ClientName = clientNameTextBox.Text;
+            }
             int set_index = 0;
             if (!Measurement.CreateNewCalSet(ref set_index)) return;
 
@@ -895,17 +969,13 @@ namespace Vertical_Federal_App
                 return;
             }
             double r_dev = 0.0;
-            double variation = 0.0;
-            double corr_centre_dev = 0.0;
-            double corr_extreme_dev = 0.0;
-            double corr_length = 0.0;
-            double min_d = 0.0;
-            double max_d = 0.0;
+            double tv = -273.14;
+
             Measurement current_measurement = new Measurement();
+            current_measurement.CalibrationGauge = working_gauge_clone;
             current_measurement.Datetime = DateTimeTextBox.Text;
-            current_measurement.Temperature = TemperatureTextBox.Text;
-            current_measurement.Metric = Measurement.working_gauge.Metric;
-            current_measurement.Nominal = Measurement.working_gauge.Nominal;
+            double.TryParse(TemperatureTextBox.Text, out tv);
+            current_measurement.CalibrationGauge.Temperature = tv;
             current_measurement.A = A;
             current_measurement.B = B;
             current_measurement.C1 = C1;
@@ -917,54 +987,60 @@ namespace Vertical_Federal_App
             current_measurement.R2 = R2;
             double.TryParse(referenceDeviationTextBox.Text, out r_dev);
             current_measurement.RefDeviation_um_uinch = r_dev;
-            current_measurement.CalSetSerial = setSerialTextBox.Text;
-            GaugeBlock cal_g_copy = Measurement.working_gauge.Clone();
-            current_measurement.CalibrationGauge = cal_g_copy;
             Stack ref_s = ref_g.Clone();
             current_measurement.ReferenceStack = ref_s;
             current_measurement.CalculateVariation();
             current_measurement.CalculateMeasuredDiff_um_uinch();
             current_measurement.RefLength();
             current_measurement.calculateElasticDeformations(federal);
-            current_measurement.CalculateDeviations(ref corr_centre_dev,ref corr_extreme_dev,ref corr_length,ref max_d,ref min_d);
-            current_measurement.CalibrationGauge.CorrLength = Math.Round(corr_length, 7);
-            current_measurement.CalibrationGauge.CentreDeviation = Math.Round(corr_centre_dev, 5);
-            current_measurement.CalibrationGauge.ExtremeDeviation = Math.Round(corr_extreme_dev, 5);
-            current_measurement.CalibrationGauge.MinDev = Math.Round(min_d, 5);
-            current_measurement.CalibrationGauge.MaxDev = Math.Round(max_d, 5);
-            current_measurement.CalibrationGauge.Variation = Math.Round(current_measurement.CalculateVariation(), 3);
-
+            current_measurement.CalculateDeviations();
+            current_measurement.CalibrationGauge.FromSet = setSerialTextBox.Text;
+            current_measurement.CalibrationGauge.Variation = Math.Round(current_measurement.CalculateVariation(), 5);
+            current_measurement.CalculateComplianceLimits();
+            current_measurement.CalculateCMCs(federal);
 
             //Save a copy of the current measurement to the measurement list.
             Measurement.Measurements.Add(current_measurement);
-
+            gaugeResultsRichTextBox.Clear();
+            Thread saveprintThread = new Thread(new ThreadStart(DoSavePrint));
+            saveprintThread.Start();
+            
+        }
+        private void DoSavePrint()
+        {
             if (System.IO.File.Exists(Measurement.filename)) System.IO.File.Delete(Measurement.filename);
             System.IO.StreamWriter writer = System.IO.File.CreateText(Measurement.filename);
-            gaugeResultsRichTextBox.Clear();
+            
             Measurement.HeaderWritten = false;
             if (!Measurement.HeaderWritten)
             {
                 writer.WriteLine(Measurement.measurement_file_header);
             }
-            
+
+            StringBuilder rtb = new StringBuilder();
             int count = 1;
             foreach (Measurement m in Measurement.Measurements)
             {
                 string line_to_write = "";
 
                 string units = "mm µm";
-                if (!m.Metric) units = "inch µinch";
-
+                if (!m.CalibrationGauge.Metric) units = "inch µinch";
+                m.calculateElasticDeformations(federal);
+                m.CalculateDeviations();
                 Measurement.PrepareLineForWrite(m, ref line_to_write, units);
-                Measurement.writeRichTBLine(m, units, ref gaugeResultsRichTextBox, count);
+                string l = Measurement.writeRichTBLine(m, units, count);
+                rtb.Append(l);
                 writer.WriteLine(line_to_write);
                 count++;
             }
             writer.Close();
 
-            Measurement.writeSummaryToFile(ref clientNameTextBox, ref gaugeSerialTextBox);
-        }
+            //invoke the gui to print to the gauge results rich text box
+            pgr(rtb.ToString());
 
+            Measurement.writeSummaryToFile();
+            Measurement.WriteUncertaintyAndComplianceToFile(ref federal);
+        }
         private void DeleteLastButton_Click(object sender, EventArgs e)
         {
             if (Measurement.Measurements.Count > 0)
@@ -989,13 +1065,7 @@ namespace Vertical_Federal_App
         //load can only be performed on an active measurement filename
         private void LoadMeasurementButton_Click(object sender, EventArgs e)
         {
-            if (clientNameTextBox.Text.Equals(""))
-            {
-                MessageBox.Show("You must enter the client name before attempting to open a file");
-                return;
-            }
-
-            
+           
             string[] lines;
             if (MeasurementOpenFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -1004,39 +1074,67 @@ namespace Vertical_Federal_App
             }
             else return;
 
+            int index = Measurement.filename.IndexOf('_');
+            Measurement.filename_sum = Measurement.filename.Insert(index+1, "summary");
+
             if (!lines[0].Contains(Measurement.measurement_file_header)) return;
+
+            gaugeResultsRichTextBox.Clear();
+
+            Thread loaderthread = new Thread(new ParameterizedThreadStart(doLoadWork));
+            loaderthread.Start(lines);
+
+           
+        }
+
+        private void doLoadWork(object string_array)
+        {
+            string[] lines = (string[])string_array;
 
             System.IO.StreamWriter writer = System.IO.File.CreateText(Measurement.filename);
             //read the file and add measurements to the measurement list
-            Measurement.ParseFile(lines, ref gaugeResultsRichTextBox, ref clientNameTextBox, ref gaugeSerialTextBox,ref writer);
+            Measurement.ParseFile(lines, ref writer, ref federal);
             
-            gaugeResultsRichTextBox.Clear();
             Measurement.HeaderWritten = false;
             if (!Measurement.HeaderWritten)
             {
                 writer.WriteLine(Measurement.measurement_file_header);
             }
             int count = 1;
-            
 
+            StringBuilder sb = new StringBuilder();
             //process all measurements
             foreach (Measurement m in Measurement.Measurements)
             {
                 string line_to_write = "";
-             
+
                 string units = "mm µm";
-                if (!m.Metric) units = "inch µinch";
+                if (!m.CalibrationGauge.Metric) units = "inch µinch";
 
                 Measurement.PrepareLineForWrite(m, ref line_to_write, units);
-                Measurement.writeRichTBLine(m, units, ref gaugeResultsRichTextBox,count);
+                sb.Append(Measurement.writeRichTBLine(m, units, count));
                 writer.WriteLine(line_to_write);
-                Measurement.writeSummaryToFile(ref clientNameTextBox, ref gaugeSerialTextBox);
+                Measurement.writeSummaryToFile();
+                Measurement.WriteUncertaintyAndComplianceToFile(ref federal);
                 count++;
             }
 
             writer.Close();
-           
+
+            //invoke the gui to print to the gauge results rich textbox
+            pgr(sb.ToString());
         }
-        
+
+        private void ComplianceComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComplianceComboBox.SelectedItem == null) return;
+
+            Measurement.working_gauge.ComplianceStandard = ComplianceComboBox.SelectedIndex;
+        }
+
+        private void TemperatureTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

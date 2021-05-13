@@ -41,7 +41,10 @@ namespace Vertical_Federal_App
 
 
 		private static XmlTextReader xmlreader;
+		private static XmlTextReader xmlreader2;
+
 		private static string xmlfilename;
+		private static string xmlfilename_uncertainty;
 		private static XmlReaderSettings settings;
 		private static bool conversion_succeeded = true;
 		/// 
@@ -60,31 +63,66 @@ namespace Vertical_Federal_App
 		/// </summary>
 		const int INITIAL_BUFFER_SIZE = 4096;
 
-		/// <summary>
-		/// Converts an INI file into an XML file.
-		/// Output XML file has the following structure...
-		///   <?xml version="1.0"?>
-		///   <configuration>
-		///       <section name="Main">
-		///           <setting name="Timeout" value="90"/>
-		///           <setting name="Mode" value="Live"/>
-		///      </section>
-		///   </configuration>
-		/// Example:
-		///	if (Loki.INI2XML.Convert( txtIniFileName.Text ))
-		///		Console.WriteLine( "Successfully converted \"" + txtIniFileName.Text + "\" to xml" );
-		///	else
-		///		Console.WriteLine( "Problem converting \"" + txtIniFileName.Text + "\" to xml" );
-		/// If an exception is raised, it is passed on to the caller.
-		/// </summary>
-		/// <param name="strINIFileName">File name of the INI file to convert</param>
-		/// <returns>True if successfuly, or False if a problem</returns>
-		public static bool Convert(string strINIFileName)
-		{
-			string temp = "";
-			return Convert(strINIFileName, ref temp);
-		}
+	
 
+		/// <summary>
+		/// Get a token from a delimited string, eg.
+		///   intSection = 0
+		///   strSection = GetToken(lpSections, charNull, intSection)
+		/// </summary>
+		/// <param name="strText">Text that is delimited</param>
+		/// <param name="delimiter">The delimiter, eg. ","</param>
+		/// <param name="intIndex">The index of the token to return, NB. first token is index 0.</param>
+		/// <returns>Returns the nth token from a string.</returns>
+		private static string GetToken(string strText, char[] delimiter, int intIndex)
+		{
+			string strTokenRet = "";
+
+			string[] strTokens = strText.Split(delimiter);
+
+			if (strTokens.GetUpperBound(0) >= intIndex)
+				strTokenRet = strTokens[intIndex];
+
+			return strTokenRet;
+		} // GetToken
+
+		/// <summary>
+		/// Does an INI2XML conversion
+		/// Only Call from GUI Thread
+		/// <summary>
+		public static void DoIni2XmlConversion(ref RichTextBox messages, string xmlfilename, string inifilename, bool U95)
+		{
+			if (U95 == false)
+			{
+				if (INI2XML.ConvertA(inifilename, ref xmlfilename))
+				{
+					TextReader tr = new StreamReader(xmlfilename);
+					tr.Close();
+
+					messages.AppendText("Successfully converted ini to XML\n");
+				}
+				else
+				{
+					messages.AppendText("Problem converting INI to XML: file in use .... new version created\n...proceeding\n\n");
+
+				}
+			}
+            else
+            {
+				if (INI2XML.ConvertB(inifilename, ref xmlfilename))
+				{
+					TextReader tr = new StreamReader(xmlfilename);
+					tr.Close();
+
+					messages.AppendText("Successfully converted U95 ini to XML\n");
+				}
+				else
+				{
+					messages.AppendText("Problem converting U95 INI to XML: file in use .... new version created\n...proceeding\n\n");
+
+				}
+			}
+		}
 		/// <summary>
 		/// Converts an INI file into an XML file.
 		/// Output XML file has the following structure...
@@ -105,7 +143,7 @@ namespace Vertical_Federal_App
 		/// <param name="strINIFileName">File name of the INI file to convert</param>
 		/// <param name="strXMLFileName">File name of the XML file that is created</param>
 		/// <returns>True if successfuly, or False if a problem</returns>
-		public static bool Convert(string strINIFileName, ref string strXMLFileName)
+		public static bool ConvertA(string strINIFileName, ref string strXMLFileName)
 		{
 			char[] charEquals = { '=' };
 			string lpSections;
@@ -123,6 +161,8 @@ namespace Vertical_Federal_App
 
 			bool could_not_write = false;
 			bool ok = false;
+
+			xmlfilename = strXMLFileName;
 
 			try
 			{
@@ -166,6 +206,7 @@ namespace Vertical_Federal_App
 				{
 
 					strXMLFileName = @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data_" + System.DateTime.Now.Ticks.ToString() + ".xml";
+					xmlfilename = strXMLFileName;
 					//if the file is in use write it under another name
 					try
 					{
@@ -437,57 +478,190 @@ namespace Vertical_Federal_App
 			}
 
 			return ok;
-		} // Convert
+		} // ConvertA
+
 
 		/// <summary>
-		/// Get a token from a delimited string, eg.
-		///   intSection = 0
-		///   strSection = GetToken(lpSections, charNull, intSection)
+		/// Converts an INI file into an XML file.
+		/// Output XML file has the following structure...
+		///   <?xml version="1.0"?>
+		///   <configuration>
+		///       <section name="Main">
+		///           <setting name="Timeout" value="90"/>
+		///           <setting name="Mode" value="Live"/>
+		///      </section>
+		///   </configuration>
+		/// Example:
+		///	if (Loki.INI2XML.Convert( txtIniFileName.Text, txtXMLFileName.Text ))
+		///		Console.WriteLine( "Successfully converted \"" + txtIniFileName.Text + "\" to \"" + txtXMLFileName.Text + "\"" );
+		///	else
+		///		Console.WriteLine( "Problem converting \"" + txtIniFileName.Text + "\" to \"" + txtXMLFileName.Text + "\"" );
+		/// If an exception is raised, it is passed on to the caller.
 		/// </summary>
-		/// <param name="strText">Text that is delimited</param>
-		/// <param name="delimiter">The delimiter, eg. ","</param>
-		/// <param name="intIndex">The index of the token to return, NB. first token is index 0.</param>
-		/// <returns>Returns the nth token from a string.</returns>
-		private static string GetToken(string strText, char[] delimiter, int intIndex)
+		/// <param name="strINIFileName">File name of the INI file to convert</param>
+		/// <param name="strXMLFileName">File name of the XML file that is created</param>
+		/// <returns>True if successfuly, or False if a problem</returns>
+		public static bool ConvertB(string strINIFileName, ref string strXMLFileName)
 		{
-			string strTokenRet = "";
+			char[] charEquals = { '=' };
+			string lpSections;
+			int nSize;
+			int nMaxSize;
+			string strSection;
+			int intSection;
+			int intNameValue;
+			string strName;
+			string strValue;
+			string strNameValue;
+			string lpNameValues;
+			byte[] str = new byte[1];
+			XmlWriter xw = null;
 
-			string[] strTokens = strText.Split(delimiter);
-
-			if (strTokens.GetUpperBound(0) >= intIndex)
-				strTokenRet = strTokens[intIndex];
-
-			return strTokenRet;
-		} // GetToken
-
-		/// <summary>
-		/// Does an INI2XML conversion
-		/// Only Call from GUI Thread
-		/// <summary>
-		public static void DoIni2XmlConversion(ref RichTextBox messages)
-		{
-			
-			
-			xmlfilename = @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data.xml";
-			string inifilename = @"G:\Shared drives\MSL - Length\Length\EQUIPREG\cal_data.ini";
-
-			if (INI2XML.Convert(inifilename, ref xmlfilename))
+			bool could_not_write = false;
+			bool ok = false;
+			xmlfilename_uncertainty = strXMLFileName;
+			try
 			{
-				TextReader tr = new StreamReader(xmlfilename);
-				tr.Close();
+				if (strXMLFileName.Length == 0)
+				{
+					strXMLFileName = Path.Combine(Path.GetDirectoryName(strINIFileName), String.Format("{0}.xml", Path.GetFileNameWithoutExtension(strINIFileName)));
+				}
 
-				messages.AppendText("Successfully converted ini to XML\n");
+				// Get all sections names
+				// Making sure allocate enough space for data returned
+				// Thanks to Peter for his fix to this loop.
+				// Peter G Jones, Microsoft .Net MVP, University of Canterbury, NZ
+				nMaxSize = INITIAL_BUFFER_SIZE;
+				while (true)
+				{
+					str = new byte[nMaxSize];
+					nSize = WIN32Wrapper.GetPrivateProfileSectionNames(str, nMaxSize, strINIFileName);
+					if ((nSize != 0) && (nSize == (nMaxSize - 2)))
+					{
+						nMaxSize *= 2;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				// convert the byte array into a .NET string
+				lpSections = Encoding.ASCII.GetString(str);
+
+				// Use this for Unicode
+				// lpSections = Encoding.Unicode.GetString( str );
+
+				// Create XML File
+				//xw = XmlTextWriter.Create(strXMLFileName);
+				try
+				{
+					xw = new XmlTextWriter(strXMLFileName, Encoding.UTF8);
+				}
+				catch (System.IO.IOException)
+				{
+
+					strXMLFileName = @"G:\Shared drives\MSL - Length\Length\Technical Procedures\XML Files\config_uncertainty_" + System.DateTime.Now.Ticks.ToString() + ".xml";
+					xmlfilename_uncertainty = strXMLFileName;
+					//if the file is in use write it under another name
+					try
+					{
+						xw = new XmlTextWriter(strXMLFileName, Encoding.UTF8);
+					}
+					catch (System.IO.DirectoryNotFoundException)
+					{
+						MessageBox.Show("Cannot Find .ini file");
+						Application.Exit();
+						conversion_succeeded = false;
+						return false;
+
+					}
+					could_not_write = true;
+				}
+				// Write the opening xml
+				xw.WriteStartDocument();
+				xw.WriteStartElement("U95_Configuration");   //open1
+
+
+				// Loop through each section in the .ini file
+				char[] charNull = { '\0' };
+				for (intSection = 0,
+					strSection = GetToken(lpSections, charNull, intSection);
+					strSection.Length > 0;
+					strSection = GetToken(lpSections, charNull, ++intSection))
+				{
+
+					// Get all values in this section, making sure to allocate enough space
+					for (nMaxSize = INITIAL_BUFFER_SIZE,
+						nSize = nMaxSize;
+						nSize != 0 && nSize >= (nMaxSize - 2);
+						nMaxSize *= 2)
+					{
+						str = new Byte[nMaxSize];
+						nSize = WIN32Wrapper.GetPrivateProfileSection(strSection, str, nMaxSize, strINIFileName);
+					}
+
+					// convert the byte array into a .NET string
+					lpNameValues = Encoding.ASCII.GetString(str);
+
+
+					// Use this for Unicode
+					// lpNameValues = Encoding.Unicode.GetString( str );
+
+					// Loop through each Name/Value pair
+					xw.WriteStartElement(strSection);              //Open2
+					for (intNameValue = 0,
+						strNameValue = GetToken(lpNameValues, charNull, intNameValue);
+						strNameValue.Length > 0;
+						strNameValue = GetToken(lpNameValues, charNull, ++intNameValue))
+					{
+						// Get the name and value from the entire null separated string of name/value pairs
+						// Also escape out the special characters, (ie. &"<> )
+						strName = GetToken(strNameValue, charEquals, 0);
+						if (strNameValue.Length > (strName.Length + 1))
+						{
+							strValue = strNameValue.Substring(strName.Length + 1);
+						}
+						else
+						{
+							strValue = "";
+						}
+				
+							xw.WriteStartElement(strName);        //Open3
+							xw.WriteValue(strValue);
+							xw.WriteEndElement();                 //Close3
+					}
+					//close the strsection node.
+					xw.WriteEndElement();                     //close2
+				}
+
+
+				// That's it
+				xw.WriteEndElement();                         //close1
+				xw.WriteEndDocument();
+				ok = true;
 			}
-			else
+			finally
 			{
-				messages.AppendText("Problem converting INI to XML: file in use .... new version created\n...proceeding\n\n");
-
+				if (xw != null)
+				{
+					xw.Close();
+				}
 			}
-		}
+
+			if (could_not_write)
+			{
+				return !ok;
+			}
+
+			return ok;
+		} // ConvertA
+
+
 		/// <summary>
-		/// Loads the xml file located on the C drive
+		/// Loads the xml file associated with equipment in the equipment register
 		/// <summary>
-		public static void LoadXML()
+		public static void LoadXML_A()
 		{
 			//create a new xml reader setting object incase we need to change settings on the fly
 			settings = new XmlReaderSettings();
@@ -498,13 +672,26 @@ namespace Vertical_Federal_App
 		}
 
 		/// <summary>
+		/// Loads the xml file located on the G: drive
+		/// <summary>
+		public static void LoadXML_B()
+		{
+			//create a new xml reader setting object incase we need to change settings on the fly
+			settings = new XmlReaderSettings();
+
+			//create a new xml doc
+			xmlreader = new XmlTextReader(xmlfilename_uncertainty);
+
+		}
+
+		/// <summary>
 		/// Populates the reference gauge block combo box
 		/// </summary>
 		public static void PopulateReferenceGaugeComboBox(ref ComboBox reference_gauges,bool metric)
 		{
 
 			//set the reader to point at the start of the file
-			LoadXML();
+			LoadXML_A();
 
 			xmlreader.ResetState();
 			//read the first node
@@ -522,6 +709,9 @@ namespace Vertical_Federal_App
 						xmlreader.ReadElementString();
 						xmlreader.ReadElementString();
 						string unit = xmlreader.ReadElementString(); //get the units of the reference gauge set 
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
 						xmlreader.ReadElementString();
 						xmlreader.ReadElementString();
 						xmlreader.ReadElementString();
@@ -556,7 +746,7 @@ namespace Vertical_Federal_App
 		{
 
 			//set the reader to point at the start of the file
-			LoadXML();
+			LoadXML_A();
 
 			xmlreader.ResetState();
 			//read the first node
@@ -581,6 +771,9 @@ namespace Vertical_Federal_App
 						string expcoeff = xmlreader.ReadElementString();
 						string youngs_modulus = xmlreader.ReadElementString();
 						string poissons_ratio = xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
 						bool valid = false;
 						double expcoeff_ = 9.5;
 						double youngs_modulus_ = 205;
@@ -638,7 +831,7 @@ namespace Vertical_Federal_App
 		public static void LoadReferenceGauges(ref GaugeBlockSet gauge_set)
         {
 			//set the reader to point at the start of the file
-			LoadXML();
+			LoadXML_A();
 
 			xmlreader.ResetState();
 			//read the first node
@@ -663,6 +856,9 @@ namespace Vertical_Federal_App
 						string expcoeff = xmlreader.ReadElementString();
 						string ym = xmlreader.ReadElementString();
 						string pr = xmlreader.ReadElementString();
+						string std_u_dep = xmlreader.ReadElementString();
+						string std_u_indep = xmlreader.ReadElementString(); 
+						string std_u_wringing_indep = xmlreader.ReadElementString();
 						xmlreader.ReadElementString();
 						string gauge_data_nom;
 						string gauge_data_val;
@@ -713,10 +909,31 @@ namespace Vertical_Federal_App
 								string serial = gauge_data_val.Remove(index_of_comma);
 								gauge.SerialNumber = serial;
 								gauge.FromSet = gauge_block_set;
-								gauge.GaugeBlockMaterial.youngs_modulus = System.Convert.ToDouble(ym);
-								gauge.GaugeBlockMaterial.poissons_ratio = System.Convert.ToDouble(pr);
-								gauge.GaugeBlockMaterial.exp_coeff = System.Convert.ToDouble(expcoeff);
+								double ym_d = 0.0;
+								double pr_d = 0.0;
+								double exp_c_d = 0.0;
+								if (double.TryParse(ym, out ym_d)) gauge.GaugeBlockMaterial.youngs_modulus = ym_d;
+								else MessageBox.Show("Youngs modulus for the reference gauge could not be read. Check cal_data.ini configuration file-the value should be numeric");
+								if (double.TryParse(pr, out pr_d)) gauge.GaugeBlockMaterial.poissons_ratio = pr_d;
+								else MessageBox.Show("Youngs modulus for the reference gauge could not be read. Check cal_data.ini configuration file-the value should be numeric");
+								if (double.TryParse(expcoeff, out exp_c_d)) gauge.GaugeBlockMaterial.exp_coeff = exp_c_d;
+								else MessageBox.Show("Youngs modulus for the reference gauge could not be read. Check cal_data.ini configuration file-the value should be numeric");
+
 								gauge.GaugeBlockMaterial.material = material;
+
+								double wrng = 0.0;
+								double rgsui = 0.0;
+								double rgsud = 0.0;
+
+								if (double.TryParse(std_u_dep, out rgsud)) gauge.GaugeStdU_Dep = rgsud;
+								else MessageBox.Show("Could not read the length dependent standard uncertainty component for the for the reference gauge. Check cal_data.ini configuration file-the value should be numeric");
+
+								if (double.TryParse(std_u_indep, out rgsui)) gauge.GaugeStdU_Indp = rgsui;
+								else MessageBox.Show("Could not read the length independent standard uncertainty component for the for the reference gauge. Check cal_data.ini configuration file-the value should be numeric");
+
+								if (double.TryParse(std_u_wringing_indep, out wrng)) gauge.WringingFilm = wrng;
+								else MessageBox.Show("Could not read the wringing standard uncertainty component for the for the reference gauge. Check cal_data.ini configuration file-the value should be numeric");
+
 								if (unit.Equals("METRIC")) gauge.Metric = true;
 								else  gauge.Metric = false; 
 								gauge_set.AddGauge(gauge);
@@ -737,7 +954,7 @@ namespace Vertical_Federal_App
 		public static void LoadVerticalFederalMetaData(ref VerticalFederal vfed)
 		{
 			//set the reader to point at the start of the file
-			LoadXML();
+			LoadXML_A();
 
 			xmlreader.ResetState();
 			//read the first node
@@ -776,6 +993,79 @@ namespace Vertical_Federal_App
 						if (double.TryParse(probe_youngs_mod, out pym)) vfed.ProbeYoungsMod = pym;
 						if (double.TryParse(probe_poissons_ratio, out ppr)) vfed.ProbePoissonsRatio = ppr;
 
+						xmlreader.Skip();
+					}
+				}
+				xmlreader.Skip();
+			}
+		}
+
+		public static void LoadUncertaintyMetaData(ref VerticalFederal vfed)
+		{
+			//set the reader to point at the start of the file
+			LoadXML_B();
+
+			xmlreader.ResetState();
+			//read the first node
+			xmlreader.ReadStartElement();
+
+			while (!xmlreader.EOF)
+			{
+				while (xmlreader.Name.Contains("verticalFederal"))
+				{
+				
+					while (xmlreader.LocalName.Contains("verticalFederal"))
+					{
+
+						//string gauge_block_set = xmlreader.LocalName;
+						//gauge_block_set = gauge_block_set.Remove(0, 5);
+
+						string technical_procedure = xmlreader.ReadElementString();
+						string procedure_expiry = xmlreader.ReadElementString();
+						string reproducibility_std_u_independent = xmlreader.ReadElementString();
+						string scale_resolution_std_u_independent = xmlreader.ReadElementString(); //get the units of the reference gauge set
+						string scale_calibration_std_u_independent = xmlreader.ReadElementString();
+						string delta = xmlreader.ReadElementString();
+						string alpha_g = xmlreader.ReadElementString();
+						string delta_alpha = xmlreader.ReadElementString();
+						string theta_s = xmlreader.ReadElementString();
+						string delta_theta = xmlreader.ReadElementString();
+						string delta_theta_var_ = xmlreader.ReadElementString();
+						string expanded_uncertainty_cmc_deviation_independent = xmlreader.ReadElementString();
+						string expanded_uncertainty_cmc_deviation_dependent = xmlreader.ReadElementString();
+						string expanded_uncertainty_cmc_variation_independent = xmlreader.ReadElementString();
+						string expanded_uncertainty_cmc_variation_dependent = xmlreader.ReadElementString();
+
+						double r = 0.0;
+						double sc = 0.0;
+						double sr = 0.0;
+						vfed.TechnicalProcedure = technical_procedure;
+						vfed.TechnicalProcedureExpiry = procedure_expiry;
+						if (double.TryParse(reproducibility_std_u_independent, out r)) vfed.ReproducibilityStduIndependent = r;
+						if (double.TryParse(scale_resolution_std_u_independent, out sr)) vfed.ScaleResStduIndependent = sr;
+						if (double.TryParse(scale_calibration_std_u_independent, out sc)) vfed.ScaleCalStduIndependent = sc;
+
+						double delta_ = 0.0;
+						double alpha_g_ = 0.0;
+						double delta_alpha_ = 0.0;
+						double theta_s_ = 0.0;
+						double delta_theta_ = 0.0;
+						double delta_theta_var = 0.0;
+						double exp_u_dev_indep = 0.0;
+						double exp_u_dev_dep = 0.0;
+						double exp_u_var_indep = 0.0;
+						double exp_u_var_dep = 0.0;
+
+						if (double.TryParse(delta, out delta_)) vfed.u_Delta = delta_;
+						if (double.TryParse(alpha_g, out alpha_g_)) vfed.u_AlphaG = alpha_g_;
+						if (double.TryParse(delta_alpha, out delta_alpha_)) vfed.u_DeltaAlpha = delta_alpha_;
+						if (double.TryParse(theta_s, out theta_s_)) vfed.u_ThetaS = theta_s_;
+						if (double.TryParse(delta_theta, out delta_theta_)) vfed.u_DeltaTheta = delta_theta_;
+						if (double.TryParse(delta_theta_var_, out delta_theta_var)) vfed.u_DeltaThetaVar = delta_theta_var;
+						if (double.TryParse(expanded_uncertainty_cmc_deviation_independent, out exp_u_dev_indep)) vfed.ExpanedUncertaintyCMCDevIndep = exp_u_dev_indep;
+						if (double.TryParse(expanded_uncertainty_cmc_deviation_dependent, out exp_u_dev_dep)) vfed.ExpanedUncertaintyCMCDevDep = exp_u_dev_dep;
+						if (double.TryParse(expanded_uncertainty_cmc_variation_independent, out exp_u_var_indep)) vfed.ExpanedUncertaintyCMCVarIndep = exp_u_var_indep;
+						if (double.TryParse(expanded_uncertainty_cmc_variation_dependent, out exp_u_var_dep)) vfed.ExpanedUncertaintyCMCVarDep = exp_u_var_dep;
 						xmlreader.Skip();
 					}
 				}

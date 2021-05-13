@@ -26,6 +26,7 @@ namespace Vertical_Federal_App
         private string material = "ceramic";
         private Material gauge_set_material;
         
+        
         public GaugeBlockSet()
         {
             unit = Units.Metric;
@@ -41,6 +42,7 @@ namespace Vertical_Federal_App
             get { return gauge_set_name; }
             set { gauge_set_name = value; }
         }
+     
         public int NumGauges
         {
             get { return num_gauges; }
