@@ -115,6 +115,7 @@ namespace Vertical_Federal_App
         private double tolerance_on_variation;
         private double expanded_uncertainty_dev;
         private double expanded_uncertainty_var;
+        private double expanded_uncertainty_ext_dev;
         private double temperature;
         private string from_set; //the name of the reference set this gauge belongs to
         private Material gauge_material;
@@ -236,6 +237,11 @@ namespace Vertical_Federal_App
         {
             get { return expanded_uncertainty_dev; }
             set { expanded_uncertainty_dev = value; }
+        }
+        public double ExpandedUncertaintyExtDev
+        {
+            get { return expanded_uncertainty_ext_dev; }
+            set { expanded_uncertainty_ext_dev = value; }
         }
         public double ExpandedUncertaintyVar
         {
