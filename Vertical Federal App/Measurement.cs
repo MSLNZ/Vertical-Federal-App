@@ -16,6 +16,7 @@ namespace Vertical_Federal_App
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
+        
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
         private GaugeBlock calibration_gauge;
@@ -41,6 +42,9 @@ namespace Vertical_Federal_App
         private static bool log_temperatures = false;
         private static double rep_d;
         private static double rep_v;
+        private static double rep_min;
+        private static double rep_max;
+        private static double rep_ext_dev;
         private static double rms_theta_s;
 
         public static string measurement_file_header = "DateTime,Temperature,Units,Cal Nominal,Gauge Set Serial No,Gauge Serial No,Cal Gauge Material,Cal Gauge Exp Coeff, Cal Gauge Young's Modulus," +
@@ -52,6 +56,7 @@ namespace Vertical_Federal_App
         public static string filename_sum = "";
         public static string filename_U95_sum = "";
         public static List<GaugeBlockSet> calibration_gauge_sets;
+        public static List<GaugeBlockSet> reference_gauge_sets;
         public static GaugeBlock working_gauge;
         
         
@@ -377,6 +382,8 @@ namespace Vertical_Federal_App
             List<double> found = new List<double>();
             List<double> stdev_dev = new List<double>();
             List<double> stdev_var = new List<double>();
+            List<double> stdev_min = new List<double>();
+            List<double> stdev_max = new List<double>();
 
             //determine the standard deviations of all repeat measurements for deviation and variation
             foreach (Measurement m in measurements)
@@ -389,6 +396,8 @@ namespace Vertical_Federal_App
                 
                 List<double> occurences_dev = new List<double>();
                 List<double> occurences_var = new List<double>();
+                List<double> occurences_min = new List<double>();
+                List<double> occurences_max = new List<double>();
                 foreach (Measurement n in measurements)
                 {
                     if (n.CalibrationGauge.Nominal == find) //we have a match
@@ -397,22 +406,30 @@ namespace Vertical_Federal_App
                         {
                             occurences_dev.Add(n.CalibrationGauge.CentreDeviation);
                             occurences_var.Add(n.CalibrationGauge.Variation);
+                            occurences_min.Add(n.CalibrationGauge.MinDev);
+                            occurences_max.Add(n.CalibrationGauge.MaxDev);
                         }
                         else //it's imperial so the deviations and variations will be in micro inches - convert them to micrometres for the u95 calculations
                         {
                             occurences_dev.Add(n.CalibrationGauge.CentreDeviation * 0.0254);
                             occurences_var.Add(n.CalibrationGauge.Variation * 0.0254);
+                            occurences_min.Add(n.CalibrationGauge.MinDev * 0.0254);
+                            occurences_max.Add(n.CalibrationGauge.MaxDev * 0.0254);
                         }
                     }
                 }
                 stdev_dev.Add(getStandardDeviation(occurences_dev));
                 stdev_var.Add(getStandardDeviation(occurences_var));
+                stdev_min.Add(getStandardDeviation(occurences_min));
+                stdev_max.Add(getStandardDeviation(occurences_max));
             }
 
             //now pool all the standard deviations
             double sumsq_d = 0.0;
             double sumsq_v = 0.0;
-            foreach(double stdev_d in stdev_dev)
+            double sumsq_min = 0.0;
+            double sumsq_max = 0.0;
+            foreach (double stdev_d in stdev_dev)
             {
                 sumsq_d += (stdev_d * stdev_d);
             }
@@ -420,9 +437,20 @@ namespace Vertical_Federal_App
             {
                 sumsq_v += (stdev_v * stdev_v);
             }
+            foreach (double stdev_min_ in stdev_min)
+            {
+                sumsq_min += (stdev_min_ * stdev_min_);
+            }
+            foreach (double stdev_max_ in stdev_max)
+            {
+                sumsq_max += (stdev_max_ * stdev_max_);
+            }
 
             rep_d = Math.Sqrt(sumsq_d / stdev_dev.Count);
             rep_v = Math.Sqrt(sumsq_v / stdev_var.Count);
+            rep_min = Math.Sqrt(sumsq_min / stdev_min.Count);
+            rep_max = Math.Sqrt(sumsq_max / stdev_max.Count);
+            rep_ext_dev = Math.Sqrt(Math.Pow(rep_min, 2) + Math.Pow(rep_max, 2));
         }
         private static double getStandardDeviation(List<double> doubleList)
         {
@@ -481,6 +509,50 @@ namespace Vertical_Federal_App
 
         }
 
+        /// <summary>
+        /// Calculates the expanded uncertainty for this measurement for Extreme deviation measurements  
+        /// </summary>
+        /// /// <param name="vfed">A reference to the vertical federal object</param>
+        public void CalculateExpandedUncertaintyExtremeDeviation(ref VerticalFederal vfed)
+        {
+            double s_d = 0.0;
+            double s_inp = 0.0;
+            u_of_g_s(this, ref s_d, ref s_inp);
+
+            //independent terms
+            CalculateReproducibility();
+            double stdu_reproducability = rep_ext_dev * 1000;
+            double stdu_scale_resolution = vfed.ScaleResStduIndependent; //in micrometers
+            double stdu_scale_calibration = vfed.ScaleCalStduIndependent; //in micrometers
+            double stdu_length_of_standard_i = s_inp;
+
+            double delta = 0.0;
+            u_of_g_ForDeltaIndependent(ref delta, ref vfed);
+
+            double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2) + Math.Pow(stdu_length_of_standard_i, 2) + Math.Pow(delta, 2));
+
+            //dependent terms
+            double stdu_length_of_standard_d = s_d;
+            double stdu_alpha_g = 0.0;
+            double stdu_delta_theta = 0.0;
+            double stdu_delta_alpha = 0.0;
+            double stdu_theta_s = 0.0;
+
+            u_of_g_ForAlphag(this, ref stdu_alpha_g, ref vfed);
+            u_of_g_ForDeltaAlpha(this, ref stdu_delta_alpha, ref vfed);
+            u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed);
+            u_of_g_ForDeltaTheta(this, ref stdu_delta_theta, ref vfed);
+
+            double combined_dependent = Math.Sqrt(Math.Pow(stdu_length_of_standard_d, 2) + Math.Pow(stdu_alpha_g, 2) + Math.Pow(stdu_delta_theta, 2) + Math.Pow(stdu_delta_alpha, 2) + Math.Pow(stdu_theta_s, 2));
+
+            double combined_standard_uncertainty = 0.0;
+            if (CalibrationGauge.Metric) combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal, 2));
+            else combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal * 25.4, 2));
+
+            CalibrationGauge.ExpandedUncertaintyExtDev = combined_standard_uncertainty * 2;
+
+        }
+
         public void CalculateExpandedUncertaintyVariation(ref VerticalFederal vfed)
         {
             //independent terms
@@ -493,20 +565,20 @@ namespace Vertical_Federal_App
             double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2));
 
             //dependent terms
-            double repro_d = rep_v;
+            double repro_v = rep_v;
             double delta_theta_v = 0.0;
             u_of_g_ForDeltaThetaVar(this, ref delta_theta_v, ref vfed);
 
-            double combined_dependent = Math.Sqrt(Math.Pow(repro_d, 2) + Math.Pow(delta_theta_v, 2));
+            double combined_dependent = Math.Sqrt(Math.Pow(delta_theta_v, 2));
 
             double combined_standard_uncertainty = 0.0;
             if (CalibrationGauge.Metric)
             {
-                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(repro_d * CalibrationGauge.Nominal, 2));
+                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal, 2));
             }
             else
             {
-                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(repro_d * CalibrationGauge.Nominal*25.5, 2));
+                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal*25.4, 2));
             }
             CalibrationGauge.ExpandedUncertaintyVar = combined_standard_uncertainty * 2;
 
@@ -1239,7 +1311,7 @@ namespace Vertical_Federal_App
             else if (m.ReferenceStack.Count == 2)
             {
                 double max_wringing_film = 0.0;
-                //determine which gauge in the stack has the uncertainty for the wringing film.
+                //determine which gauge in the stack has the largest uncertainty for the wringing film.
                 if (m.ReferenceStack.Gauge1.WringingFilm >= m.ReferenceStack.Gauge2.WringingFilm) max_wringing_film = m.ReferenceStack.Gauge1.WringingFilm;
                 else max_wringing_film = m.ReferenceStack.Gauge1.WringingFilm;
                 
@@ -1253,7 +1325,7 @@ namespace Vertical_Federal_App
             else if (m.ReferenceStack.Count == 3)
             {
                 double max_wringing_film = 0.0;
-                //determine which gauge in the stack has the uncertainty for the wringing film.
+                //determine which gauge in the stack has the largest uncertainty for the wringing film.
                 if (m.ReferenceStack.Gauge1.WringingFilm >= m.ReferenceStack.Gauge2.WringingFilm)
                 {
                     if (m.ReferenceStack.Gauge1.WringingFilm >= m.ReferenceStack.Gauge3.WringingFilm) max_wringing_film = m.ReferenceStack.Gauge1.WringingFilm;
@@ -1291,10 +1363,7 @@ namespace Vertical_Federal_App
         /// <param name="vfederal">The vertical federal object which contains the uncertainty in alpha g</param> 
         private double u_of_g_ForAlphag(Measurement m, ref double u_g_alpha_g, ref VerticalFederal vfederal)
         {
-
-            if (m.CalibrationGauge.Metric) u_g_alpha_g = vfederal.u_AlphaG * vfederal.u_DeltaTheta * Math.Round(m.CalibrationGauge.Nominal/1000, 8);
-            else u_g_alpha_g = vfederal.u_AlphaG * vfederal.u_DeltaTheta * Math.Round(m.CalibrationGauge.Nominal * 25.4, 8);
-
+            u_g_alpha_g = vfederal.u_AlphaG * vfederal.u_DeltaTheta;
             return u_g_alpha_g;
         }
 
@@ -1307,8 +1376,7 @@ namespace Vertical_Federal_App
         private double u_of_g_ForDeltaAlpha(Measurement m, ref double u_g_delta_alpha, ref VerticalFederal vfederal)
         {
             double utheta_s = RMS_Theta_S();
-            if (m.CalibrationGauge.Metric) u_g_delta_alpha = vfederal.u_DeltaAlpha * utheta_s * Math.Round(m.CalibrationGauge.Nominal/1000, 8);
-            else u_g_delta_alpha = vfederal.u_DeltaAlpha * utheta_s * Math.Round(m.CalibrationGauge.Nominal/1000 * 25.4, 8);
+            u_g_delta_alpha = vfederal.u_DeltaAlpha * utheta_s;
 
             return u_g_delta_alpha;
         }
@@ -1347,16 +1415,8 @@ namespace Vertical_Federal_App
                 delta_alpha = Math.Abs(Math.Round(m.CalibrationGauge.GaugeBlockMaterial.exp_coeff, 2) - Math.Round(ref_g_exp_c, 2));
             }
 
-            if (delta_alpha == 0.0)
-            {
-                if (m.CalibrationGauge.Metric) u_g_theta_s = RMS_Theta_S()*vfederal.u_DeltaAlpha * (Math.Round(m.CalibrationGauge.Nominal / 1000, 8));
-                else u_g_theta_s = RMS_Theta_S() * vfederal.u_DeltaAlpha * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
-            }
-            else
-            {
-                if (m.CalibrationGauge.Metric) u_g_theta_s = RMS_Theta_S() * delta_alpha * (Math.Round(m.CalibrationGauge.Nominal / 1000, 8));
-                else u_g_theta_s = RMS_Theta_S() * delta_alpha * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
-            }
+            if (delta_alpha == 0.0) u_g_theta_s = RMS_Theta_S()*vfederal.u_DeltaAlpha;
+            else u_g_theta_s = RMS_Theta_S() * delta_alpha;
 
             return u_g_theta_s;
         }
@@ -1369,9 +1429,7 @@ namespace Vertical_Federal_App
         /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta theta</param> 
         private double u_of_g_ForDeltaTheta(Measurement m, ref double u_g_delta_theta, ref VerticalFederal vfederal)
         {
-            if (m.CalibrationGauge.Metric) u_g_delta_theta = vfederal.u_DeltaTheta * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal / 1000, 8);
-            else u_g_delta_theta = vfederal.u_DeltaTheta * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
-
+            u_g_delta_theta = vfederal.u_DeltaTheta * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff;
             return u_g_delta_theta;
         }
 
@@ -1383,9 +1441,7 @@ namespace Vertical_Federal_App
         /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta theta</param> 
         private double u_of_g_ForDeltaThetaVar(Measurement m, ref double u_g_delta_theta_var, ref VerticalFederal vfederal)
         {
-            if (m.CalibrationGauge.Metric) u_g_delta_theta_var = vfederal.u_DeltaThetaVar * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal / 1000, 8);
-            else u_g_delta_theta_var = vfederal.u_DeltaThetaVar * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff * Math.Round(m.CalibrationGauge.Nominal * 25.4 / 1000, 8);
-
+            u_g_delta_theta_var = vfederal.u_DeltaThetaVar * m.CalibrationGauge.GaugeBlockMaterial.exp_coeff;
             return u_g_delta_theta_var;
         }
 
@@ -1500,6 +1556,16 @@ namespace Vertical_Federal_App
             ref_stack.Gauge1.Nominal = Convert.ToDouble(strings[10]);
             ref_stack.Gauge1.CentreDeviation = Convert.ToDouble(strings[11]);
             ref_stack.Gauge1.FromSet = strings[12];
+            GaugeBlockSet gb_set = GetGaugeSet(ref_stack.Gauge1.FromSet);
+            foreach(GaugeBlock gb in gb_set.GaugeList)
+            {
+                if(gb.Nominal == ref_stack.Gauge1.Nominal)
+                {
+                    ref_stack.Gauge1.GaugeStdU_Dep = gb.GaugeStdU_Dep;
+                    ref_stack.Gauge1.GaugeStdU_Indp = gb.GaugeStdU_Indp;
+                    ref_stack.Gauge1.WringingFilm = gb.WringingFilm;
+                }
+            }
             ref_stack.Gauge1.SerialNumber = strings[13];
             ref_stack.Gauge1.GaugeBlockMaterial.material = strings[14];
             ref_stack.Gauge1.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[15]);
@@ -1518,6 +1584,16 @@ namespace Vertical_Federal_App
                 ref_stack.Gauge2.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[23]);
                 ref_stack.Gauge2.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[24]);
                 ref_stack.Gauge2.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[25]);
+                GaugeBlockSet gb_set_2 = GetGaugeSet(ref_stack.Gauge2.FromSet);
+                foreach (GaugeBlock gb in gb_set_2.GaugeList)
+                {
+                    if (gb.Nominal == ref_stack.Gauge2.Nominal)
+                    {
+                        ref_stack.Gauge2.GaugeStdU_Dep = gb.GaugeStdU_Dep;
+                        ref_stack.Gauge2.GaugeStdU_Indp = gb.GaugeStdU_Indp;
+                        ref_stack.Gauge2.WringingFilm = gb.WringingFilm;
+                    }
+                }
             }
 
             if (!strings[26].Equals(""))
@@ -1531,6 +1607,16 @@ namespace Vertical_Federal_App
                 ref_stack.Gauge3.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[31]);
                 ref_stack.Gauge3.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[32]);
                 ref_stack.Gauge3.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[33]);
+                GaugeBlockSet gb_set_3 = GetGaugeSet(ref_stack.Gauge3.FromSet);
+                foreach (GaugeBlock gb in gb_set_3.GaugeList)
+                {
+                    if (gb.Nominal == ref_stack.Gauge3.Nominal)
+                    {
+                        ref_stack.Gauge3.GaugeStdU_Dep = gb.GaugeStdU_Dep;
+                        ref_stack.Gauge3.GaugeStdU_Indp = gb.GaugeStdU_Indp;
+                        ref_stack.Gauge3.WringingFilm = gb.WringingFilm;
+                    }
+                }
             }
 
             double.TryParse(strings[34], out meas.reference_deviation);
@@ -1573,10 +1659,29 @@ namespace Vertical_Federal_App
 
             //Save a copy of the current measurement to the measurement list.
             Measurement.Measurements.Add(meas);
-
-
-
         }
+
+        public static GaugeBlockSet GetGaugeSet(string set_name)
+        {
+            //if we have reference gauge sets already in the list then see if the set has previously been added (i.e is this a unique serial number)
+            foreach (GaugeBlockSet ref_set in reference_gauge_sets)
+            {
+                if (ref_set.GaugeSetName.Equals(set_name))
+                {
+                    return ref_set;
+                }
+            }
+            //we haven't added the set to the set list so add it now.
+            GaugeBlockSet gauge_set = new GaugeBlockSet();
+            gauge_set.GaugeSetName = set_name;
+            reference_gauge_sets.Add(gauge_set);
+
+            //Add all gauges found in the xml file to the reference gauge set.
+            INI2XML.LoadReferenceGauges(ref gauge_set);
+
+            return gauge_set;   
+        }
+
         /// <summary>
         /// Write a line of data for this measurement to the gauge results rich text box.
         /// </summary>
@@ -1850,7 +1955,8 @@ namespace Vertical_Federal_App
                             num_id_matches++;
                             k.CalculateExpandedUncertaintyDeviation(ref vfederal);
                             U95_centre_dev = k.CalibrationGauge.ExpandedUncertaintyDev;
-                            U95_extreme_dev = U95_centre_dev * Math.Sqrt(2.000);
+                            k.CalculateExpandedUncertaintyExtremeDeviation(ref vfederal);
+                            U95_extreme_dev = k.CalibrationGauge.ExpandedUncertaintyExtDev;
                             k.CalculateExpandedUncertaintyVariation(ref vfederal);
                             U95_variation = k.CalibrationGauge.ExpandedUncertaintyVar;
                             limit_deviation = k.CalibrationGauge.LimitDeviation;
@@ -1872,7 +1978,8 @@ namespace Vertical_Federal_App
                     date_time /= num_id_matches;
                     var a_dt = new DateTime(date_time);
                     sum_centre_dev /= num_id_matches;
-       
+                    sum_min_dev /= num_id_matches;
+                    sum_max_dev /= num_id_matches;
                     sum_variation /= num_id_matches;
                     double corr_extreme_dev = Measurement.CalculateExtremeDeviation(sum_min_dev, sum_max_dev);
 
