@@ -30,7 +30,7 @@ namespace Vertical_Federal_App
         private PrintGaugeResultsToRichTextbox pgr;
         private VerticalFederal federal;
         private Stack ref_g;
-        private List<GaugeBlockSet> reference_gauge_sets;
+        
         private List<Stack> suitable_gauges;
         private int rb_position;
         private bool radiobuttionclearcalled;
@@ -51,7 +51,7 @@ namespace Vertical_Federal_App
             INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"G:\Shared drives\MSL - Length\Length\Technical Procedures\XML Files\config_uncertainty.xml", @"G:\Shared drives\MSL - Length\Length\Technical Procedures\config_uncertainty.ini", true);
             if (INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             Measurement.calibration_gauge_sets = new List<GaugeBlockSet>();  //make a new list for calibration gauge sets
-            reference_gauge_sets = new List<GaugeBlockSet>();
+            Measurement.reference_gauge_sets = new List<GaugeBlockSet>();
             radiobuttionclearcalled = false;
             Measurement.StartRetreivingTemperatures(ref tdr);
             Measurement.LogTemperatures = true;
@@ -302,20 +302,20 @@ namespace Vertical_Federal_App
         {
             
             //check if we have any reference gauge sets in the list, if we don't then add a new set
-            if (reference_gauge_sets.Count == 0)
+            if (Measurement.reference_gauge_sets.Count == 0)
             {
                 GaugeBlockSet gauge_set = new GaugeBlockSet();
                 gauge_set.GaugeSetName = referenceSetComboBox.SelectedItem.ToString();
-                reference_gauge_sets.Add(gauge_set);
+                Measurement.reference_gauge_sets.Add(gauge_set);
 
                 //Get the reference set data from the xml file
-                INI2XML.GetReferenceSetMetaData(ref gauge_set);
+                //INI2XML.GetReferenceSetMetaData(ref gauge_set);
                 //Add all gauges found in the xml file to the reference gauge set.
                 INI2XML.LoadReferenceGauges(ref gauge_set);
 
                 CheckBBFDate(gauge_set.ReportDate);
                 
-                foreach (GaugeBlockSet gbs in reference_gauge_sets)
+                foreach (GaugeBlockSet gbs in Measurement.reference_gauge_sets)
                 {
                     gbs.PrintGaugeList(ref messagesRichTextBox);
                 }
@@ -325,7 +325,7 @@ namespace Vertical_Federal_App
                 bool set_exists = false;
 
                 //if we have reference gauge sets already in the list then see if the set has previously been added (i.e is this a unique serial number)
-                foreach (GaugeBlockSet ref_set in reference_gauge_sets)
+                foreach (GaugeBlockSet ref_set in Measurement.reference_gauge_sets)
                 {
                     if (ref_set.GaugeSetName.Equals(referenceSetComboBox.SelectedItem.ToString()))
                     {
@@ -337,15 +337,15 @@ namespace Vertical_Federal_App
                 {
                     GaugeBlockSet gauge_set = new GaugeBlockSet();
                     gauge_set.GaugeSetName = referenceSetComboBox.SelectedItem.ToString();
-                    reference_gauge_sets.Add(gauge_set);
+                    Measurement.reference_gauge_sets.Add(gauge_set);
 
                     //Get the reference set data from the xml file
-                    INI2XML.GetReferenceSetMetaData(ref gauge_set);
+                    //INI2XML.GetReferenceSetMetaData(ref gauge_set);
                     //Add all gauges found in the xml file to the reference gauge set.
                     INI2XML.LoadReferenceGauges(ref gauge_set);
                     CheckBBFDate(gauge_set.ReportDate);
 
-                    foreach (GaugeBlockSet gbs in reference_gauge_sets)
+                    foreach (GaugeBlockSet gbs in Measurement.reference_gauge_sets)
                     {
                         gbs.PrintGaugeList(ref messagesRichTextBox);
                     }
@@ -382,7 +382,7 @@ namespace Vertical_Federal_App
             suitableReferenceGaugesComboBox.Items.Clear();
 
             //has the user selected a reference set?
-            if (reference_gauge_sets.Count == 0)
+            if (Measurement.reference_gauge_sets.Count == 0)
             {
                 MessageBox.Show("Please Select a reference set");
                 return;
@@ -423,7 +423,7 @@ namespace Vertical_Federal_App
 
 
 
-            foreach (GaugeBlockSet g in reference_gauge_sets)
+            foreach (GaugeBlockSet g in Measurement.reference_gauge_sets)
             {
                 foreach (GaugeBlock gb in g.GaugeList)
                 {
@@ -469,7 +469,7 @@ namespace Vertical_Federal_App
                     else suitableReferenceGaugesComboBox.Items.Add(gb1.Nominal.ToString() + " inch");
                     suitableReferenceGaugesComboBox.SelectedIndex = 0;
 
-                    foreach (GaugeBlockSet g in reference_gauge_sets)
+                    foreach (GaugeBlockSet g in Measurement.reference_gauge_sets)
                     {
                         foreach (GaugeBlock gb in g.GaugeList)
                         {
@@ -564,7 +564,7 @@ namespace Vertical_Federal_App
             message_shown = true;
             if (!Measurement.working_gauge.Metric) Measurement.working_gauge.Nominal = Math.Round(Measurement.working_gauge.Nominal / 25.4, 5);
 
-            foreach (GaugeBlockSet g in reference_gauge_sets)
+            foreach (GaugeBlockSet g in Measurement.reference_gauge_sets)
             {
                 foreach (GaugeBlock gb in g.GaugeList)
                 {
@@ -1076,7 +1076,11 @@ namespace Vertical_Federal_App
 
             int index = Measurement.filename.IndexOf('_');
             Measurement.filename_sum = Measurement.filename.Insert(index+1, "summary");
-
+            if (lines.Length == 0)
+            {
+                MessageBox.Show("The file is empty");
+                return;
+            }
             if (!lines[0].Contains(Measurement.measurement_file_header)) return;
 
             gaugeResultsRichTextBox.Clear();
