@@ -308,27 +308,27 @@ namespace Vertical_Federal_App
 
 
 
-            //The top gauge should alway be assigned to Gauge1 in the case where a stack is made from gauges with difference mechanical properties.
-            reference_deformation_top_probe = term1 * term2_top * term3_ref_top * term4;
+            //The top gauge should alway be assigned to Gauge1 in the case where a stack is made from gauges with different mechanical properties.
+            reference_deformation_top_probe = term1 * term2_top * term3_ref_top * term4; //metres
 
             if (singleton)
             {
-                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot1 * term4;
+                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot1 * term4; //metres
             }
             else if (two_gauge_stack)
             {
                 
-                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot2 * term4;
+                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot2 * term4; //metres
             }
             else
             {
               
-                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot3 * term4;
+                reference_deformation_bottom_probe = term1 * term2_bottom * term3_ref_bot3 * term4; //metres
             }
 
-            top_probe_deformation_cal_gauge = term1 * term2_top * term3_cal * term4;
+            top_probe_deformation_cal_gauge = term1 * term2_top * term3_cal * term4; //metres
 
-            bottom_probe_deformation_cal_gauge = term1 * term2_bottom * term3_cal * term4;
+            bottom_probe_deformation_cal_gauge = term1 * term2_bottom * term3_cal * term4; //metres
 
         }
         public void CalculateDeviations()
@@ -472,14 +472,14 @@ namespace Vertical_Federal_App
         public void CalculateExpandedUncertaintyDeviation(ref VerticalFederal vfed)
         {
             double s_d = 0.0;
-            double s_inp = 0.0;
+            double s_inp = 0.0; //nm
             u_of_g_s(this, ref s_d, ref s_inp);
 
             //independent terms
             CalculateReproducibility();
-            double stdu_reproducability = rep_d*1000;
-            double stdu_scale_resolution = vfed.ScaleResStduIndependent; //in micrometers
-            double stdu_scale_calibration = vfed.ScaleCalStduIndependent; //in micrometers
+            double stdu_reproducability = rep_d*1000; //in nanometres
+            double stdu_scale_resolution = vfed.ScaleResStduIndependent; //in nanometers
+            double stdu_scale_calibration = vfed.ScaleCalStduIndependent; //in nanometers
             double stdu_length_of_standard_i = s_inp;
 
             double delta = 0.0;
@@ -607,7 +607,8 @@ namespace Vertical_Federal_App
             //Determine what standard we are using to assess compliance (this is chosen by the user)
             if (CalibrationGauge.Metric)
             {
-                if (CalibrationGauge.Nominal <= 10) category = nom.category1;
+                if (CalibrationGauge.Nominal <= 0.5) category = nom.category0;
+                else if (CalibrationGauge.Nominal > 0.5 && CalibrationGauge.Nominal <= 10.0) category = nom.category1;
                 else if (CalibrationGauge.Nominal > 10.0 && CalibrationGauge.Nominal <= 25.0) category = nom.category2;
                 else if (CalibrationGauge.Nominal > 25.0 && CalibrationGauge.Nominal <= 50.0) category = nom.category3;
                 else if (CalibrationGauge.Nominal > 50.0 && CalibrationGauge.Nominal <= 75.0) category = nom.category4;
@@ -711,120 +712,100 @@ namespace Vertical_Federal_App
                 case ComplianceImperial.BS_4311_1_2007_Grade_K:
                     switch (l)
                     {
-
-                        case nom.category0:
-                            ld = 0.3;
-                            vr = 0.05;
-                            break;
                         case nom.category1:
-                            ld = 0.2;
-                            vr = 0.05;
+                            ld = 8.0;
+                            vr = 2.0;
                             break;
                         case nom.category2:
-                            ld = 0.3;
-                            vr = 0.05;
+                            ld = 12.0;
+                            vr = 2.0;
                             break;
                         case nom.category3:
-                            ld = 0.4;
-                            vr = 0.06;
+                            ld = 16.0;
+                            vr = 3.0;
                             break;
                         case nom.category4:
-                            ld = 0.5;
-                            vr = 0.06;
+                            ld = 20.0;
+                            vr = 3.0;
                             break;
                         case nom.category5:
-                            ld = 0.6;
-                            vr = 0.07;
+                            ld = 24.0;
+                            vr = 3.0;
                             break;
                     }
                     break;
                 case ComplianceImperial.BS_4311_1_2007_Grade_0:
                     switch (l)
                     {
-
-                        case nom.category0:
-                            ld = 0.3;
-                            vr = 0.05;
-                            break;
                         case nom.category1:
-                            ld = 0.2;
-                            vr = 0.05;
+                            ld = 5.0;
+                            vr = 4.0;
                             break;
                         case nom.category2:
-                            ld = 0.3;
-                            vr = 0.05;
+                            ld = 6.0;
+                            vr = 4.0;
                             break;
                         case nom.category3:
-                            ld = 0.4;
-                            vr = 0.06;
+                            ld = 8.0;
+                            vr = 4.0;
                             break;
                         case nom.category4:
-                            ld = 0.5;
-                            vr = 0.06;
+                            ld = 10.0;
+                            vr = 5.0;
                             break;
                         case nom.category5:
-                            ld = 0.6;
-                            vr = 0.07;
+                            ld = 12.0;
+                            vr = 5.0;
                             break;
                     }
                     break;
                 case ComplianceImperial.BS_4311_1_2007_Grade_1:
                     switch (l)
                     {
-
-                        case nom.category0:
-                            ld = 0.3;
-                            vr = 0.05;
-                            break;
                         case nom.category1:
-                            ld = 0.2;
-                            vr = 0.05;
+                            ld = 8.0;
+                            vr = 6.0;
                             break;
                         case nom.category2:
-                            ld = 0.3;
-                            vr = 0.05;
+                            ld = 12.0;
+                            vr = 6.0;
                             break;
                         case nom.category3:
-                            ld = 0.4;
-                            vr = 0.06;
+                            ld = 16.0;
+                            vr = 7.0;
                             break;
                         case nom.category4:
-                            ld = 0.5;
-                            vr = 0.06;
+                            ld = 20.0;
+                            vr = 7.0;
                             break;
                         case nom.category5:
-                            ld = 0.6;
-                            vr = 0.07;
+                            ld = 24.0;
+                            vr = 8.0;
                             break;
                     }
                     break;
                 case ComplianceImperial.BS_4311_1_2007_Grade_2:
                     switch (l)
                     {
-
-                        case nom.category0:
-                            ld = 0.3;
-                            vr = 0.05;
-                            break;
                         case nom.category1:
-                            ld = 0.2;
-                            vr = 0.05;
+                            ld = 18.0;
+                            vr = 12.0;
                             break;
                         case nom.category2:
-                            ld = 0.3;
-                            vr = 0.05;
+                            ld = 24.0;
+                            vr = 12.0;
                             break;
                         case nom.category3:
-                            ld = 0.4;
-                            vr = 0.06;
+                            ld = 32.0;
+                            vr = 12.0;
                             break;
                         case nom.category4:
-                            ld = 0.5;
-                            vr = 0.06;
+                            ld = 40.0;
+                            vr = 14.0;
                             break;
                         case nom.category5:
-                            ld = 0.6;
-                            vr = 0.07;
+                            ld = 48.0;
+                            vr = 14.0;
                             break;
                     }
                     break;
@@ -990,6 +971,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.AS_1457_1999_Grade_K:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
                         case nom.category1:
                             ld = 0.2;
                             vr = 0.05;
@@ -1015,6 +1000,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.AS_1457_1999_Grade_0:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.12;
+                            vr = 0.1;
+                            break;
                         case nom.category1:
                             ld = 0.12;
                             vr = 0.1;
@@ -1040,6 +1029,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.AS_1457_1999_Grade_1:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.2;
+                            vr = 0.16;
+                            break;
                         case nom.category1:
                             ld = 0.2;
                             vr = 0.16;
@@ -1065,6 +1058,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.AS_1457_1999_Grade_2:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.45;
+                            vr = 0.3;
+                            break;
                         case nom.category1:
                             ld = 0.45;
                             vr = 0.3;
@@ -1090,6 +1087,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_K:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
                         case nom.category1:
                             ld = 0.2;
                             vr = 0.05;
@@ -1115,6 +1116,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_0:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.12;
+                            vr = 0.1;
+                            break;
                         case nom.category1:
                             ld = 0.12;
                             vr = 0.1;
@@ -1140,6 +1145,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_1:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.2;
+                            vr = 0.16;
+                            break;
                         case nom.category1:
                             ld = 0.2;
                             vr = 0.16;
@@ -1165,6 +1174,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.BS_EN_ISO_3650_1999_Grade_2:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.45;
+                            vr = 0.3;
+                            break;
                         case nom.category1:
                             ld = 0.45;
                             vr = 0.3;
@@ -1190,6 +1203,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.JIS_B_7506_2004_Grade_K:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.2;
+                            vr = 0.05;
+                            break;
                         case nom.category1:
                             ld = 0.2;
                             vr = 0.05;
@@ -1215,6 +1232,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.JIS_B_7506_2004_Grade_0:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.12;
+                            vr = 0.1;
+                            break;
                         case nom.category1:
                             ld = 0.12;
                             vr = 0.1;
@@ -1240,6 +1261,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.JIS_B_7506_2004_Grade_1:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.2;
+                            vr = 0.16;
+                            break;
                         case nom.category1:
                             ld = 0.2;
                             vr = 0.16;
@@ -1265,6 +1290,10 @@ namespace Vertical_Federal_App
                 case ComplianceMetric.JIS_B_7506_2004_Grade_2:
                     switch (l)
                     {
+                        case nom.category0:
+                            ld = 0.45;
+                            vr = 0.3;
+                            break;
                         case nom.category1:
                             ld = 0.45;
                             vr = 0.3;
@@ -1913,7 +1942,23 @@ namespace Vertical_Federal_App
         /// </summary>
         public static void WriteUncertaintyAndComplianceToFile(ref VerticalFederal vfederal)
         {
-            if (System.IO.File.Exists(filename_U95_sum)) System.IO.File.Delete(filename_U95_sum);
+            try
+            {
+                if (System.IO.File.Exists(filename_U95_sum)) System.IO.File.Delete(filename_U95_sum);
+            }
+            catch (System.IO.IOException)
+            {
+                MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. If it's in use please close it now before pushing OK");
+                try
+                {
+                    if (System.IO.File.Exists(filename_U95_sum)) System.IO.File.Delete(filename_U95_sum);
+                }
+                catch (System.IO.IOException)
+                {
+                    MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. Uncertainties calculations won't be attempted until the next measurement is made");
+                    return;
+                }
+            }
             System.IO.StreamWriter writer3;
             writer3 = System.IO.File.CreateText(filename_U95_sum);
             writer3.WriteLine("DateTime,Nominal,Serial Number,Centre Deviation,U95 Centre Deviation As Calculated,U95 Centre Deviation CMC,CMC U95 Centre Deviation As Reported,Extreme Deviation,U95 Extreme Deviation As Calculated,U95 Extreme Deviation CMC,U95 Extreme Deviation As Reported,Variation,U95 Variation As Calculated,U95 Variation CMC,U95 Variation As Reported,Compliance Deviation, Compliance Variation");
@@ -1983,15 +2028,37 @@ namespace Vertical_Federal_App
                     sum_variation /= num_id_matches;
                     double corr_extreme_dev = Measurement.CalculateExtremeDeviation(sum_min_dev, sum_max_dev);
 
+                    if (!m.CalibrationGauge.Metric) CalculateUncertaintiesMicroInch(ref U95_centre_dev, ref U95_extreme_dev, ref U95_variation);
+                    if (!m.CalibrationGauge.Metric) CalculateCMCMicroInch(ref cmc_d, ref cmc_v);
+
+
                     string compliance_d = "";
-                    if ((corr_extreme_dev + U95_extreme_dev/1000) < limit_deviation) compliance_d = "P";
-                    else if (corr_extreme_dev > (limit_deviation + U95_extreme_dev/1000)) compliance_d = "F";
-                    else compliance_d = "U";
+                    if (m.CalibrationGauge.Metric)
+                    {
+                        if ((corr_extreme_dev + U95_extreme_dev / 1000) < limit_deviation) compliance_d = "P";
+                        else if (corr_extreme_dev > (limit_deviation + U95_extreme_dev / 1000)) compliance_d = "F";
+                        else compliance_d = "U";
+                    }
+                    else
+                    {
+                        if ((corr_extreme_dev + U95_extreme_dev) < limit_deviation) compliance_d = "P";
+                        else if (corr_extreme_dev > (limit_deviation + U95_extreme_dev)) compliance_d = "F";
+                        else compliance_d = "U";
+                    }
 
                     string compliance_v ="";
-                    if ((sum_variation + U95_variation/1000) < tolerance_variation) compliance_v = "P";
-                    else if (sum_variation > (tolerance_variation + U95_variation/1000)) compliance_v = "F";
-                    else compliance_v = "U";
+                    if (m.CalibrationGauge.Metric)
+                    {
+                        if ((sum_variation + U95_variation / 1000) < tolerance_variation) compliance_v = "P";
+                        else if (sum_variation > (tolerance_variation + U95_variation / 1000)) compliance_v = "F";
+                        else compliance_v = "U";
+                    }
+                    else
+                    {
+                        if ((sum_variation + U95_variation) < tolerance_variation) compliance_v = "P";
+                        else if (sum_variation > (tolerance_variation + U95_variation)) compliance_v = "F";
+                        else compliance_v = "U";
+                    }
 
                     double reported_U95_dev = 0.0;
                     double reported_U95_ext_dev = 0.0;
@@ -2008,7 +2075,6 @@ namespace Vertical_Federal_App
                     writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev + "," + cmc_d + "," + reported_U95_dev + "," + corr_extreme_dev + "," + U95_extreme_dev + "," + cmc_d + "," + reported_U95_ext_dev + "," + sum_variation + "," + U95_variation + "," + cmc_v + "," + reported_U95_var + "," + compliance_d + "," + compliance_v);
                     unique_ids_used.Add(unique_id);
                 }
-
             }
             writer3.Close();
         }
@@ -2053,6 +2119,28 @@ namespace Vertical_Federal_App
                 }
             }
 
+        }
+        /// <summary>
+        /// Converts the uncertainty from nanometers to microinches
+        /// </summary>
+        /// <param name="U_dev">The deviation uncertainty in nm</param>
+        /// <param name="U_ext_dev">The extreme deviation uncertainty in nm</param>
+        /// <param name="U_var">The variation uncertainty in nm</param> 
+        public static void CalculateUncertaintiesMicroInch(ref double U_dev, ref double U_ext_dev, ref double U_var)
+        {
+            U_dev /= 25.4;
+            U_ext_dev /= 25.4;
+            U_var /= 25.4;
+        }
+        /// <summary>
+        /// Converts the CMC from nanometers to microinches
+        /// </summary>
+        /// <param name="CMC_dev">The deviation CMC in nm</param>
+        /// <param name="CMC_var">The variation CMC in nm</param> 
+        public static void CalculateCMCMicroInch(ref double CMC_dev, ref double CMC_var)
+        {
+            CMC_dev /= 25.4;
+            CMC_var /= 25.4;
         }
     }
 }
