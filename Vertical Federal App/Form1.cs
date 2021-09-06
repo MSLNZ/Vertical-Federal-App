@@ -309,7 +309,7 @@ namespace Vertical_Federal_App
                 Measurement.reference_gauge_sets.Add(gauge_set);
 
                 //Get the reference set data from the xml file
-                //INI2XML.GetReferenceSetMetaData(ref gauge_set);
+                INI2XML.GetReferenceSetMetaData(ref gauge_set);
                 //Add all gauges found in the xml file to the reference gauge set.
                 INI2XML.LoadReferenceGauges(ref gauge_set);
 
@@ -340,7 +340,7 @@ namespace Vertical_Federal_App
                     Measurement.reference_gauge_sets.Add(gauge_set);
 
                     //Get the reference set data from the xml file
-                    //INI2XML.GetReferenceSetMetaData(ref gauge_set);
+                    INI2XML.GetReferenceSetMetaData(ref gauge_set);
                     //Add all gauges found in the xml file to the reference gauge set.
                     INI2XML.LoadReferenceGauges(ref gauge_set);
                     CheckBBFDate(gauge_set.ReportDate);
