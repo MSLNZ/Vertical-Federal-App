@@ -83,13 +83,16 @@ namespace Vertical_Federal_App
         
         public void PrintGaugeList(ref RichTextBox b)
         {
+            num_gauges = gauges.Count;
             foreach(GaugeBlock g in gauges)
             {
+                
                 b.AppendText(g.Nominal.ToString() + ", ");
                 b.AppendText(g.SerialNumber.ToString() + ", ");
                 b.AppendText(g.CentreDeviation.ToString() + "\n");
                 b.ScrollToCaret();
             }
+           
         }
         public void AddGauge(GaugeBlock g)
         {
