@@ -876,6 +876,11 @@ namespace Vertical_Federal_App
 
 							if (gauge_block_set.Equals(gauge_set.GaugeSetName))
 							{
+								//gauge_set.GaugeSetName = gauge_block_set;
+								//gauge_set.ReportNumber = report_number;
+								//gauge_set.ReportDate = report_date;
+								//gauge_set.EquipID = equip_reg_id;
+
 								GaugeBlock gauge = new GaugeBlock(true);
 								if(gauge_set.Unit== Units.Metric)
                                 {
