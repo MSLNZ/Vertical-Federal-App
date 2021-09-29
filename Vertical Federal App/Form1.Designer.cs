@@ -43,6 +43,8 @@
             this.referenceDeviationTextBox = new System.Windows.Forms.TextBox();
             this.refDeviationLabel = new System.Windows.Forms.Label();
             this.gaugeParametersGroupBox = new System.Windows.Forms.GroupBox();
+            this.ComplianceComboBox = new System.Windows.Forms.ComboBox();
+            this.Compliance_label = new System.Windows.Forms.Label();
             this.clientNameLabel = new System.Windows.Forms.Label();
             this.clientNameTextBox = new System.Windows.Forms.TextBox();
             this.poissonsRatioTextBox = new System.Windows.Forms.TextBox();
@@ -103,8 +105,6 @@
             this.messagesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.MeasurementOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.Compliance_label = new System.Windows.Forms.Label();
-            this.ComplianceComboBox = new System.Windows.Forms.ComboBox();
             this.gaugeParametersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.gaugeBlockGroupBox.SuspendLayout();
@@ -303,6 +303,43 @@
             this.gaugeParametersGroupBox.TabStop = false;
             this.gaugeParametersGroupBox.Text = "Gauge Parameters";
             // 
+            // ComplianceComboBox
+            // 
+            this.ComplianceComboBox.Enabled = false;
+            this.ComplianceComboBox.FormattingEnabled = true;
+            this.ComplianceComboBox.Items.AddRange(new object[] {
+            "BS EN ISO 3650:1999 Grade 00",
+            "BS EN ISO3650:1999 Grade 0",
+            "BS EN ISO3650:1999 Grade 1",
+            "BS EN ISO3650:1999 Grade 2",
+            "JIS B 7506 : 2004 Grade K",
+            "JIS B 7506 : 2004 Grade 0",
+            "JIS B 7506 : 2004 Grade 1",
+            "JIS B 7506 : 2004 Grade 2",
+            "AS 1457 - 1999 Grade K",
+            "AS 1457 - 1999 Grade 0",
+            "AS 1457 - 1999 Grade 1",
+            "AS 1457 - 1999 Grade 2",
+            "ASME B89.1.9-2002 Grade K",
+            "ASME B89.1.9-2002 Grade 00",
+            "ASME B89.1.9-2002 Grade 0",
+            "ASME B89.1.9-2002 Grade AS-1",
+            "ASME B89.1.9-2002 Grade AS-2"});
+            this.ComplianceComboBox.Location = new System.Drawing.Point(160, 116);
+            this.ComplianceComboBox.Name = "ComplianceComboBox";
+            this.ComplianceComboBox.Size = new System.Drawing.Size(173, 21);
+            this.ComplianceComboBox.TabIndex = 55;
+            this.ComplianceComboBox.SelectedIndexChanged += new System.EventHandler(this.ComplianceComboBox_SelectedIndexChanged);
+            // 
+            // Compliance_label
+            // 
+            this.Compliance_label.AutoSize = true;
+            this.Compliance_label.Location = new System.Drawing.Point(16, 119);
+            this.Compliance_label.Name = "Compliance_label";
+            this.Compliance_label.Size = new System.Drawing.Size(74, 13);
+            this.Compliance_label.TabIndex = 54;
+            this.Compliance_label.Text = "Compliance to";
+            // 
             // clientNameLabel
             // 
             this.clientNameLabel.AutoSize = true;
@@ -328,7 +365,7 @@
             this.poissonsRatioTextBox.Name = "poissonsRatioTextBox";
             this.poissonsRatioTextBox.Size = new System.Drawing.Size(173, 20);
             this.poissonsRatioTextBox.TabIndex = 50;
-            this.poissonsRatioTextBox.Text = "0.290";
+            this.poissonsRatioTextBox.Text = "0.23";
             this.poissonsRatioTextBox.TextChanged += new System.EventHandler(this.poissonsRatioTextBox_TextChanged);
             // 
             // youngModulusTextBox
@@ -338,7 +375,7 @@
             this.youngModulusTextBox.Name = "youngModulusTextBox";
             this.youngModulusTextBox.Size = new System.Drawing.Size(173, 20);
             this.youngModulusTextBox.TabIndex = 49;
-            this.youngModulusTextBox.Text = "205";
+            this.youngModulusTextBox.Text = "200";
             this.youngModulusTextBox.TextChanged += new System.EventHandler(this.youngModulusTextBox_TextChanged);
             // 
             // poissonsRatioLabel
@@ -411,7 +448,7 @@
             this.expNumericUpDown.Size = new System.Drawing.Size(173, 20);
             this.expNumericUpDown.TabIndex = 20;
             this.expNumericUpDown.Value = new decimal(new int[] {
-            95,
+            92,
             0,
             0,
             65536});
@@ -927,43 +964,6 @@
             this.MeasurementOpenFileDialog.DefaultExt = "txt";
             this.MeasurementOpenFileDialog.Filter = "txt files (*.txt)|*.txt";
             this.MeasurementOpenFileDialog.InitialDirectory = "G:\\Shared drives\\MSL - Length\\Length\\Federal\\FederalData";
-            // 
-            // Compliance_label
-            // 
-            this.Compliance_label.AutoSize = true;
-            this.Compliance_label.Location = new System.Drawing.Point(16, 119);
-            this.Compliance_label.Name = "Compliance_label";
-            this.Compliance_label.Size = new System.Drawing.Size(74, 13);
-            this.Compliance_label.TabIndex = 54;
-            this.Compliance_label.Text = "Compliance to";
-            // 
-            // ComplianceComboBox
-            // 
-            this.ComplianceComboBox.Enabled = false;
-            this.ComplianceComboBox.FormattingEnabled = true;
-            this.ComplianceComboBox.Items.AddRange(new object[] {
-            "BS EN ISO 3650:1999 Grade 00",
-            "BS EN ISO3650:1999 Grade 0",
-            "BS EN ISO3650:1999 Grade 1",
-            "BS EN ISO3650:1999 Grade 2",
-            "JIS B 7506 : 2004 Grade K",
-            "JIS B 7506 : 2004 Grade 0",
-            "JIS B 7506 : 2004 Grade 1",
-            "JIS B 7506 : 2004 Grade 2",
-            "AS 1457 - 1999 Grade K",
-            "AS 1457 - 1999 Grade 0",
-            "AS 1457 - 1999 Grade 1",
-            "AS 1457 - 1999 Grade 2",
-            "ASME B89.1.9-2002 Grade K",
-            "ASME B89.1.9-2002 Grade 00",
-            "ASME B89.1.9-2002 Grade 0",
-            "ASME B89.1.9-2002 Grade AS-1",
-            "ASME B89.1.9-2002 Grade AS-2"});
-            this.ComplianceComboBox.Location = new System.Drawing.Point(160, 116);
-            this.ComplianceComboBox.Name = "ComplianceComboBox";
-            this.ComplianceComboBox.Size = new System.Drawing.Size(173, 21);
-            this.ComplianceComboBox.TabIndex = 55;
-            this.ComplianceComboBox.SelectedIndexChanged += new System.EventHandler(this.ComplianceComboBox_SelectedIndexChanged);
             // 
             // VerticalFedForm
             // 
