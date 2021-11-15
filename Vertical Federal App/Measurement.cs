@@ -16,7 +16,8 @@ namespace Vertical_Federal_App
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
-        
+        public static string Version_number = "Rev 2.0";
+
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
         private GaugeBlock calibration_gauge;
@@ -377,6 +378,7 @@ namespace Vertical_Federal_App
         /// <summary>
         /// Calculates the reproducability for deviation and variation in length measurement.  
         /// </summary>
+        /// 
         public static void CalculateReproducibility()
         {
             List<double> found = new List<double>();
@@ -1879,8 +1881,7 @@ namespace Vertical_Federal_App
             System.IO.StreamWriter writer2;
             writer2 = System.IO.File.CreateText(filename_sum);
             writer2.WriteLine("DateTime,Temperature,Nominal,Serial Number,Centre Deviation,Extreme Deviation,Variation,Count");
-
-
+            writer2.WriteLine(Version_number);
 
             string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
             List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
@@ -1962,6 +1963,7 @@ namespace Vertical_Federal_App
             System.IO.StreamWriter writer3;
             writer3 = System.IO.File.CreateText(filename_U95_sum);
             writer3.WriteLine("DateTime,Nominal,Serial Number,Centre Deviation,U95 Centre Deviation As Calculated,U95 Centre Deviation CMC,CMC U95 Centre Deviation As Reported,Extreme Deviation,U95 Extreme Deviation As Calculated,U95 Extreme Deviation CMC,U95 Extreme Deviation As Reported,Variation,U95 Variation As Calculated,U95 Variation CMC,U95 Variation As Reported,Compliance Deviation, Compliance Variation");
+            writer3.WriteLine(Version_number);
 
             string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
             List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
