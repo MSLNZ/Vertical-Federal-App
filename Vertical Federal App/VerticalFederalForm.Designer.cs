@@ -469,7 +469,7 @@
             this.suitableReferenceGaugesComboBox.FormattingEnabled = true;
             this.suitableReferenceGaugesComboBox.Location = new System.Drawing.Point(160, 301);
             this.suitableReferenceGaugesComboBox.Name = "suitableReferenceGaugesComboBox";
-            this.suitableReferenceGaugesComboBox.Size = new System.Drawing.Size(173, 21);
+            this.suitableReferenceGaugesComboBox.Size = new System.Drawing.Size(253, 21);
             this.suitableReferenceGaugesComboBox.TabIndex = 16;
             this.suitableReferenceGaugesComboBox.SelectedIndexChanged += new System.EventHandler(this.suitableReferenceGaugesComboBox_SelectedIndexChanged);
             // 
