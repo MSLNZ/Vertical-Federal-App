@@ -16,7 +16,7 @@ namespace Vertical_Federal_App
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
-        public static string Version_number = "Rev 2.0";
+        public static string Version_number = "Rev 2.1";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -215,7 +215,7 @@ namespace Vertical_Federal_App
                 using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     string[] lines = File.ReadAllLines(fileName);
-                    if (lines.Length == 1 || lines.Length == 2) return "";
+                    if (lines.Length == 0 || lines.Length == 1 || lines.Length == 2) return "";
                     else return lines[lines.Length - 1];
                 }
             }
@@ -1501,6 +1501,7 @@ namespace Vertical_Federal_App
         public static bool ParseFile(string[] lines, ref System.IO.StreamWriter writer, ref VerticalFederal verticalFederal)
         {
             bool first_line = true;
+            bool second_line = true;
             string line_read;
 
             foreach (string line in lines)
@@ -1509,6 +1510,12 @@ namespace Vertical_Federal_App
                 if (first_line)
                 {
                     first_line = false;
+                    continue;
+                }
+                //the second line doesn't contain data either, it just shows the revision number
+                if (second_line)
+                {
+                    second_line = false;
                     continue;
                 }
                 line_read = (string)line.Clone();
@@ -1868,7 +1875,10 @@ namespace Vertical_Federal_App
             line.Append(Math.Round(current_measurement.CalibrationGauge.MaxDev, 5).ToString() + ",");
             line.Append(Math.Round(current_measurement.CalibrationGauge.ExtremeDeviation, 5).ToString() + ",");
             line.Append(Math.Round(current_measurement.CalibrationGauge.Variation, 5).ToString()+ "," );
-            line.Append(current_measurement.CalibrationGauge.ComplianceStandard.ToString());
+
+            string compliance_std = FetchComplianceStandardString(current_measurement.CalibrationGauge.ComplianceStandard,ref current_measurement);
+
+            line.Append(compliance_std);
             line_to_write = line.ToString();
         }
 
@@ -2143,6 +2153,87 @@ namespace Vertical_Federal_App
         {
             CMC_dev /= 25.4;
             CMC_var /= 25.4;
+        }
+        public static string FetchComplianceStandardString(int index,ref Measurement current_measurement)
+        {
+            string cs = "";
+            if (current_measurement.CalibrationGauge.Metric)
+            {
+                switch (index)
+                {
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_K:
+                        cs = "BS_EN_ISO_3650_1999_Grade_K";
+                        break;
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_0:
+                        cs = "BS_EN_ISO_3650_1999_Grade_0";
+                        break;
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_1:
+                        cs = "BS_EN_ISO_3650_1999_Grade_1";
+                        break;
+                    case (int)ComplianceMetric.BS_EN_ISO_3650_1999_Grade_2:
+                        cs = "BS_EN_ISO_3650_1999_Grade_2";
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_K:
+                        cs = "AS_1457_1999_Grade_K";
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_0:
+                        cs = "AS_1457_1999_Grade_0";
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_1:
+                        cs = "AS_1457_1999_Grade_1";
+                        break;
+                    case (int)ComplianceMetric.AS_1457_1999_Grade_2:
+                        cs = "AS_1457_1999_Grade_2";
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_K:
+                        cs = "JIS_B_7506_2004_Grade_K";
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_0:
+                        cs = "JIS_B_7506_2004_Grade_0";
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_1:
+                        cs = "JIS_B_7506_2004_Grade_1";
+                        break;
+                    case (int)ComplianceMetric.JIS_B_7506_2004_Grade_2:
+                        cs = "JIS_B_7506_2004_Grade_2";
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_K:
+                        cs = "ASME_B89_1_9_2002_Grade_K";
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_00:
+                        cs = "ASME_B89_1_9_2002_Grade_00";
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_0:
+                        cs = "ASME_B89_1_9_2002_Grade_0";
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_AS1:
+                        cs = "ASME_B89_1_9_2002_Grade_AS1";
+                        break;
+                    case (int)ComplianceMetric.ASME_B89_1_9_2002_Grade_AS2:
+                        cs = "ASME_B89_1_9_2002_Grade_AS2";
+                        break;
+
+                }
+            }
+            else
+            {
+                switch (index)
+                {
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_K:
+                        cs = "BS_4311_1_2007_Grade_K";
+                        break;
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_0:
+                        cs = "BS_4311_1_2007_Grade_0";
+                        break;
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_1:
+                        cs = "BS_4311_1_2007_Grade_1";
+                        break;
+                    case (int)ComplianceImperial.BS_4311_1_2007_Grade_2:
+                        cs = "BS_4311_1_2007_Grade_2";
+                        break;
+                }
+            }
+            return cs;
         }
     }
 }
