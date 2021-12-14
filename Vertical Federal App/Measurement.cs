@@ -16,7 +16,7 @@ namespace Vertical_Federal_App
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
-        public static string Version_number = "Rev 2.1";
+        public static string Version_number = "Rev 2.2";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -52,7 +52,7 @@ namespace Vertical_Federal_App
                         "Cal Gauge Poisson Ratio,Ref Gauge 1 Nominal,Ref Gauge 1 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No, Ref Gauge 1 Material,Ref Gauge 1 exp coeeff,Ref Gauge 1 Young's Modulus,Ref Gauge 1 Poisson Ratio," +
                         "Ref Gauge 2 Nominal,Ref Gauge 2 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No,Ref Gauge 2 Material,Ref Gauge 2 exp coeeff,Ref Gauge 2 Young's Modulus,Ref Gauge 2 Poisson Ratio," +
                         "Ref Gauge 3 Nominal,Ref Gauge 3 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No,Ref Gauge 3 Material,Ref Gauge 3 exp coeeff,Ref Gauge 3 Young's Modulus,Ref Gauge 3 Poisson Ratio," +
-                        "Reference Stack Deviation,R1,C1,A,B,C2,D,E,C3,R2,Measured Length,Centre Deviation,Min Deviation,Max Deviation,Extreme Deviation,Variation,Compliance Standard";
+                        "Reference Stack Deviation,R1,C1,A,B,C2,D,E,C3,R2,Measured Length,Centre Deviation,Min Deviation,Max Deviation,Extreme Deviation,Variation,Compliance Standard ID,Compliance Standard String";
         public static string filename ="";
         public static string filename_sum = "";
         public static string filename_U95_sum = "";
@@ -1875,7 +1875,7 @@ namespace Vertical_Federal_App
             line.Append(Math.Round(current_measurement.CalibrationGauge.MaxDev, 5).ToString() + ",");
             line.Append(Math.Round(current_measurement.CalibrationGauge.ExtremeDeviation, 5).ToString() + ",");
             line.Append(Math.Round(current_measurement.CalibrationGauge.Variation, 5).ToString()+ "," );
-
+            line.Append(current_measurement.CalibrationGauge.ComplianceStandard.ToString() + ",");
             string compliance_std = FetchComplianceStandardString(current_measurement.CalibrationGauge.ComplianceStandard,ref current_measurement);
 
             line.Append(compliance_std);
@@ -2084,7 +2084,7 @@ namespace Vertical_Federal_App
                     else reported_U95_var = U95_variation;
 
 
-                    writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev + "," + cmc_d + "," + reported_U95_dev + "," + corr_extreme_dev + "," + U95_extreme_dev + "," + cmc_d + "," + reported_U95_ext_dev + "," + sum_variation + "," + U95_variation + "," + cmc_v + "," + reported_U95_var + "," + compliance_d + "," + compliance_v);
+                    writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_dev/1000 + "," + corr_extreme_dev + "," + U95_extreme_dev/1000 + "," + cmc_d + "," + reported_U95_ext_dev/1000 + "," + sum_variation + "," + U95_variation/1000 + "," + cmc_v/1000 + "," + reported_U95_var/1000 + "," + compliance_d + "," + compliance_v);
                     unique_ids_used.Add(unique_id);
                 }
             }
