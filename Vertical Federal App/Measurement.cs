@@ -1972,7 +1972,7 @@ namespace Vertical_Federal_App
             }
             System.IO.StreamWriter writer3;
             writer3 = System.IO.File.CreateText(filename_U95_sum);
-            writer3.WriteLine("DateTime,Nominal,Serial Number,Centre Deviation,U95 Centre Deviation As Calculated,U95 Centre Deviation CMC,CMC U95 Centre Deviation As Reported,Extreme Deviation,U95 Extreme Deviation As Calculated,U95 Extreme Deviation CMC,U95 Extreme Deviation As Reported,Variation,U95 Variation As Calculated,U95 Variation CMC,U95 Variation As Reported,Compliance Deviation, Compliance Variation");
+            writer3.WriteLine("DateTime,Nominal,Serial Number,Centre Deviation (um),U95 Centre Deviation As Calculated (um),U95 Centre Deviation CMC (um),CMC U95 Centre Deviation As Reported (um),Extreme Deviation (um),U95 Extreme Deviation As Calculated (um),U95 Extreme Deviation CMC (um),U95 Extreme Deviation As Reported(um),Variation,U95 Variation As Calculated (um),U95 Variation CMC (um),U95 Variation As Reported (um),Compliance Deviation, Compliance Variation");
             writer3.WriteLine(Version_number);
 
             string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
@@ -2084,7 +2084,7 @@ namespace Vertical_Federal_App
                     else reported_U95_var = U95_variation;
 
 
-                    writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_dev/1000 + "," + corr_extreme_dev + "," + U95_extreme_dev/1000 + "," + cmc_d + "," + reported_U95_ext_dev/1000 + "," + sum_variation + "," + U95_variation/1000 + "," + cmc_v/1000 + "," + reported_U95_var/1000 + "," + compliance_d + "," + compliance_v);
+                    writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_dev/1000 + "," + corr_extreme_dev + "," + U95_extreme_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_ext_dev/1000 + "," + sum_variation + "," + U95_variation/1000 + "," + cmc_v/1000 + "," + reported_U95_var/1000 + "," + compliance_d + "," + compliance_v);
                     unique_ids_used.Add(unique_id);
                 }
             }
