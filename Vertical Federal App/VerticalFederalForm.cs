@@ -1094,7 +1094,7 @@ namespace Vertical_Federal_App
 
             System.IO.StreamWriter writer = System.IO.File.CreateText(Measurement.filename);
             //read the file and add measurements to the measurement list
-            Measurement.ParseFile(lines, ref writer, ref federal);
+            Measurement.ParseFile(lines, ref federal);
             
             Measurement.HeaderWritten = false;
             if (!Measurement.HeaderWritten)
