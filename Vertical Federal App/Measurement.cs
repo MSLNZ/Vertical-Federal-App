@@ -16,7 +16,7 @@ namespace Vertical_Federal_App
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
-        public static string Version_number = "Rev 2.2";
+        public static string Version_number = "Rev 2.4";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -48,10 +48,10 @@ namespace Vertical_Federal_App
         private static double rep_ext_dev;
         private static double rms_theta_s;
 
-        public static string measurement_file_header = "DateTime,Temperature,Units,Cal Nominal,Gauge Set Serial No,Gauge Serial No,Cal Gauge Material,Cal Gauge Exp Coeff, Cal Gauge Young's Modulus," +
-                        "Cal Gauge Poisson Ratio,Ref Gauge 1 Nominal,Ref Gauge 1 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No, Ref Gauge 1 Material,Ref Gauge 1 exp coeeff,Ref Gauge 1 Young's Modulus,Ref Gauge 1 Poisson Ratio," +
-                        "Ref Gauge 2 Nominal,Ref Gauge 2 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No,Ref Gauge 2 Material,Ref Gauge 2 exp coeeff,Ref Gauge 2 Young's Modulus,Ref Gauge 2 Poisson Ratio," +
-                        "Ref Gauge 3 Nominal,Ref Gauge 3 Deviation,Ref Gauge 1 Set Serial No, Reg Gauge 1 Serial No,Ref Gauge 3 Material,Ref Gauge 3 exp coeeff,Ref Gauge 3 Young's Modulus,Ref Gauge 3 Poisson Ratio," +
+        public static string measurement_file_header = "DateTime,Temperature,Units,Cal Nominal,Gauge Set Serial No,Gauge Serial No,Cal Gauge Material,Cal Gauge Exp Coeff,Cal Gauge Young's Modulus," +
+                        "Cal Gauge Poisson Ratio,Ref Gauge 1 Nominal,Ref Gauge 1 Deviation,Ref Gauge 1 Set Serial No,Ref Gauge 1 Metric/Imperial,Ref Gauge 1 Serial No,Ref Gauge 1 Material,Ref Gauge 1 exp coeeff,Ref Gauge 1 Young's Modulus,Ref Gauge 1 Poisson Ratio," +
+                        "Ref Gauge 2 Nominal,Ref Gauge 2 Deviation,Ref Gauge 2 Set Serial No,Ref Gauge 2 Metric/Imperial,Ref Gauge 2 Serial No,Ref Gauge 2 Material,Ref Gauge 2 exp coeeff,Ref Gauge 2 Young's Modulus,Ref Gauge 2 Poisson Ratio," +
+                        "Ref Gauge 3 Nominal,Ref Gauge 3 Deviation,Ref Gauge 3 Set Serial No,Ref Gauge 3 Metric/Imperial,Ref Gauge 3 Serial No,Ref Gauge 3 Material,Ref Gauge 3 exp coeeff,Ref Gauge 3 Young's Modulus,Ref Gauge 3 Poisson Ratio," +
                         "Reference Stack Deviation,R1,C1,A,B,C2,D,E,C3,R2,Measured Length,Centre Deviation,Min Deviation,Max Deviation,Extreme Deviation,Variation,Compliance Standard ID,Compliance Standard String";
         public static string filename ="";
         public static string filename_sum = "";
@@ -381,7 +381,7 @@ namespace Vertical_Federal_App
         /// 
         public static void CalculateReproducibility()
         {
-            List<double> found = new List<double>();
+            List<string> found = new List<string>();
             List<double> stdev_dev = new List<double>();
             List<double> stdev_var = new List<double>();
             List<double> stdev_min = new List<double>();
@@ -390,11 +390,14 @@ namespace Vertical_Federal_App
             //determine the standard deviations of all repeat measurements for deviation and variation
             foreach (Measurement m in measurements)
             {
-                double find = 0.0;
-                if (found.Contains(m.calibration_gauge.Nominal)) continue; 
-                else find = m.CalibrationGauge.Nominal;
+                string find = "";
+                if (found.Contains(m.calibration_gauge.Nominal.ToString() + m.calibration_gauge.SerialNumber)) continue;
+                else
+                {
+                    find = m.calibration_gauge.Nominal.ToString() + m.calibration_gauge.SerialNumber;
+                }
 
-                found.Add(m.CalibrationGauge.Nominal);
+                found.Add(m.CalibrationGauge.Nominal.ToString()+ m.calibration_gauge.SerialNumber);
                 
                 List<double> occurences_dev = new List<double>();
                 List<double> occurences_var = new List<double>();
@@ -402,7 +405,7 @@ namespace Vertical_Federal_App
                 List<double> occurences_max = new List<double>();
                 foreach (Measurement n in measurements)
                 {
-                    if (n.CalibrationGauge.Nominal == find) //we have a match
+                    if (n.CalibrationGauge.Nominal.ToString()+n.calibration_gauge.SerialNumber == find) //we have a match
                     {
                         if (n.CalibrationGauge.Metric)
                         {
@@ -1496,9 +1499,8 @@ namespace Vertical_Federal_App
         /// Parse the file opened by the user line by line while updating the gui
         /// </summary>
         /// <param name="lines">A string array containing lines of the measurement file</param>
-        /// <param name="writer">A reference to the stream writer for the measurement data file</param>
         /// <param name="verticalFederal">A reference to the vertical federal object</param>
-        public static bool ParseFile(string[] lines, ref System.IO.StreamWriter writer, ref VerticalFederal verticalFederal)
+        public static bool ParseFile(string[] lines, ref VerticalFederal verticalFederal)
         {
             bool first_line = true;
             bool second_line = true;
@@ -1568,6 +1570,7 @@ namespace Vertical_Federal_App
             GaugeBlock calibration_gauge = new GaugeBlock(false);
             meas.CalibrationGauge = calibration_gauge;
             meas.ReferenceStack = ref_stack;
+            bool metric = true;
 
 
             string[] strings = line.Split(',');
@@ -1594,6 +1597,10 @@ namespace Vertical_Federal_App
             ref_stack.Gauge1.Nominal = Convert.ToDouble(strings[10]);
             ref_stack.Gauge1.CentreDeviation = Convert.ToDouble(strings[11]);
             ref_stack.Gauge1.FromSet = strings[12];
+
+
+            bool.TryParse(strings[13], out metric);
+            ref_stack.Gauge1.Metric = metric;
             GaugeBlockSet gb_set = GetGaugeSet(ref_stack.Gauge1.FromSet);
             foreach(GaugeBlock gb in gb_set.GaugeList)
             {
@@ -1604,24 +1611,27 @@ namespace Vertical_Federal_App
                     ref_stack.Gauge1.WringingFilm = gb.WringingFilm;
                 }
             }
-            ref_stack.Gauge1.SerialNumber = strings[13];
-            ref_stack.Gauge1.GaugeBlockMaterial.material = strings[14];
-            ref_stack.Gauge1.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[15]);
-            ref_stack.Gauge1.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[16]);
-            ref_stack.Gauge1.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[17]);
+            ref_stack.Gauge1.SerialNumber = strings[14];
+            ref_stack.Gauge1.GaugeBlockMaterial.material = strings[15];
+            ref_stack.Gauge1.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[16]);
+            ref_stack.Gauge1.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[17]);
+            ref_stack.Gauge1.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[18]);
             ref_stack.Gauge1 = ref_stack.Gauge1;
 
-            if (!strings[18].Equals(""))
+            if (!strings[19].Equals(""))
             {
                 ref_stack.Gauge2 = new GaugeBlock(false);
-                ref_stack.Gauge2.Nominal = Convert.ToDouble(strings[18]);
-                ref_stack.Gauge2.CentreDeviation = Convert.ToDouble(strings[19]);
-                ref_stack.Gauge2.FromSet = strings[20];
-                ref_stack.Gauge2.SerialNumber = strings[21];
-                ref_stack.Gauge2.GaugeBlockMaterial.material = strings[22];
-                ref_stack.Gauge2.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[23]);
-                ref_stack.Gauge2.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[24]);
-                ref_stack.Gauge2.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[25]);
+                ref_stack.Gauge2.Nominal = Convert.ToDouble(strings[19]);
+                ref_stack.Gauge2.CentreDeviation = Convert.ToDouble(strings[20]);
+                ref_stack.Gauge2.FromSet = strings[21];
+
+                bool.TryParse(strings[22], out metric);
+                ref_stack.Gauge2.Metric = metric;
+                ref_stack.Gauge2.SerialNumber = strings[23];
+                ref_stack.Gauge2.GaugeBlockMaterial.material = strings[24];
+                ref_stack.Gauge2.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[25]);
+                ref_stack.Gauge2.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[26]);
+                ref_stack.Gauge2.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[27]);
                 GaugeBlockSet gb_set_2 = GetGaugeSet(ref_stack.Gauge2.FromSet);
                 foreach (GaugeBlock gb in gb_set_2.GaugeList)
                 {
@@ -1634,17 +1644,20 @@ namespace Vertical_Federal_App
                 }
             }
 
-            if (!strings[26].Equals(""))
+            if (!strings[28].Equals(""))
             {
                 ref_stack.Gauge3 = new GaugeBlock(false);
-                ref_stack.Gauge3.Nominal = Convert.ToDouble(strings[26]);
-                ref_stack.Gauge3.CentreDeviation = Convert.ToDouble(strings[27]);
-                ref_stack.Gauge3.FromSet = strings[28];
-                ref_stack.Gauge3.SerialNumber = strings[29];
-                ref_stack.Gauge3.GaugeBlockMaterial.material = strings[30];
-                ref_stack.Gauge3.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[31]);
-                ref_stack.Gauge3.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[32]);
-                ref_stack.Gauge3.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[33]);
+                ref_stack.Gauge3.Nominal = Convert.ToDouble(strings[28]);
+                ref_stack.Gauge3.CentreDeviation = Convert.ToDouble(strings[29]);
+                ref_stack.Gauge3.FromSet = strings[30];
+
+                bool.TryParse(strings[31], out metric);
+                ref_stack.Gauge3.Metric = metric;
+                ref_stack.Gauge3.SerialNumber = strings[32];
+                ref_stack.Gauge3.GaugeBlockMaterial.material = strings[33];
+                ref_stack.Gauge3.GaugeBlockMaterial.exp_coeff = Convert.ToDouble(strings[34]);
+                ref_stack.Gauge3.GaugeBlockMaterial.youngs_modulus = Convert.ToDouble(strings[35]);
+                ref_stack.Gauge3.GaugeBlockMaterial.poissons_ratio = Convert.ToDouble(strings[36]);
                 GaugeBlockSet gb_set_3 = GetGaugeSet(ref_stack.Gauge3.FromSet);
                 foreach (GaugeBlock gb in gb_set_3.GaugeList)
                 {
@@ -1657,16 +1670,16 @@ namespace Vertical_Federal_App
                 }
             }
 
-            double.TryParse(strings[34], out meas.reference_deviation);
-            double.TryParse(strings[35], out meas.r1);
-            double.TryParse(strings[36], out meas.c1);
-            double.TryParse(strings[37], out meas.a);
-            double.TryParse(strings[38], out meas.b);
-            double.TryParse(strings[39], out meas.c2);
-            double.TryParse(strings[40], out meas.d);
-            double.TryParse(strings[41], out meas.e);
-            double.TryParse(strings[42], out meas.c3);
-            double.TryParse(strings[43], out meas.r2);
+            double.TryParse(strings[37], out meas.reference_deviation);
+            double.TryParse(strings[38], out meas.r1);
+            double.TryParse(strings[39], out meas.c1);
+            double.TryParse(strings[40], out meas.a);
+            double.TryParse(strings[41], out meas.b);
+            double.TryParse(strings[42], out meas.c2);
+            double.TryParse(strings[43], out meas.d);
+            double.TryParse(strings[44], out meas.e);
+            double.TryParse(strings[45], out meas.c3);
+            double.TryParse(strings[46], out meas.r2);
 
             double c_length = 0.0;
             double centre_d = 0.0;
@@ -1675,12 +1688,12 @@ namespace Vertical_Federal_App
             double ext_d = 0.0;
             double v = 0.0;
 
-            double.TryParse(strings[44], out c_length);
-            double.TryParse(strings[45], out centre_d);
-            double.TryParse(strings[46], out min_d);
-            double.TryParse(strings[47], out max_d);
-            double.TryParse(strings[48], out ext_d);
-            double.TryParse(strings[49], out v);
+            double.TryParse(strings[47], out c_length);
+            double.TryParse(strings[48], out centre_d);
+            double.TryParse(strings[49], out min_d);
+            double.TryParse(strings[50], out max_d);
+            double.TryParse(strings[51], out ext_d);
+            double.TryParse(strings[52], out v);
 
             meas.CalibrationGauge.CorrLength = c_length;
             meas.CalibrationGauge.CentreDeviation = centre_d;
@@ -1690,7 +1703,7 @@ namespace Vertical_Federal_App
             meas.CalibrationGauge.Variation = v;
 
             int comp_std = 0;
-            int.TryParse(strings[50], out comp_std);
+            int.TryParse(strings[53], out comp_std);
             meas.CalibrationGauge.ComplianceStandard = comp_std;
             meas.CalculateCMCs(verticalFederal);
             meas.CalculateComplianceLimits();
@@ -1753,7 +1766,6 @@ namespace Vertical_Federal_App
         public static void PrepareLineForWrite(Measurement current_measurement, ref string line_to_write, string units)
         {
 
-
             //build the measurement data string, each parameter is seperated by commas 
             StringBuilder line = new StringBuilder();
             // Create a string array that consists of three lines.
@@ -1785,6 +1797,7 @@ namespace Vertical_Federal_App
                 line.Append(Math.Round(current_measurement.ReferenceStack.Gauge1.CentreDeviation, 5).ToString() + ",");
             }
             line.Append(current_measurement.ReferenceStack.Gauge1.FromSet + ",");
+            line.Append(current_measurement.ReferenceStack.Gauge1.Metric.ToString() + ",");
             line.Append(current_measurement.ReferenceStack.Gauge1.SerialNumber + ",");
             line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.material.ToString() + ",");
             line.Append(current_measurement.ReferenceStack.Gauge1.GaugeBlockMaterial.exp_coeff.ToString() + ",");
@@ -1811,8 +1824,11 @@ namespace Vertical_Federal_App
                 }
             }
             else line.Append(",,");
-
+            
+            
             if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.FromSet + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.Metric.ToString() + ",");
             else line.Append(",");
             if (current_measurement.ReferenceStack.Gauge2 != null) line.Append(current_measurement.ReferenceStack.Gauge2.SerialNumber + ",");
             else line.Append(",");
@@ -1847,6 +1863,8 @@ namespace Vertical_Federal_App
 
             else line.Append(",,");
             if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.FromSet + ",");
+            else line.Append(",");
+            if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.Metric.ToString() + ",");
             else line.Append(",");
             if (current_measurement.ReferenceStack.Gauge3 != null) line.Append(current_measurement.ReferenceStack.Gauge3.SerialNumber + ",");
             else line.Append(",");
@@ -2114,6 +2132,7 @@ namespace Vertical_Federal_App
             else
             {
                 bool set_exists = false;
+                set_index = 0;
                 //if we have calibration gauge sets already in the list then see if the set has previously been added (i.e is this a unique serial number)
                 foreach (GaugeBlockSet cal_set in calibration_gauge_sets)
                 {
@@ -2131,7 +2150,7 @@ namespace Vertical_Federal_App
                     GaugeBlockSet gauge_set = new GaugeBlockSet();
                     gauge_set.GaugeSetName = working_gauge.FromSet;
                     calibration_gauge_sets.Add(gauge_set);
-                    set_index++;
+                    //set_index++;
                     return true;
                 }
             }
