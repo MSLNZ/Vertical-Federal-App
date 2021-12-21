@@ -828,6 +828,64 @@ namespace Vertical_Federal_App
 			}
 		}
 
+		/// <summary>
+		/// Get the metadata for a reference gauge set
+		/// </summary>
+		public static bool ReferenceSetIsMetric(string name)
+		{
+
+			//set the reader to point at the start of the file
+			LoadXML_A();
+
+			xmlreader.ResetState();
+			//read the first node
+			xmlreader.ReadStartElement();
+
+			while (!xmlreader.EOF)
+			{
+				while (xmlreader.Name.Contains("GAUGE"))
+				{
+					xmlreader.Read();
+					while (xmlreader.LocalName.Contains("gauge"))
+					{
+						
+						string gauge_block_set = xmlreader.LocalName;
+						gauge_block_set = gauge_block_set.Remove(0, 5);
+
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						string unit = xmlreader.ReadElementString(); //get the units of the reference gauge set.
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						xmlreader.ReadElementString();
+						
+						if (gauge_block_set.Equals(name))
+						{
+							switch (unit)
+							{
+								case "METRIC":
+									return true;
+
+								case "IMPERIAL":
+									return false;
+									
+							}
+						}
+						xmlreader.ReadElementString();
+						xmlreader.Skip();
+						xmlreader.Skip();
+					}
+				}
+				xmlreader.Skip();
+			}
+			return true;
+		}
+
 		public static void LoadReferenceGauges(ref GaugeBlockSet gauge_set)
         {
 			//set the reader to point at the start of the file
