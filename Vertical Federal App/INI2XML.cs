@@ -776,8 +776,8 @@ namespace Vertical_Federal_App
 						xmlreader.ReadElementString();
 						bool valid = false;
 						double expcoeff_ = 9.5;
-						double youngs_modulus_ = 205;
-						double poissons_ratio_ = 9.5;
+						double youngs_modulus_ = 200;
+						double poissons_ratio_ = 0.23;
 						try
 						{
 							expcoeff_ = System.Convert.ToDouble(expcoeff);
