@@ -16,7 +16,7 @@ namespace Vertical_Federal_App
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
-        public static string Version_number = "Rev 2.4";
+        public static string Version_number = "Rev 2.5";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -597,8 +597,18 @@ namespace Vertical_Federal_App
             double var_indep = vfed.ExpanedUncertaintyCMCVarIndep;
             double cmc_dev = 0.0;
             double cmc_var = 0.0;
-            CalibrationGauge.DeviationCMC = Math.Sqrt(Math.Pow(dev_dep * CalibrationGauge.Nominal, 2) + Math.Pow(dev_indep, 2));
-            CalibrationGauge.VariationCMC = Math.Sqrt(Math.Pow(var_dep * CalibrationGauge.Nominal, 2) + Math.Pow(var_indep, 2));
+            if (CalibrationGauge.Metric)
+            {
+                CalibrationGauge.DeviationCMC = Math.Sqrt(Math.Pow(dev_dep * CalibrationGauge.Nominal, 2) + Math.Pow(dev_indep, 2));
+                CalibrationGauge.VariationCMC = Math.Sqrt(Math.Pow(var_dep * CalibrationGauge.Nominal, 2) + Math.Pow(var_indep, 2));
+            }
+            else
+            {
+                double cmc_dev_ = Math.Sqrt(Math.Pow(dev_dep * CalibrationGauge.Nominal*25.4, 2) + Math.Pow(dev_indep, 2));
+                double cmc_var_ = Math.Sqrt(Math.Pow(var_dep * CalibrationGauge.Nominal * 25.4, 2) + Math.Pow(var_indep, 2));
+                CalibrationGauge.DeviationCMC = cmc_dev / 25.4;
+                CalibrationGauge.VariationCMC = cmc_var / 25.4;
+            }
         }
 
         public void CalculateComplianceLimits()
