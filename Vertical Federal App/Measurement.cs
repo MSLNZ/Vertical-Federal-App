@@ -2080,28 +2080,28 @@ namespace Vertical_Federal_App
                     string compliance_d = "";
                     if (m.CalibrationGauge.Metric)
                     {
-                        if ((corr_extreme_dev + U95_extreme_dev / 1000) < limit_deviation) compliance_d = "P";
-                        else if (corr_extreme_dev > (limit_deviation + U95_extreme_dev / 1000)) compliance_d = "F";
+                        if ((Math.Abs(corr_extreme_dev) + U95_extreme_dev / 1000) < limit_deviation) compliance_d = "P";
+                        else if (Math.Abs(corr_extreme_dev) > (limit_deviation + U95_extreme_dev / 1000)) compliance_d = "F";
                         else compliance_d = "U";
                     }
                     else
                     {
-                        if ((corr_extreme_dev + U95_extreme_dev) < limit_deviation) compliance_d = "P";
-                        else if (corr_extreme_dev > (limit_deviation + U95_extreme_dev)) compliance_d = "F";
+                        if ((Math.Abs(corr_extreme_dev) + U95_extreme_dev) < limit_deviation) compliance_d = "P";
+                        else if (Math.Abs(corr_extreme_dev) > (limit_deviation + U95_extreme_dev)) compliance_d = "F";
                         else compliance_d = "U";
                     }
 
                     string compliance_v ="";
                     if (m.CalibrationGauge.Metric)
                     {
-                        if ((sum_variation + U95_variation / 1000) < tolerance_variation) compliance_v = "P";
-                        else if (sum_variation > (tolerance_variation + U95_variation / 1000)) compliance_v = "F";
+                        if ((Math.Abs(sum_variation) + U95_variation / 1000) < tolerance_variation) compliance_v = "P";
+                        else if (Math.Abs(sum_variation) > (tolerance_variation + U95_variation / 1000)) compliance_v = "F";
                         else compliance_v = "U";
                     }
                     else
                     {
-                        if ((sum_variation + U95_variation) < tolerance_variation) compliance_v = "P";
-                        else if (sum_variation > (tolerance_variation + U95_variation)) compliance_v = "F";
+                        if ((Math.Abs(sum_variation) + U95_variation) < tolerance_variation) compliance_v = "P";
+                        else if (Math.Abs(sum_variation) > (tolerance_variation + U95_variation)) compliance_v = "F";
                         else compliance_v = "U";
                     }
 
