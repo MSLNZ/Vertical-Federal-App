@@ -1100,6 +1100,7 @@ namespace Vertical_Federal_App
             if (!Measurement.HeaderWritten)
             {
                 writer.WriteLine(Measurement.measurement_file_header);
+                writer.WriteLine(Measurement.Version_number);
             }
             int count = 1;
 

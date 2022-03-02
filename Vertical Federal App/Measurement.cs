@@ -16,7 +16,7 @@ namespace Vertical_Federal_App
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
         private static List<Measurement> measurements = new List<Measurement>();
-        public static string Version_number = "Rev 2.5";
+        public static string Version_number = "Rev 3.0";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -43,8 +43,11 @@ namespace Vertical_Federal_App
         private static bool log_temperatures = false;
         private static double rep_d;
         private static double rep_v;
-        private static double rep_min;
-        private static double rep_max;
+        private static double rep_A;
+        private static double rep_B;
+        private static double rep_D;
+        private static double rep_E;
+        private static double rep_ABDE;
         private static double rep_ext_dev;
         private static double rms_theta_s;
 
@@ -359,6 +362,11 @@ namespace Vertical_Federal_App
             double[] values_array = new double[] { A_dev, B_dev, D_dev, E_dev, corr_centre_dev };
             CalibrationGauge.MaxDev = Math.Round(values_array.Max(),5);
             CalibrationGauge.MinDev = Math.Round(values_array.Min(),5);
+            CalibrationGauge.ADev = Math.Round(A_dev, 5);
+            CalibrationGauge.BDev = Math.Round(B_dev, 5);
+            CalibrationGauge.DDev = Math.Round(D_dev, 5);
+            CalibrationGauge.EDev = Math.Round(E_dev, 5);
+
             corr_extreme_dev = CalculateExtremeDeviation(CalibrationGauge.MinDev, CalibrationGauge.MaxDev);
             CalibrationGauge.ExtremeDeviation = Math.Round(corr_extreme_dev, 5);
         }
@@ -383,9 +391,17 @@ namespace Vertical_Federal_App
         {
             List<string> found = new List<string>();
             List<double> stdev_dev = new List<double>();
-            List<double> stdev_var = new List<double>();
-            List<double> stdev_min = new List<double>();
-            List<double> stdev_max = new List<double>();
+            List<double> stdev_A = new List<double>();
+            List<double> stdev_B = new List<double>();
+            List<double> stdev_D = new List<double>();
+            List<double> stdev_E = new List<double>();
+
+            List<double> mean_dev = new List<double>();
+            List<double> mean_A = new List<double>();
+            List<double> mean_B = new List<double>();
+            List<double> mean_D = new List<double>();
+            List<double> mean_E = new List<double>();
+
 
             //determine the standard deviations of all repeat measurements for deviation and variation
             foreach (Measurement m in measurements)
@@ -400,9 +416,10 @@ namespace Vertical_Federal_App
                 found.Add(m.CalibrationGauge.Nominal.ToString()+ m.calibration_gauge.SerialNumber);
                 
                 List<double> occurences_dev = new List<double>();
-                List<double> occurences_var = new List<double>();
-                List<double> occurences_min = new List<double>();
-                List<double> occurences_max = new List<double>();
+                List<double> occurences_Adev = new List<double>();
+                List<double> occurences_Bdev = new List<double>();
+                List<double> occurences_Ddev = new List<double>();
+                List<double> occurences_Edev = new List<double>();
                 foreach (Measurement n in measurements)
                 {
                     if (n.CalibrationGauge.Nominal.ToString()+n.calibration_gauge.SerialNumber == find) //we have a match
@@ -410,52 +427,67 @@ namespace Vertical_Federal_App
                         if (n.CalibrationGauge.Metric)
                         {
                             occurences_dev.Add(n.CalibrationGauge.CentreDeviation);
-                            occurences_var.Add(n.CalibrationGauge.Variation);
-                            occurences_min.Add(n.CalibrationGauge.MinDev);
-                            occurences_max.Add(n.CalibrationGauge.MaxDev);
+                            occurences_Adev.Add(n.CalibrationGauge.ADev);
+                            occurences_Bdev.Add(n.CalibrationGauge.BDev);
+                            occurences_Ddev.Add(n.CalibrationGauge.DDev);
+                            occurences_Edev.Add(n.CalibrationGauge.EDev);
+                          
                         }
                         else //it's imperial so the deviations and variations will be in micro inches - convert them to micrometres for the u95 calculations
                         {
                             occurences_dev.Add(n.CalibrationGauge.CentreDeviation * 0.0254);
-                            occurences_var.Add(n.CalibrationGauge.Variation * 0.0254);
-                            occurences_min.Add(n.CalibrationGauge.MinDev * 0.0254);
-                            occurences_max.Add(n.CalibrationGauge.MaxDev * 0.0254);
+                            occurences_Adev.Add(n.CalibrationGauge.ADev * 0.0254);
+                            occurences_Bdev.Add(n.CalibrationGauge.BDev * 0.0254);
+                            occurences_Ddev.Add(n.CalibrationGauge.DDev * 0.0254);
+                            occurences_Edev.Add(n.CalibrationGauge.EDev * 0.0254);
                         }
                     }
                 }
+                
                 stdev_dev.Add(getStandardDeviation(occurences_dev));
-                stdev_var.Add(getStandardDeviation(occurences_var));
-                stdev_min.Add(getStandardDeviation(occurences_min));
-                stdev_max.Add(getStandardDeviation(occurences_max));
+                stdev_A.Add(getStandardDeviation(occurences_Adev));
+                stdev_B.Add(getStandardDeviation(occurences_Bdev));
+                stdev_D.Add(getStandardDeviation(occurences_Ddev));
+                stdev_E.Add(getStandardDeviation(occurences_Edev));
             }
 
-            //now pool all the standard deviations
+            //now find the sum of the squares
             double sumsq_d = 0.0;
-            double sumsq_v = 0.0;
-            double sumsq_min = 0.0;
-            double sumsq_max = 0.0;
+            double sumsq_A = 0.0;
+            double sumsq_B = 0.0;
+            double sumsq_D = 0.0;
+            double sumsq_E = 0.0;
+            double sumsq_ABDE = 0.0;
             foreach (double stdev_d in stdev_dev)
             {
                 sumsq_d += (stdev_d * stdev_d);
             }
-            foreach(double stdev_v in stdev_var)
+            foreach (double stdev_A_ in stdev_A)
             {
-                sumsq_v += (stdev_v * stdev_v);
+                sumsq_A += (stdev_A_ * stdev_A_);
             }
-            foreach (double stdev_min_ in stdev_min)
+            foreach (double stdev_B_ in stdev_B)
             {
-                sumsq_min += (stdev_min_ * stdev_min_);
+                sumsq_B += (stdev_B_ * stdev_B_);
             }
-            foreach (double stdev_max_ in stdev_max)
+            foreach (double stdev_D_ in stdev_D)
             {
-                sumsq_max += (stdev_max_ * stdev_max_);
+                sumsq_D += (stdev_D_ * stdev_D_);
             }
-
+            foreach (double stdev_E_ in stdev_E)
+            {
+                sumsq_E += (stdev_E_ * stdev_E_);
+            }
+            sumsq_ABDE = sumsq_A + sumsq_B + sumsq_D + sumsq_E;
+            
+            //and the reproducability (pooled standard deviation)
             rep_d = Math.Sqrt(sumsq_d / stdev_dev.Count);
-            rep_v = Math.Sqrt(sumsq_v / stdev_var.Count);
-            rep_min = Math.Sqrt(sumsq_min / stdev_min.Count);
-            rep_max = Math.Sqrt(sumsq_max / stdev_max.Count);
-            rep_ext_dev = Math.Sqrt(Math.Pow(rep_min, 2) + Math.Pow(rep_max, 2));
+            rep_A = Math.Sqrt(sumsq_A / stdev_A.Count);
+            rep_B = Math.Sqrt(sumsq_B / stdev_B.Count);
+            rep_D = Math.Sqrt(sumsq_D / stdev_D.Count);
+            rep_E = Math.Sqrt(sumsq_E / stdev_E.Count);
+            rep_ABDE = Math.Sqrt(sumsq_ABDE / (stdev_A.Count + stdev_B.Count + stdev_D.Count + stdev_E.Count));
+            
         }
         private static double getStandardDeviation(List<double> doubleList)
         {
@@ -470,10 +502,11 @@ namespace Vertical_Federal_App
             sumOfDeviation /= (doubleList.Count-1);
             return Math.Sqrt(sumOfDeviation);
         }
+
         /// <summary>
         /// Calculates the expanded uncertainty for this measurement for deviation measurements  
         /// </summary>
-        /// /// <param name="vfed">A reference to the vertical federal object</param>
+        /// <param name="vfed">A reference to the vertical federal object</param>
         public void CalculateExpandedUncertaintyDeviation(ref VerticalFederal vfed)
         {
             double s_d = 0.0;
@@ -517,8 +550,9 @@ namespace Vertical_Federal_App
         /// <summary>
         /// Calculates the expanded uncertainty for this measurement for Extreme deviation measurements  
         /// </summary>
-        /// /// <param name="vfed">A reference to the vertical federal object</param>
-        public void CalculateExpandedUncertaintyExtremeDeviation(ref VerticalFederal vfed)
+        /// <param name="vfed">A reference to the vertical federal object</param>
+        /// <param name="extrema_pos">integer representing where on the gauge the extrema occurs</param>
+        public void CalculateExpandedUncertaintyExtremeDeviation(ref VerticalFederal vfed,int extrema_pos)
         {
             double s_d = 0.0;
             double s_inp = 0.0;
@@ -526,7 +560,14 @@ namespace Vertical_Federal_App
 
             //independent terms
             CalculateReproducibility();
-            double stdu_reproducability = rep_ext_dev * 1000;
+
+            //The extrema can occur at any point on the gauge, it is assumed the centrepoint measurements are a different population to corner points.  Therefore the reproducability is calculated as either a pooled
+            //standard deviation of repeat measurements on the centre or a pooled standard deviation of repeat measurements on corners A,B,D and E.
+
+            double stdu_reproducability = 0.0;
+            if (extrema_pos == 0) stdu_reproducability = rep_d*1000;
+            else stdu_reproducability = rep_ABDE*1000;
+
             double stdu_scale_resolution = vfed.ScaleResStduIndependent; //in micrometers
             double stdu_scale_calibration = vfed.ScaleCalStduIndependent; //in micrometers
             double stdu_length_of_standard_i = s_inp;
@@ -557,12 +598,25 @@ namespace Vertical_Federal_App
             CalibrationGauge.ExpandedUncertaintyExtDev = combined_standard_uncertainty * 2;
 
         }
-
-        public void CalculateExpandedUncertaintyVariation(ref VerticalFederal vfed)
+        /// <summary>
+        /// Calculates the expanded uncertainty for this measurement for Variation in Length measurements  
+        /// </summary>
+        /// <param name="vfed">A reference to the vertical federal object</param>
+        /// <param name="max_pos">integer representing where on the gauge the max occurs, 0=the centre, 1 = a corner</param>
+        /// <param name="min_pos">integer representing where on the gauge the min occurs</param>
+        public void CalculateExpandedUncertaintyVariation(ref VerticalFederal vfed,int max_pos,int min_pos)
         {
             //independent terms
             CalculateReproducibility();
-            double stdu_reproducability = rep_v*1000;
+
+            
+            
+            if ((max_pos + min_pos) == 0) rep_v = Math.Sqrt(2) * rep_d;
+            else if ((max_pos == 0)||(min_pos == 0)) rep_v = Math.Sqrt(Math.Pow(rep_d, 2) + Math.Pow(rep_ABDE, 2));
+            else rep_v = Math.Sqrt(2)*rep_ABDE;
+            
+            
+            double stdu_reproducability = rep_v * 1000;
             double stdu_scale_resolution = vfed.ScaleResStduIndependent;
             double stdu_scale_calibration = vfed.ScaleCalStduIndependent;
      
@@ -570,7 +624,7 @@ namespace Vertical_Federal_App
             double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2));
 
             //dependent terms
-            double repro_v = rep_v;
+            
             double delta_theta_v = 0.0;
             u_of_g_ForDeltaThetaVar(this, ref delta_theta_v, ref vfed);
 
@@ -606,8 +660,8 @@ namespace Vertical_Federal_App
             {
                 double cmc_dev_ = Math.Sqrt(Math.Pow(dev_dep * CalibrationGauge.Nominal*25.4, 2) + Math.Pow(dev_indep, 2));
                 double cmc_var_ = Math.Sqrt(Math.Pow(var_dep * CalibrationGauge.Nominal * 25.4, 2) + Math.Pow(var_indep, 2));
-                CalibrationGauge.DeviationCMC = cmc_dev / 25.4;
-                CalibrationGauge.VariationCMC = cmc_var / 25.4;
+                CalibrationGauge.DeviationCMC = cmc_dev_;
+                CalibrationGauge.VariationCMC = cmc_var_;
             }
         }
 
@@ -1711,6 +1765,10 @@ namespace Vertical_Federal_App
             meas.CalibrationGauge.MaxDev = max_d;
             meas.CalibrationGauge.ExtremeDeviation = ext_d;
             meas.CalibrationGauge.Variation = v;
+            meas.CalibrationGauge.ADev = meas.a-(meas.r1+meas.r2)/2+meas.reference_deviation;
+            meas.CalibrationGauge.BDev = meas.b - (meas.r1 + meas.r2) / 2 + meas.reference_deviation;
+            meas.CalibrationGauge.DDev = meas.d - (meas.r1 + meas.r2) / 2 + meas.reference_deviation;
+            meas.CalibrationGauge.EDev = meas.e - (meas.r1 + meas.r2) / 2 + meas.reference_deviation;
 
             int comp_std = 0;
             int.TryParse(strings[53], out comp_std);
@@ -1936,8 +1994,10 @@ namespace Vertical_Federal_App
                     double nominal = m.CalibrationGauge.Nominal;
                     string ser_no = m.CalibrationGauge.SerialNumber;
                     double sum_centre_dev = 0.0;
-                    double sum_min_dev = 0.0;
-                    double sum_max_dev = 0.0;
+                    double sum_A_dev = 0.0;
+                    double sum_B_dev = 0.0;
+                    double sum_D_dev = 0.0;
+                    double sum_E_dev = 0.0;
                     double sum_variation = 0.0;
 
                     //with the unique id loop through each measurement
@@ -1953,22 +2013,44 @@ namespace Vertical_Federal_App
                             //we need the date time to be represented as a double to do averaging math on
                             date_time += Convert.ToDateTime(k.Datetime).Ticks;
                             sum_centre_dev += k.CalibrationGauge.CentreDeviation;
-                            sum_min_dev += k.CalibrationGauge.MinDev;
-                            sum_max_dev += k.CalibrationGauge.MaxDev;
+                            sum_A_dev += k.CalibrationGauge.ADev;
+                            sum_B_dev += k.CalibrationGauge.BDev;
+                            sum_D_dev += k.CalibrationGauge.DDev;
+                            sum_E_dev += k.CalibrationGauge.EDev;
                             sum_variation += k.CalibrationGauge.Variation;
                             
                         }
                     }
                     //compute the means
                     sum_centre_dev /= num_id_matches;
-                    sum_min_dev /= num_id_matches;
-                    sum_max_dev /= num_id_matches;
+                    sum_A_dev /= num_id_matches;
+                    sum_B_dev /= num_id_matches;
+                    sum_D_dev /= num_id_matches;
+                    sum_E_dev /= num_id_matches;
+
+                    //put the average gauge points into a list for processing.
+                    List<double> devs = new List<double>();
+                    devs.Add(sum_centre_dev);
+                    devs.Add(sum_A_dev);
+                    devs.Add(sum_B_dev);
+                    devs.Add(sum_D_dev);
+                    devs.Add(sum_E_dev);
+
+                    double corr_min_dev = devs.Min();
+                    double corr_max_dev = devs.Max();
+
+                    double corr_extreme_dev = 0.0;
+                    if (Math.Abs(corr_max_dev) >= Math.Abs(corr_min_dev)) corr_extreme_dev = corr_max_dev;
+                    else corr_extreme_dev = corr_min_dev;
+
+                    double vari = corr_max_dev - corr_min_dev;
+
+                    
                     t /= num_id_matches;
                     date_time /= num_id_matches;
                     var a_dt = new DateTime(date_time);
-                    double corr_extreme_dev = Measurement.CalculateExtremeDeviation(sum_min_dev, sum_max_dev);
                     sum_variation /= (num_id_matches);
-                    writer2.WriteLine(a_dt.ToString() + "," + t.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + corr_extreme_dev + "," + sum_variation + "," + num_id_matches.ToString());
+                    writer2.WriteLine(a_dt.ToString() + "," + t.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + corr_extreme_dev + "," + vari + "," + num_id_matches.ToString());
                     unique_ids_used.Add(unique_id);
                 }
 
@@ -2010,6 +2092,7 @@ namespace Vertical_Federal_App
 
             string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
             List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
+            
 
             foreach (Measurement m in Measurement.Measurements)
             {
@@ -2023,17 +2106,20 @@ namespace Vertical_Federal_App
                     double nominal = m.CalibrationGauge.Nominal;
                     string ser_no = m.CalibrationGauge.SerialNumber;
          
-                    double sum_variation = 0.0;
+                    //double sum_variation = 0.0;
                     double sum_centre_dev = 0.0;
                     double U95_centre_dev = 0.0;
                     double U95_extreme_dev = 0.0;
                     double U95_variation = 0.0;
-                    double sum_min_dev = 0.0;
-                    double sum_max_dev = 0.0;
+                    double sum_A_dev = 0.0;
+                    double sum_B_dev = 0.0;
+                    double sum_D_dev = 0.0;
+                    double sum_E_dev = 0.0;
                     double tolerance_variation = 0.0;
                     double limit_deviation = 0.0;
                     double cmc_d = 0.0;
                     double cmc_v = 0.0;
+                    List<Measurement> gauge_measurements = new List<Measurement>();
 
                     //with the unique id loop through each measurement
                     foreach (Measurement k in Measurement.Measurements)
@@ -2042,36 +2128,76 @@ namespace Vertical_Federal_App
 
                         if (unique_id_to_compare.Equals(unique_id))
                         {
+                            gauge_measurements.Add(k);
                             num_id_matches++;
                             k.CalculateExpandedUncertaintyDeviation(ref vfederal);
                             U95_centre_dev = k.CalibrationGauge.ExpandedUncertaintyDev;
-                            k.CalculateExpandedUncertaintyExtremeDeviation(ref vfederal);
-                            U95_extreme_dev = k.CalibrationGauge.ExpandedUncertaintyExtDev;
-                            k.CalculateExpandedUncertaintyVariation(ref vfederal);
-                            U95_variation = k.CalibrationGauge.ExpandedUncertaintyVar;
                             limit_deviation = k.CalibrationGauge.LimitDeviation;
                             tolerance_variation = k.CalibrationGauge.ToleranceVariation;
                             cmc_d = k.CalibrationGauge.DeviationCMC;
                             cmc_v = k.CalibrationGauge.VariationCMC;
+
                             //we need the date time to be represented as a double to do averaging math on
                             date_time += Convert.ToDateTime(k.Datetime).Ticks;
                             
-                        
-                            sum_variation += k.CalibrationGauge.Variation;
+                            //add up all the repeat measurements for each point of this gauge block
                             sum_centre_dev += k.CalibrationGauge.CentreDeviation;
-                            sum_min_dev += k.CalibrationGauge.MinDev;
-                            sum_max_dev += k.CalibrationGauge.MaxDev;
+                            sum_A_dev += k.CalibrationGauge.ADev;
+                            sum_B_dev += k.CalibrationGauge.BDev;
+                            sum_D_dev += k.CalibrationGauge.DDev;
+                            sum_E_dev += k.CalibrationGauge.EDev;
                         }
                     }
 
                     //compute the means
-                    date_time /= num_id_matches;
+                    date_time /= gauge_measurements.Count;
                     var a_dt = new DateTime(date_time);
-                    sum_centre_dev /= num_id_matches;
-                    sum_min_dev /= num_id_matches;
-                    sum_max_dev /= num_id_matches;
-                    sum_variation /= num_id_matches;
-                    double corr_extreme_dev = Measurement.CalculateExtremeDeviation(sum_min_dev, sum_max_dev);
+                    sum_centre_dev /= gauge_measurements.Count;
+                    sum_A_dev /= gauge_measurements.Count;
+                    sum_B_dev /= gauge_measurements.Count;
+                    sum_D_dev /= gauge_measurements.Count;
+                    sum_E_dev /= gauge_measurements.Count;
+      
+
+                    
+                    //put the average values into a list for processing
+                    List<double> devs = new List<double>();
+                    devs.Add(sum_centre_dev);
+                    devs.Add(sum_A_dev);
+                    devs.Add(sum_B_dev);
+                    devs.Add(sum_D_dev);
+                    devs.Add(sum_E_dev);
+
+                    //determine the extreme deviation and at which position is occurs on the gauge
+                    double corr_extreme_dev = 0.0;
+                    int index_of_extreme_deviation = 0;
+
+                    if (Math.Abs(devs.Max()) >= Math.Abs(devs.Min()))
+                    {
+                        corr_extreme_dev = devs.Max();
+                        index_of_extreme_deviation = devs.IndexOf(devs.Max());
+
+                    }
+                    else
+                    {
+                        corr_extreme_dev = devs.Min();
+                        index_of_extreme_deviation = devs.IndexOf(devs.Min());
+                    }
+
+                    //determine the variation
+                    double var_ = devs.Max() - devs.Min();
+
+                    int max_index = devs.IndexOf(devs.Max());
+                    int min_index = devs.IndexOf(devs.Min());
+
+                    //Now that we have the extrema calculated we can determine the uncertainty for the extreme deviation and variation in length
+                    foreach (Measurement k in gauge_measurements)
+                    {
+                        k.CalculateExpandedUncertaintyExtremeDeviation(ref vfederal,index_of_extreme_deviation);
+                        U95_extreme_dev = k.CalibrationGauge.ExpandedUncertaintyExtDev;
+                        k.CalculateExpandedUncertaintyVariation(ref vfederal,max_index,min_index);
+                        U95_variation = k.CalibrationGauge.ExpandedUncertaintyVar;
+                    }
 
                     if (!m.CalibrationGauge.Metric) CalculateUncertaintiesMicroInch(ref U95_centre_dev, ref U95_extreme_dev, ref U95_variation);
                     if (!m.CalibrationGauge.Metric) CalculateCMCMicroInch(ref cmc_d, ref cmc_v);
@@ -2094,14 +2220,14 @@ namespace Vertical_Federal_App
                     string compliance_v ="";
                     if (m.CalibrationGauge.Metric)
                     {
-                        if ((Math.Abs(sum_variation) + U95_variation / 1000) < tolerance_variation) compliance_v = "P";
-                        else if (Math.Abs(sum_variation) > (tolerance_variation + U95_variation / 1000)) compliance_v = "F";
+                        if ((Math.Abs(var_) + U95_variation / 1000) < tolerance_variation) compliance_v = "P";
+                        else if (Math.Abs(var_) > (tolerance_variation + U95_variation / 1000)) compliance_v = "F";
                         else compliance_v = "U";
                     }
                     else
                     {
-                        if ((Math.Abs(sum_variation) + U95_variation) < tolerance_variation) compliance_v = "P";
-                        else if (Math.Abs(sum_variation) > (tolerance_variation + U95_variation)) compliance_v = "F";
+                        if ((Math.Abs(var_) + U95_variation) < tolerance_variation) compliance_v = "P";
+                        else if (Math.Abs(var_) > (tolerance_variation + U95_variation)) compliance_v = "F";
                         else compliance_v = "U";
                     }
 
@@ -2116,8 +2242,8 @@ namespace Vertical_Federal_App
                     if (U95_variation < cmc_v) reported_U95_var = cmc_v;
                     else reported_U95_var = U95_variation;
 
-                    if(m.CalibrationGauge.Metric) writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_dev/1000 + "," + corr_extreme_dev + "," + U95_extreme_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_ext_dev/1000 + "," + sum_variation + "," + U95_variation/1000 + "," + cmc_v/1000 + "," + reported_U95_var/1000 + "," + compliance_d + "," + compliance_v);
-                    else writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev + "," + cmc_d + "," + reported_U95_dev + "," + corr_extreme_dev + "," + U95_extreme_dev + "," + cmc_d + "," + reported_U95_ext_dev + "," + sum_variation + "," + U95_variation + "," + cmc_v + "," + reported_U95_var + "," + compliance_d + "," + compliance_v);
+                    if(m.CalibrationGauge.Metric) writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_dev/1000 + "," + corr_extreme_dev + "," + U95_extreme_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_ext_dev/1000 + "," + var_ + "," + U95_variation/1000 + "," + cmc_v/1000 + "," + reported_U95_var/1000 + "," + compliance_d + "," + compliance_v);
+                    else writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev + "," + cmc_d + "," + reported_U95_dev + "," + corr_extreme_dev + "," + U95_extreme_dev + "," + cmc_d + "," + reported_U95_ext_dev + "," + var_ + "," + U95_variation + "," + cmc_v + "," + reported_U95_var + "," + compliance_d + "," + compliance_v);
                     unique_ids_used.Add(unique_id);
                 }
             }

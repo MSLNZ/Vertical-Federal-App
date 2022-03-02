@@ -107,6 +107,10 @@ namespace Vertical_Federal_App
         private bool metric;
         private double deviation;
         private double extreme_deviation;
+        private double A_dev;
+        private double B_dev;
+        private double D_dev;
+        private double E_dev;
         private double min_deviation;
         private double max_deviation;
         private double corrected_length;
@@ -162,6 +166,10 @@ namespace Vertical_Federal_App
             else gb.client_name = (string) client_name.Clone();
             gb.metric = metric;
             gb.deviation = deviation;
+            gb.A_dev = A_dev;
+            gb.B_dev = B_dev;
+            gb.D_dev = D_dev;
+            gb.E_dev = E_dev;
             gb.extreme_deviation = extreme_deviation;
             gb.min_deviation = min_deviation;
             gb.max_deviation = max_deviation;
@@ -321,6 +329,27 @@ namespace Vertical_Federal_App
         {
             get { return max_deviation; }
             set { max_deviation = value; }
+        }
+
+        public double ADev
+        {
+            get { return A_dev; }
+            set { A_dev = value; }
+        }
+        public double BDev
+        {
+            get { return B_dev; }
+            set { B_dev = value; }
+        }
+        public double DDev
+        {
+            get { return D_dev; }
+            set { D_dev = value; }
+        }
+        public double EDev
+        {
+            get { return E_dev; }
+            set { E_dev = value; }
         }
         public double ExtremeDeviation
         {
