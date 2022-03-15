@@ -1112,7 +1112,8 @@ namespace Vertical_Federal_App
 
                 string units = "mm µm";
                 if (!m.CalibrationGauge.Metric) units = "inch µinch";
-
+                m.calculateElasticDeformations(federal);
+                m.CalculateDeviations();
                 Measurement.PrepareLineForWrite(m, ref line_to_write, units);
                 sb.Append(Measurement.writeRichTBLine(m, units, count));
                 writer.WriteLine(line_to_write);
