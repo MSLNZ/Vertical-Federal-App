@@ -390,17 +390,27 @@ namespace Vertical_Federal_App
         public static void CalculateReproducibility()
         {
             List<string> found = new List<string>();
-            List<double> stdev_dev = new List<double>();
-            List<double> stdev_A = new List<double>();
-            List<double> stdev_B = new List<double>();
-            List<double> stdev_D = new List<double>();
-            List<double> stdev_E = new List<double>();
 
-            List<double> mean_dev = new List<double>();
-            List<double> mean_A = new List<double>();
-            List<double> mean_B = new List<double>();
-            List<double> mean_D = new List<double>();
-            List<double> mean_E = new List<double>();
+            //These lists hold the variances of each sample
+            List<double> vars_dev = new List<double>();
+            List<double> vars_A = new List<double>();
+            List<double> vars_B = new List<double>();
+            List<double> vars_D = new List<double>();
+            List<double> vars_E = new List<double>();
+
+            //These lists hold the sample size of each sample
+            List<double> counts_dev = new List<double>();
+            List<double> counts_A = new List<double>();
+            List<double> counts_B = new List<double>();
+            List<double> counts_D = new List<double>();
+            List<double> counts_E = new List<double>();
+
+            //These lists hold the mean of each sample
+            List<double> means_dev = new List<double>();
+            List<double> means_A = new List<double>();
+            List<double> means_B = new List<double>();
+            List<double> means_D = new List<double>();
+            List<double> means_E = new List<double>();
 
 
             //determine the standard deviations of all repeat measurements for deviation and variation
@@ -444,49 +454,84 @@ namespace Vertical_Federal_App
                     }
                 }
                 
-                stdev_dev.Add(getStandardDeviation(occurences_dev));
-                stdev_A.Add(getStandardDeviation(occurences_Adev));
-                stdev_B.Add(getStandardDeviation(occurences_Bdev));
-                stdev_D.Add(getStandardDeviation(occurences_Ddev));
-                stdev_E.Add(getStandardDeviation(occurences_Edev));
+                vars_dev.Add(getVariance(occurences_dev));
+                vars_A.Add(getVariance(occurences_Adev));
+                vars_B.Add(getVariance(occurences_Bdev));
+                vars_D.Add(getVariance(occurences_Ddev));
+                vars_E.Add(getVariance(occurences_Edev));
+
+                counts_dev.Add(occurences_dev.Count);
+                counts_A.Add(occurences_Adev.Count);
+                counts_B.Add(occurences_Bdev.Count);
+                counts_D.Add(occurences_Ddev.Count);
+                counts_E.Add(occurences_Edev.Count);
             }
 
             //now find the sum of the squares
-            double sumsq_d = 0.0;
-            double sumsq_A = 0.0;
-            double sumsq_B = 0.0;
-            double sumsq_D = 0.0;
-            double sumsq_E = 0.0;
-            double sumsq_ABDE = 0.0;
-            foreach (double stdev_d in stdev_dev)
+            double weighted_sum_d = 0.0;
+            double weighted_sum_A = 0.0;
+            double weighted_sum_B = 0.0;
+            double weighted_sum_D = 0.0;
+            double weighted_sum_E = 0.0;
+            double weighted_sum_ABDE = 0.0;
+            int count_index = 0;
+            double total_samples_centre_dev = 0;
+            foreach (double var_d in vars_dev)
             {
-                sumsq_d += (stdev_d * stdev_d);
+                double sample_size = counts_dev.ElementAt(count_index);
+                total_samples_centre_dev += sample_size;
+                weighted_sum_d += (var_d)*(sample_size-1);
+                count_index++;
             }
-            foreach (double stdev_A_ in stdev_A)
+            double pooled_variance_centre_dev = weighted_sum_d / (total_samples_centre_dev - count_index);
+
+            double total_samples_ABDE_dev = 0;
+            count_index = 0;
+            foreach (double var_A in vars_A)
             {
-                sumsq_A += (stdev_A_ * stdev_A_);
+                double sample_size = counts_dev.ElementAt(count_index);
+                total_samples_ABDE_dev += sample_size;
+                weighted_sum_A += (var_A) * (sample_size - 1);
+                count_index++;
             }
-            foreach (double stdev_B_ in stdev_B)
+            count_index = 0;
+            foreach (double var_B in vars_B)
             {
-                sumsq_B += (stdev_B_ * stdev_B_);
+                double sample_size = counts_dev.ElementAt(count_index);
+                total_samples_ABDE_dev += sample_size;
+                weighted_sum_B += (var_B) * (sample_size - 1);
+                count_index++;
             }
-            foreach (double stdev_D_ in stdev_D)
+            count_index = 0;
+            foreach (double var_D in vars_D)
             {
-                sumsq_D += (stdev_D_ * stdev_D_);
+                double sample_size = counts_dev.ElementAt(count_index);
+                total_samples_ABDE_dev += sample_size;
+                weighted_sum_D += (var_D) * (sample_size - 1);
+                count_index++;
             }
-            foreach (double stdev_E_ in stdev_E)
+            count_index = 0;
+            foreach (double var_E in vars_E)
             {
-                sumsq_E += (stdev_E_ * stdev_E_);
+                double sample_size = counts_dev.ElementAt(count_index);
+                total_samples_ABDE_dev += sample_size;
+                weighted_sum_E += (var_E) * (sample_size - 1);
+                count_index++;
             }
-            sumsq_ABDE = sumsq_A + sumsq_B + sumsq_D + sumsq_E;
+            weighted_sum_ABDE = weighted_sum_A + weighted_sum_B + weighted_sum_D + weighted_sum_E;
+            double pooled_variance_A = weighted_sum_A / (total_samples_ABDE_dev / 4 - count_index);
+            double pooled_variance_B = weighted_sum_B / (total_samples_ABDE_dev / 4 - count_index);
+            double pooled_variance_D = weighted_sum_D / (total_samples_ABDE_dev / 4 - count_index);
+            double pooled_variance_E = weighted_sum_E / (total_samples_ABDE_dev / 4 - count_index);
+            double pooled_variance_ABDE = weighted_sum_ABDE / (total_samples_ABDE_dev - count_index*4);
             
             //and the reproducability (pooled standard deviation)
-            rep_d = Math.Sqrt(sumsq_d / stdev_dev.Count);
-            rep_A = Math.Sqrt(sumsq_A / stdev_A.Count);
-            rep_B = Math.Sqrt(sumsq_B / stdev_B.Count);
-            rep_D = Math.Sqrt(sumsq_D / stdev_D.Count);
-            rep_E = Math.Sqrt(sumsq_E / stdev_E.Count);
-            rep_ABDE = Math.Sqrt(sumsq_ABDE / (stdev_A.Count + stdev_B.Count + stdev_D.Count + stdev_E.Count));
+            rep_d = Math.Sqrt(pooled_variance_centre_dev);
+            rep_A = Math.Sqrt(pooled_variance_A);
+            rep_B = Math.Sqrt(pooled_variance_B);
+            rep_D = Math.Sqrt(pooled_variance_D);
+            rep_E = Math.Sqrt(pooled_variance_E);
+            rep_ABDE = Math.Sqrt(pooled_variance_ABDE);
             
         }
         private static double getStandardDeviation(List<double> doubleList)
@@ -501,6 +546,20 @@ namespace Vertical_Federal_App
             }
             sumOfDeviation /= (doubleList.Count-1);
             return Math.Sqrt(sumOfDeviation);
+        }
+        private static double getVariance(List<double> doubleList)
+        {
+            if (doubleList.Count <= 1) return 0.0;
+
+            double sample_mean = doubleList.Average();
+            double sum = 0;
+            foreach (double sample in doubleList)
+            {
+                sum += Math.Pow(sample - sample_mean, 2);
+            }
+            double variance = sum / (doubleList.Count - 1);
+            
+            return variance;
         }
 
         /// <summary>
@@ -1633,6 +1692,7 @@ namespace Vertical_Federal_App
             Stack ref_stack = new Stack(1);
             GaugeBlock calibration_gauge = new GaugeBlock(false);
             meas.CalibrationGauge = calibration_gauge;
+            
             meas.ReferenceStack = ref_stack;
             bool metric = true;
 
@@ -1765,11 +1825,9 @@ namespace Vertical_Federal_App
             meas.CalibrationGauge.MaxDev = max_d;
             meas.CalibrationGauge.ExtremeDeviation = ext_d;
             meas.CalibrationGauge.Variation = v;
-            meas.CalibrationGauge.ADev = meas.a-(meas.r1+meas.r2)/2+meas.reference_deviation;
-            meas.CalibrationGauge.BDev = meas.b - (meas.r1 + meas.r2) / 2 + meas.reference_deviation;
-            meas.CalibrationGauge.DDev = meas.d - (meas.r1 + meas.r2) / 2 + meas.reference_deviation;
-            meas.CalibrationGauge.EDev = meas.e - (meas.r1 + meas.r2) / 2 + meas.reference_deviation;
+        
 
+          
             int comp_std = 0;
             int.TryParse(strings[53], out comp_std);
             meas.CalibrationGauge.ComplianceStandard = comp_std;
