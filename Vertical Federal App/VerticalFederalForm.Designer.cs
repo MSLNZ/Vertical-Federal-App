@@ -137,26 +137,29 @@
             "COM20",
             "COM21",
             "COM22"});
-            this.COMComboBox.Location = new System.Drawing.Point(93, 29);
+            this.COMComboBox.Location = new System.Drawing.Point(140, 45);
+            this.COMComboBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.COMComboBox.Name = "COMComboBox";
-            this.COMComboBox.Size = new System.Drawing.Size(121, 21);
+            this.COMComboBox.Size = new System.Drawing.Size(180, 28);
             this.COMComboBox.TabIndex = 2;
             this.COMComboBox.Text = "COM4";
             // 
             // ComPortlabel
             // 
             this.ComPortlabel.AutoSize = true;
-            this.ComPortlabel.Location = new System.Drawing.Point(26, 32);
+            this.ComPortlabel.Location = new System.Drawing.Point(39, 49);
+            this.ComPortlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.ComPortlabel.Name = "ComPortlabel";
-            this.ComPortlabel.Size = new System.Drawing.Size(53, 13);
+            this.ComPortlabel.Size = new System.Drawing.Size(78, 20);
             this.ComPortlabel.TabIndex = 3;
             this.ComPortlabel.Text = "COM Port";
             // 
             // Comopenbutton
             // 
-            this.Comopenbutton.Location = new System.Drawing.Point(240, 27);
+            this.Comopenbutton.Location = new System.Drawing.Point(360, 42);
+            this.Comopenbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Comopenbutton.Name = "Comopenbutton";
-            this.Comopenbutton.Size = new System.Drawing.Size(68, 23);
+            this.Comopenbutton.Size = new System.Drawing.Size(102, 35);
             this.Comopenbutton.TabIndex = 4;
             this.Comopenbutton.Text = "Open";
             this.Comopenbutton.UseVisualStyleBackColor = true;
@@ -164,9 +167,11 @@
             // 
             // comgroupBox
             // 
-            this.comgroupBox.Location = new System.Drawing.Point(12, 12);
+            this.comgroupBox.Location = new System.Drawing.Point(18, 18);
+            this.comgroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.comgroupBox.Name = "comgroupBox";
-            this.comgroupBox.Size = new System.Drawing.Size(435, 65);
+            this.comgroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comgroupBox.Size = new System.Drawing.Size(652, 100);
             this.comgroupBox.TabIndex = 5;
             this.comgroupBox.TabStop = false;
             this.comgroupBox.Text = "Federal Communication";
@@ -174,36 +179,40 @@
             // setSerialTextBox
             // 
             this.setSerialTextBox.Enabled = false;
-            this.setSerialTextBox.Location = new System.Drawing.Point(160, 64);
+            this.setSerialTextBox.Location = new System.Drawing.Point(240, 98);
+            this.setSerialTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.setSerialTextBox.Name = "setSerialTextBox";
-            this.setSerialTextBox.Size = new System.Drawing.Size(173, 20);
+            this.setSerialTextBox.Size = new System.Drawing.Size(258, 26);
             this.setSerialTextBox.TabIndex = 6;
             this.setSerialTextBox.TextChanged += new System.EventHandler(this.setSerialTextBox_TextChanged);
             // 
             // gaugeSerialTextBox
             // 
             this.gaugeSerialTextBox.Enabled = false;
-            this.gaugeSerialTextBox.Location = new System.Drawing.Point(160, 90);
+            this.gaugeSerialTextBox.Location = new System.Drawing.Point(240, 138);
+            this.gaugeSerialTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.gaugeSerialTextBox.Name = "gaugeSerialTextBox";
-            this.gaugeSerialTextBox.Size = new System.Drawing.Size(173, 20);
+            this.gaugeSerialTextBox.Size = new System.Drawing.Size(258, 26);
             this.gaugeSerialTextBox.TabIndex = 7;
             this.gaugeSerialTextBox.TextChanged += new System.EventHandler(this.gaugeSerialTextBox_TextChanged);
             // 
             // GaugeSerialLabel
             // 
             this.GaugeSerialLabel.AutoSize = true;
-            this.GaugeSerialLabel.Location = new System.Drawing.Point(16, 93);
+            this.GaugeSerialLabel.Location = new System.Drawing.Point(24, 143);
+            this.GaugeSerialLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.GaugeSerialLabel.Name = "GaugeSerialLabel";
-            this.GaugeSerialLabel.Size = new System.Drawing.Size(108, 13);
+            this.GaugeSerialLabel.Size = new System.Drawing.Size(162, 20);
             this.GaugeSerialLabel.TabIndex = 8;
             this.GaugeSerialLabel.Text = "Gauge Serial Number";
             // 
             // setSerialLabel2
             // 
             this.setSerialLabel2.AutoSize = true;
-            this.setSerialLabel2.Location = new System.Drawing.Point(16, 67);
+            this.setSerialLabel2.Location = new System.Drawing.Point(24, 103);
+            this.setSerialLabel2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.setSerialLabel2.Name = "setSerialLabel2";
-            this.setSerialLabel2.Size = new System.Drawing.Size(92, 13);
+            this.setSerialLabel2.Size = new System.Drawing.Size(138, 20);
             this.setSerialLabel2.TabIndex = 9;
             this.setSerialLabel2.Text = "Set Serial Number";
             // 
@@ -211,9 +220,10 @@
             // 
             this.imperialCheckBox.AutoSize = true;
             this.imperialCheckBox.Enabled = false;
-            this.imperialCheckBox.Location = new System.Drawing.Point(17, 19);
+            this.imperialCheckBox.Location = new System.Drawing.Point(26, 29);
+            this.imperialCheckBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.imperialCheckBox.Name = "imperialCheckBox";
-            this.imperialCheckBox.Size = new System.Drawing.Size(62, 17);
+            this.imperialCheckBox.Size = new System.Drawing.Size(91, 24);
             this.imperialCheckBox.TabIndex = 0;
             this.imperialCheckBox.Text = "Imperial";
             this.imperialCheckBox.UseVisualStyleBackColor = true;
@@ -223,18 +233,20 @@
             // 
             this.referenceSetComboBox.Enabled = false;
             this.referenceSetComboBox.FormattingEnabled = true;
-            this.referenceSetComboBox.Location = new System.Drawing.Point(160, 248);
+            this.referenceSetComboBox.Location = new System.Drawing.Point(240, 382);
+            this.referenceSetComboBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.referenceSetComboBox.Name = "referenceSetComboBox";
-            this.referenceSetComboBox.Size = new System.Drawing.Size(173, 21);
+            this.referenceSetComboBox.Size = new System.Drawing.Size(258, 28);
             this.referenceSetComboBox.TabIndex = 10;
             this.referenceSetComboBox.SelectedIndexChanged += new System.EventHandler(this.referenceSetComboBox_SelectedIndexChanged);
             // 
             // referenceGaugeSetLabel
             // 
             this.referenceGaugeSetLabel.AutoSize = true;
-            this.referenceGaugeSetLabel.Location = new System.Drawing.Point(16, 251);
+            this.referenceGaugeSetLabel.Location = new System.Drawing.Point(24, 386);
+            this.referenceGaugeSetLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.referenceGaugeSetLabel.Name = "referenceGaugeSetLabel";
-            this.referenceGaugeSetLabel.Size = new System.Drawing.Size(111, 13);
+            this.referenceGaugeSetLabel.Size = new System.Drawing.Size(166, 20);
             this.referenceGaugeSetLabel.TabIndex = 11;
             this.referenceGaugeSetLabel.Text = "Reference Gauge Set";
             // 
@@ -244,9 +256,10 @@
             this.metricCheckBox.Checked = true;
             this.metricCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.metricCheckBox.Enabled = false;
-            this.metricCheckBox.Location = new System.Drawing.Point(81, 19);
+            this.metricCheckBox.Location = new System.Drawing.Point(122, 29);
+            this.metricCheckBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.metricCheckBox.Name = "metricCheckBox";
-            this.metricCheckBox.Size = new System.Drawing.Size(55, 17);
+            this.metricCheckBox.Size = new System.Drawing.Size(78, 24);
             this.metricCheckBox.TabIndex = 1;
             this.metricCheckBox.Text = "Metric";
             this.metricCheckBox.UseVisualStyleBackColor = true;
@@ -255,17 +268,19 @@
             // referenceDeviationTextBox
             // 
             this.referenceDeviationTextBox.Enabled = false;
-            this.referenceDeviationTextBox.Location = new System.Drawing.Point(126, 24);
+            this.referenceDeviationTextBox.Location = new System.Drawing.Point(189, 37);
+            this.referenceDeviationTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.referenceDeviationTextBox.Name = "referenceDeviationTextBox";
-            this.referenceDeviationTextBox.Size = new System.Drawing.Size(95, 20);
+            this.referenceDeviationTextBox.Size = new System.Drawing.Size(140, 26);
             this.referenceDeviationTextBox.TabIndex = 12;
             // 
             // refDeviationLabel
             // 
             this.refDeviationLabel.AutoSize = true;
-            this.refDeviationLabel.Location = new System.Drawing.Point(7, 27);
+            this.refDeviationLabel.Location = new System.Drawing.Point(10, 42);
+            this.refDeviationLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.refDeviationLabel.Name = "refDeviationLabel";
-            this.refDeviationLabel.Size = new System.Drawing.Size(105, 13);
+            this.refDeviationLabel.Size = new System.Drawing.Size(154, 20);
             this.refDeviationLabel.TabIndex = 13;
             this.refDeviationLabel.Text = "Reference Deviation";
             // 
@@ -296,9 +311,11 @@
             this.gaugeParametersGroupBox.Controls.Add(this.GaugeSerialLabel);
             this.gaugeParametersGroupBox.Controls.Add(this.gaugeSerialTextBox);
             this.gaugeParametersGroupBox.Enabled = false;
-            this.gaugeParametersGroupBox.Location = new System.Drawing.Point(12, 83);
+            this.gaugeParametersGroupBox.Location = new System.Drawing.Point(18, 128);
+            this.gaugeParametersGroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.gaugeParametersGroupBox.Name = "gaugeParametersGroupBox";
-            this.gaugeParametersGroupBox.Size = new System.Drawing.Size(435, 339);
+            this.gaugeParametersGroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.gaugeParametersGroupBox.Size = new System.Drawing.Size(652, 522);
             this.gaugeParametersGroupBox.TabIndex = 14;
             this.gaugeParametersGroupBox.TabStop = false;
             this.gaugeParametersGroupBox.Text = "Gauge Parameters";
@@ -325,45 +342,50 @@
             "ASME B89.1.9-2002 Grade 0",
             "ASME B89.1.9-2002 Grade AS-1",
             "ASME B89.1.9-2002 Grade AS-2"});
-            this.ComplianceComboBox.Location = new System.Drawing.Point(160, 116);
+            this.ComplianceComboBox.Location = new System.Drawing.Point(240, 178);
+            this.ComplianceComboBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ComplianceComboBox.Name = "ComplianceComboBox";
-            this.ComplianceComboBox.Size = new System.Drawing.Size(173, 21);
+            this.ComplianceComboBox.Size = new System.Drawing.Size(258, 28);
             this.ComplianceComboBox.TabIndex = 55;
             this.ComplianceComboBox.SelectedIndexChanged += new System.EventHandler(this.ComplianceComboBox_SelectedIndexChanged);
             // 
             // Compliance_label
             // 
             this.Compliance_label.AutoSize = true;
-            this.Compliance_label.Location = new System.Drawing.Point(16, 119);
+            this.Compliance_label.Location = new System.Drawing.Point(24, 183);
+            this.Compliance_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.Compliance_label.Name = "Compliance_label";
-            this.Compliance_label.Size = new System.Drawing.Size(74, 13);
+            this.Compliance_label.Size = new System.Drawing.Size(110, 20);
             this.Compliance_label.TabIndex = 54;
             this.Compliance_label.Text = "Compliance to";
             // 
             // clientNameLabel
             // 
             this.clientNameLabel.AutoSize = true;
-            this.clientNameLabel.Location = new System.Drawing.Point(16, 41);
+            this.clientNameLabel.Location = new System.Drawing.Point(24, 63);
+            this.clientNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.clientNameLabel.Name = "clientNameLabel";
-            this.clientNameLabel.Size = new System.Drawing.Size(64, 13);
+            this.clientNameLabel.Size = new System.Drawing.Size(95, 20);
             this.clientNameLabel.TabIndex = 52;
             this.clientNameLabel.Text = "Client Name";
             // 
             // clientNameTextBox
             // 
             this.clientNameTextBox.Enabled = false;
-            this.clientNameTextBox.Location = new System.Drawing.Point(160, 38);
+            this.clientNameTextBox.Location = new System.Drawing.Point(240, 58);
+            this.clientNameTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.clientNameTextBox.Name = "clientNameTextBox";
-            this.clientNameTextBox.Size = new System.Drawing.Size(173, 20);
+            this.clientNameTextBox.Size = new System.Drawing.Size(258, 26);
             this.clientNameTextBox.TabIndex = 51;
             this.clientNameTextBox.TextChanged += new System.EventHandler(this.clientNameTextBox_TextChanged);
             // 
             // poissonsRatioTextBox
             // 
             this.poissonsRatioTextBox.Enabled = false;
-            this.poissonsRatioTextBox.Location = new System.Drawing.Point(160, 196);
+            this.poissonsRatioTextBox.Location = new System.Drawing.Point(240, 302);
+            this.poissonsRatioTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.poissonsRatioTextBox.Name = "poissonsRatioTextBox";
-            this.poissonsRatioTextBox.Size = new System.Drawing.Size(173, 20);
+            this.poissonsRatioTextBox.Size = new System.Drawing.Size(258, 26);
             this.poissonsRatioTextBox.TabIndex = 50;
             this.poissonsRatioTextBox.Text = "0.23";
             this.poissonsRatioTextBox.TextChanged += new System.EventHandler(this.poissonsRatioTextBox_TextChanged);
@@ -371,9 +393,10 @@
             // youngModulusTextBox
             // 
             this.youngModulusTextBox.Enabled = false;
-            this.youngModulusTextBox.Location = new System.Drawing.Point(160, 170);
+            this.youngModulusTextBox.Location = new System.Drawing.Point(240, 262);
+            this.youngModulusTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.youngModulusTextBox.Name = "youngModulusTextBox";
-            this.youngModulusTextBox.Size = new System.Drawing.Size(173, 20);
+            this.youngModulusTextBox.Size = new System.Drawing.Size(258, 26);
             this.youngModulusTextBox.TabIndex = 49;
             this.youngModulusTextBox.Text = "200";
             this.youngModulusTextBox.TextChanged += new System.EventHandler(this.youngModulusTextBox_TextChanged);
@@ -381,18 +404,20 @@
             // poissonsRatioLabel
             // 
             this.poissonsRatioLabel.AutoSize = true;
-            this.poissonsRatioLabel.Location = new System.Drawing.Point(16, 199);
+            this.poissonsRatioLabel.Location = new System.Drawing.Point(24, 306);
+            this.poissonsRatioLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.poissonsRatioLabel.Name = "poissonsRatioLabel";
-            this.poissonsRatioLabel.Size = new System.Drawing.Size(77, 13);
+            this.poissonsRatioLabel.Size = new System.Drawing.Size(115, 20);
             this.poissonsRatioLabel.TabIndex = 48;
             this.poissonsRatioLabel.Text = "Poissons Ratio";
             // 
             // youngsModulusLabel
             // 
             this.youngsModulusLabel.AutoSize = true;
-            this.youngsModulusLabel.Location = new System.Drawing.Point(16, 173);
+            this.youngsModulusLabel.Location = new System.Drawing.Point(24, 266);
+            this.youngsModulusLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.youngsModulusLabel.Name = "youngsModulusLabel";
-            this.youngsModulusLabel.Size = new System.Drawing.Size(88, 13);
+            this.youngsModulusLabel.Size = new System.Drawing.Size(131, 20);
             this.youngsModulusLabel.TabIndex = 47;
             this.youngsModulusLabel.Text = "Young\'s Modulus";
             // 
@@ -404,9 +429,10 @@
             "steel",
             "ceramic",
             "tungsten carbide"});
-            this.materialComboBox.Location = new System.Drawing.Point(160, 143);
+            this.materialComboBox.Location = new System.Drawing.Point(240, 220);
+            this.materialComboBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.materialComboBox.Name = "materialComboBox";
-            this.materialComboBox.Size = new System.Drawing.Size(173, 21);
+            this.materialComboBox.Size = new System.Drawing.Size(258, 28);
             this.materialComboBox.TabIndex = 23;
             this.materialComboBox.Text = "ceramic";
             this.materialComboBox.SelectedIndexChanged += new System.EventHandler(this.materialComboBox_SelectedIndexChanged);
@@ -414,18 +440,20 @@
             // MaterialLabel
             // 
             this.MaterialLabel.AutoSize = true;
-            this.MaterialLabel.Location = new System.Drawing.Point(16, 146);
+            this.MaterialLabel.Location = new System.Drawing.Point(24, 225);
+            this.MaterialLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.MaterialLabel.Name = "MaterialLabel";
-            this.MaterialLabel.Size = new System.Drawing.Size(44, 13);
+            this.MaterialLabel.Size = new System.Drawing.Size(65, 20);
             this.MaterialLabel.TabIndex = 22;
             this.MaterialLabel.Text = "Material";
             // 
             // CalGaugeExpCoeffLabel
             // 
             this.CalGaugeExpCoeffLabel.AutoSize = true;
-            this.CalGaugeExpCoeffLabel.Location = new System.Drawing.Point(16, 224);
+            this.CalGaugeExpCoeffLabel.Location = new System.Drawing.Point(24, 345);
+            this.CalGaugeExpCoeffLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.CalGaugeExpCoeffLabel.Name = "CalGaugeExpCoeffLabel";
-            this.CalGaugeExpCoeffLabel.Size = new System.Drawing.Size(53, 13);
+            this.CalGaugeExpCoeffLabel.Size = new System.Drawing.Size(79, 20);
             this.CalGaugeExpCoeffLabel.TabIndex = 21;
             this.CalGaugeExpCoeffLabel.Text = "Exp Coeff";
             // 
@@ -438,14 +466,15 @@
             0,
             0,
             65536});
-            this.expNumericUpDown.Location = new System.Drawing.Point(160, 222);
+            this.expNumericUpDown.Location = new System.Drawing.Point(240, 342);
+            this.expNumericUpDown.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.expNumericUpDown.Maximum = new decimal(new int[] {
             25,
             0,
             0,
             0});
             this.expNumericUpDown.Name = "expNumericUpDown";
-            this.expNumericUpDown.Size = new System.Drawing.Size(173, 20);
+            this.expNumericUpDown.Size = new System.Drawing.Size(260, 26);
             this.expNumericUpDown.TabIndex = 20;
             this.expNumericUpDown.Value = new decimal(new int[] {
             92,
@@ -457,9 +486,10 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(16, 304);
+            this.label15.Location = new System.Drawing.Point(24, 468);
+            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(138, 13);
+            this.label15.Size = new System.Drawing.Size(207, 20);
             this.label15.TabIndex = 17;
             this.label15.Text = "Suitable Reference Gauges";
             // 
@@ -467,45 +497,50 @@
             // 
             this.suitableReferenceGaugesComboBox.Enabled = false;
             this.suitableReferenceGaugesComboBox.FormattingEnabled = true;
-            this.suitableReferenceGaugesComboBox.Location = new System.Drawing.Point(160, 301);
+            this.suitableReferenceGaugesComboBox.Location = new System.Drawing.Point(240, 463);
+            this.suitableReferenceGaugesComboBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.suitableReferenceGaugesComboBox.Name = "suitableReferenceGaugesComboBox";
-            this.suitableReferenceGaugesComboBox.Size = new System.Drawing.Size(253, 21);
+            this.suitableReferenceGaugesComboBox.Size = new System.Drawing.Size(378, 28);
             this.suitableReferenceGaugesComboBox.TabIndex = 16;
             this.suitableReferenceGaugesComboBox.SelectedIndexChanged += new System.EventHandler(this.suitableReferenceGaugesComboBox_SelectedIndexChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 278);
+            this.label2.Location = new System.Drawing.Point(24, 428);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(132, 13);
+            this.label2.Size = new System.Drawing.Size(198, 20);
             this.label2.TabIndex = 15;
             this.label2.Text = "Calibration Gauge Nominal";
             // 
             // calGaugeNominalTextBox
             // 
             this.calGaugeNominalTextBox.Enabled = false;
-            this.calGaugeNominalTextBox.Location = new System.Drawing.Point(160, 275);
+            this.calGaugeNominalTextBox.Location = new System.Drawing.Point(240, 423);
+            this.calGaugeNominalTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.calGaugeNominalTextBox.Name = "calGaugeNominalTextBox";
-            this.calGaugeNominalTextBox.Size = new System.Drawing.Size(173, 20);
+            this.calGaugeNominalTextBox.Size = new System.Drawing.Size(258, 26);
             this.calGaugeNominalTextBox.TabIndex = 15;
             this.calGaugeNominalTextBox.TextChanged += new System.EventHandler(this.calGaugeSizeTextBox_TextChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(41, 113);
+            this.label1.Location = new System.Drawing.Point(62, 174);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(20, 13);
+            this.label1.Size = new System.Drawing.Size(29, 20);
             this.label1.TabIndex = 15;
             this.label1.Text = "C1";
             // 
             // C1TextBox
             // 
             this.C1TextBox.Enabled = false;
-            this.C1TextBox.Location = new System.Drawing.Point(81, 110);
+            this.C1TextBox.Location = new System.Drawing.Point(122, 169);
+            this.C1TextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.C1TextBox.Name = "C1TextBox";
-            this.C1TextBox.Size = new System.Drawing.Size(140, 20);
+            this.C1TextBox.Size = new System.Drawing.Size(208, 26);
             this.C1TextBox.TabIndex = 16;
             this.C1TextBox.TextChanged += new System.EventHandler(this.C1TextBox_TextChanged);
             // 
@@ -516,9 +551,11 @@
             this.gaugeBlockGroupBox.Controls.Add(this.topRightRadioButton);
             this.gaugeBlockGroupBox.Controls.Add(this.topLeftRadioButton);
             this.gaugeBlockGroupBox.Controls.Add(this.centreRadioButton);
-            this.gaugeBlockGroupBox.Location = new System.Drawing.Point(286, 55);
+            this.gaugeBlockGroupBox.Location = new System.Drawing.Point(429, 85);
+            this.gaugeBlockGroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.gaugeBlockGroupBox.Name = "gaugeBlockGroupBox";
-            this.gaugeBlockGroupBox.Size = new System.Drawing.Size(107, 255);
+            this.gaugeBlockGroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.gaugeBlockGroupBox.Size = new System.Drawing.Size(160, 392);
             this.gaugeBlockGroupBox.TabIndex = 17;
             this.gaugeBlockGroupBox.TabStop = false;
             // 
@@ -526,9 +563,10 @@
             // 
             this.bottomRightRadioButton.AutoSize = true;
             this.bottomRightRadioButton.Enabled = false;
-            this.bottomRightRadioButton.Location = new System.Drawing.Point(88, 233);
+            this.bottomRightRadioButton.Location = new System.Drawing.Point(132, 358);
+            this.bottomRightRadioButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bottomRightRadioButton.Name = "bottomRightRadioButton";
-            this.bottomRightRadioButton.Size = new System.Drawing.Size(14, 13);
+            this.bottomRightRadioButton.Size = new System.Drawing.Size(21, 20);
             this.bottomRightRadioButton.TabIndex = 20;
             this.bottomRightRadioButton.TabStop = true;
             this.bottomRightRadioButton.UseVisualStyleBackColor = true;
@@ -538,9 +576,10 @@
             // 
             this.bottomLeftRadioButton.AutoSize = true;
             this.bottomLeftRadioButton.Enabled = false;
-            this.bottomLeftRadioButton.Location = new System.Drawing.Point(7, 233);
+            this.bottomLeftRadioButton.Location = new System.Drawing.Point(10, 358);
+            this.bottomLeftRadioButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bottomLeftRadioButton.Name = "bottomLeftRadioButton";
-            this.bottomLeftRadioButton.Size = new System.Drawing.Size(14, 13);
+            this.bottomLeftRadioButton.Size = new System.Drawing.Size(21, 20);
             this.bottomLeftRadioButton.TabIndex = 19;
             this.bottomLeftRadioButton.TabStop = true;
             this.bottomLeftRadioButton.UseVisualStyleBackColor = true;
@@ -550,9 +589,10 @@
             // 
             this.topRightRadioButton.AutoSize = true;
             this.topRightRadioButton.Enabled = false;
-            this.topRightRadioButton.Location = new System.Drawing.Point(88, 19);
+            this.topRightRadioButton.Location = new System.Drawing.Point(132, 29);
+            this.topRightRadioButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.topRightRadioButton.Name = "topRightRadioButton";
-            this.topRightRadioButton.Size = new System.Drawing.Size(14, 13);
+            this.topRightRadioButton.Size = new System.Drawing.Size(21, 20);
             this.topRightRadioButton.TabIndex = 2;
             this.topRightRadioButton.TabStop = true;
             this.topRightRadioButton.UseVisualStyleBackColor = true;
@@ -562,9 +602,10 @@
             // 
             this.topLeftRadioButton.AutoSize = true;
             this.topLeftRadioButton.Enabled = false;
-            this.topLeftRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.topLeftRadioButton.Location = new System.Drawing.Point(9, 29);
+            this.topLeftRadioButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.topLeftRadioButton.Name = "topLeftRadioButton";
-            this.topLeftRadioButton.Size = new System.Drawing.Size(14, 13);
+            this.topLeftRadioButton.Size = new System.Drawing.Size(21, 20);
             this.topLeftRadioButton.TabIndex = 1;
             this.topLeftRadioButton.TabStop = true;
             this.topLeftRadioButton.UseVisualStyleBackColor = true;
@@ -574,9 +615,10 @@
             // 
             this.centreRadioButton.AutoSize = true;
             this.centreRadioButton.Enabled = false;
-            this.centreRadioButton.Location = new System.Drawing.Point(46, 126);
+            this.centreRadioButton.Location = new System.Drawing.Point(69, 194);
+            this.centreRadioButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.centreRadioButton.Name = "centreRadioButton";
-            this.centreRadioButton.Size = new System.Drawing.Size(14, 13);
+            this.centreRadioButton.Size = new System.Drawing.Size(21, 20);
             this.centreRadioButton.TabIndex = 0;
             this.centreRadioButton.TabStop = true;
             this.centreRadioButton.UseVisualStyleBackColor = true;
@@ -585,9 +627,10 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(290, 46);
+            this.label3.Location = new System.Drawing.Point(435, 71);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(101, 13);
+            this.label3.Size = new System.Drawing.Size(149, 20);
             this.label3.TabIndex = 18;
             this.label3.Text = "Gauge Block Points";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -595,27 +638,30 @@
             // Blabel
             // 
             this.Blabel.AutoSize = true;
-            this.Blabel.Location = new System.Drawing.Point(266, 74);
+            this.Blabel.Location = new System.Drawing.Point(399, 114);
+            this.Blabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.Blabel.Name = "Blabel";
-            this.Blabel.Size = new System.Drawing.Size(14, 13);
+            this.Blabel.Size = new System.Drawing.Size(20, 20);
             this.Blabel.TabIndex = 19;
             this.Blabel.Text = "B";
             // 
             // Alabel
             // 
             this.Alabel.AutoSize = true;
-            this.Alabel.Location = new System.Drawing.Point(395, 74);
+            this.Alabel.Location = new System.Drawing.Point(592, 114);
+            this.Alabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.Alabel.Name = "Alabel";
-            this.Alabel.Size = new System.Drawing.Size(14, 13);
+            this.Alabel.Size = new System.Drawing.Size(20, 20);
             this.Alabel.TabIndex = 20;
             this.Alabel.Text = "A";
             // 
             // C1label
             // 
             this.C1label.AutoSize = true;
-            this.C1label.Location = new System.Drawing.Point(393, 168);
+            this.C1label.Location = new System.Drawing.Point(590, 258);
+            this.C1label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.C1label.Name = "C1label";
-            this.C1label.Size = new System.Drawing.Size(20, 13);
+            this.C1label.Size = new System.Drawing.Size(29, 20);
             this.C1label.TabIndex = 21;
             this.C1label.Text = "C1";
             this.C1label.Click += new System.EventHandler(this.C1label_Click);
@@ -623,9 +669,10 @@
             // C2label
             // 
             this.C2label.AutoSize = true;
-            this.C2label.Location = new System.Drawing.Point(393, 181);
+            this.C2label.Location = new System.Drawing.Point(590, 278);
+            this.C2label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.C2label.Name = "C2label";
-            this.C2label.Size = new System.Drawing.Size(20, 13);
+            this.C2label.Size = new System.Drawing.Size(29, 20);
             this.C2label.TabIndex = 22;
             this.C2label.Text = "C2";
             this.C2label.Click += new System.EventHandler(this.C2label_Click);
@@ -633,9 +680,10 @@
             // C3label
             // 
             this.C3label.AutoSize = true;
-            this.C3label.Location = new System.Drawing.Point(393, 194);
+            this.C3label.Location = new System.Drawing.Point(590, 298);
+            this.C3label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.C3label.Name = "C3label";
-            this.C3label.Size = new System.Drawing.Size(20, 13);
+            this.C3label.Size = new System.Drawing.Size(29, 20);
             this.C3label.TabIndex = 23;
             this.C3label.Text = "C3";
             this.C3label.Click += new System.EventHandler(this.C3label_Click);
@@ -643,162 +691,180 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(394, 288);
+            this.label9.Location = new System.Drawing.Point(591, 443);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(15, 13);
+            this.label9.Size = new System.Drawing.Size(21, 20);
             this.label9.TabIndex = 24;
             this.label9.Text = "D";
             // 
             // Elabel
             // 
             this.Elabel.AutoSize = true;
-            this.Elabel.Location = new System.Drawing.Point(266, 288);
+            this.Elabel.Location = new System.Drawing.Point(399, 443);
+            this.Elabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.Elabel.Name = "Elabel";
-            this.Elabel.Size = new System.Drawing.Size(14, 13);
+            this.Elabel.Size = new System.Drawing.Size(20, 20);
             this.Elabel.TabIndex = 25;
             this.Elabel.Text = "E";
             // 
             // ATextBox
             // 
             this.ATextBox.Enabled = false;
-            this.ATextBox.Location = new System.Drawing.Point(81, 136);
+            this.ATextBox.Location = new System.Drawing.Point(122, 209);
+            this.ATextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ATextBox.Name = "ATextBox";
-            this.ATextBox.Size = new System.Drawing.Size(140, 20);
+            this.ATextBox.Size = new System.Drawing.Size(208, 26);
             this.ATextBox.TabIndex = 27;
             this.ATextBox.TextChanged += new System.EventHandler(this.ATextBox_TextChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(41, 139);
+            this.label4.Location = new System.Drawing.Point(62, 214);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(14, 13);
+            this.label4.Size = new System.Drawing.Size(20, 20);
             this.label4.TabIndex = 26;
             this.label4.Text = "A";
             // 
             // BTextBox
             // 
             this.BTextBox.Enabled = false;
-            this.BTextBox.Location = new System.Drawing.Point(81, 162);
+            this.BTextBox.Location = new System.Drawing.Point(122, 249);
+            this.BTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BTextBox.Name = "BTextBox";
-            this.BTextBox.Size = new System.Drawing.Size(140, 20);
+            this.BTextBox.Size = new System.Drawing.Size(208, 26);
             this.BTextBox.TabIndex = 29;
             this.BTextBox.TextChanged += new System.EventHandler(this.BTextBox_TextChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(41, 165);
+            this.label5.Location = new System.Drawing.Point(62, 254);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(14, 13);
+            this.label5.Size = new System.Drawing.Size(20, 20);
             this.label5.TabIndex = 28;
             this.label5.Text = "B";
             // 
             // C2TextBox
             // 
             this.C2TextBox.Enabled = false;
-            this.C2TextBox.Location = new System.Drawing.Point(81, 188);
+            this.C2TextBox.Location = new System.Drawing.Point(122, 289);
+            this.C2TextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.C2TextBox.Name = "C2TextBox";
-            this.C2TextBox.Size = new System.Drawing.Size(140, 20);
+            this.C2TextBox.Size = new System.Drawing.Size(208, 26);
             this.C2TextBox.TabIndex = 31;
             this.C2TextBox.TextChanged += new System.EventHandler(this.C2TextBox_TextChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(40, 191);
+            this.label6.Location = new System.Drawing.Point(60, 294);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(20, 13);
+            this.label6.Size = new System.Drawing.Size(29, 20);
             this.label6.TabIndex = 30;
             this.label6.Text = "C2";
             // 
             // DTextBox
             // 
             this.DTextBox.Enabled = false;
-            this.DTextBox.Location = new System.Drawing.Point(81, 214);
+            this.DTextBox.Location = new System.Drawing.Point(122, 329);
+            this.DTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.DTextBox.Name = "DTextBox";
-            this.DTextBox.Size = new System.Drawing.Size(140, 20);
+            this.DTextBox.Size = new System.Drawing.Size(208, 26);
             this.DTextBox.TabIndex = 33;
             this.DTextBox.TextChanged += new System.EventHandler(this.DTextBox_TextChanged);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(39, 217);
+            this.label7.Location = new System.Drawing.Point(58, 334);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(15, 13);
+            this.label7.Size = new System.Drawing.Size(21, 20);
             this.label7.TabIndex = 32;
             this.label7.Text = "D";
             // 
             // ETextBox
             // 
             this.ETextBox.Enabled = false;
-            this.ETextBox.Location = new System.Drawing.Point(81, 240);
+            this.ETextBox.Location = new System.Drawing.Point(122, 369);
+            this.ETextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ETextBox.Name = "ETextBox";
-            this.ETextBox.Size = new System.Drawing.Size(140, 20);
+            this.ETextBox.Size = new System.Drawing.Size(208, 26);
             this.ETextBox.TabIndex = 35;
             this.ETextBox.TextChanged += new System.EventHandler(this.ETextBox_TextChanged);
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(39, 243);
+            this.label8.Location = new System.Drawing.Point(58, 374);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(14, 13);
+            this.label8.Size = new System.Drawing.Size(20, 20);
             this.label8.TabIndex = 34;
             this.label8.Text = "E";
             // 
             // C3TextBox
             // 
             this.C3TextBox.Enabled = false;
-            this.C3TextBox.Location = new System.Drawing.Point(81, 266);
+            this.C3TextBox.Location = new System.Drawing.Point(122, 409);
+            this.C3TextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.C3TextBox.Name = "C3TextBox";
-            this.C3TextBox.Size = new System.Drawing.Size(140, 20);
+            this.C3TextBox.Size = new System.Drawing.Size(208, 26);
             this.C3TextBox.TabIndex = 37;
             this.C3TextBox.TextChanged += new System.EventHandler(this.C3TextBox_TextChanged);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(39, 269);
+            this.label10.Location = new System.Drawing.Point(58, 414);
+            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(20, 13);
+            this.label10.Size = new System.Drawing.Size(29, 20);
             this.label10.TabIndex = 36;
             this.label10.Text = "C3";
             // 
             // R1TextBox
             // 
             this.R1TextBox.Enabled = false;
-            this.R1TextBox.Location = new System.Drawing.Point(81, 71);
+            this.R1TextBox.Location = new System.Drawing.Point(122, 109);
+            this.R1TextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.R1TextBox.Name = "R1TextBox";
-            this.R1TextBox.Size = new System.Drawing.Size(140, 20);
+            this.R1TextBox.Size = new System.Drawing.Size(208, 26);
             this.R1TextBox.TabIndex = 39;
             this.R1TextBox.TextChanged += new System.EventHandler(this.R1TextBox_TextChanged);
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(39, 74);
+            this.label11.Location = new System.Drawing.Point(58, 114);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(21, 13);
+            this.label11.Size = new System.Drawing.Size(30, 20);
             this.label11.TabIndex = 38;
             this.label11.Text = "R1";
             // 
             // R2TextBox
             // 
             this.R2TextBox.Enabled = false;
-            this.R2TextBox.Location = new System.Drawing.Point(81, 305);
+            this.R2TextBox.Location = new System.Drawing.Point(122, 469);
+            this.R2TextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.R2TextBox.Name = "R2TextBox";
-            this.R2TextBox.Size = new System.Drawing.Size(140, 20);
+            this.R2TextBox.Size = new System.Drawing.Size(208, 26);
             this.R2TextBox.TabIndex = 41;
             this.R2TextBox.TextChanged += new System.EventHandler(this.R2TextBox_TextChanged);
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(39, 308);
+            this.label12.Location = new System.Drawing.Point(58, 474);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(21, 13);
+            this.label12.Size = new System.Drawing.Size(30, 20);
             this.label12.TabIndex = 40;
             this.label12.Text = "R2";
             this.label12.Click += new System.EventHandler(this.label12_Click);
@@ -806,9 +872,10 @@
             // gaugeResultsRichTextBox
             // 
             this.gaugeResultsRichTextBox.HideSelection = false;
-            this.gaugeResultsRichTextBox.Location = new System.Drawing.Point(466, 417);
+            this.gaugeResultsRichTextBox.Location = new System.Drawing.Point(699, 642);
+            this.gaugeResultsRichTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.gaugeResultsRichTextBox.Name = "gaugeResultsRichTextBox";
-            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(560, 430);
+            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(838, 659);
             this.gaugeResultsRichTextBox.TabIndex = 42;
             this.gaugeResultsRichTextBox.Text = "";
             // 
@@ -851,18 +918,21 @@
             this.measurementGroupBox.Controls.Add(this.BTextBox);
             this.measurementGroupBox.Controls.Add(this.C2TextBox);
             this.measurementGroupBox.Controls.Add(this.label1);
-            this.measurementGroupBox.Location = new System.Drawing.Point(12, 428);
+            this.measurementGroupBox.Location = new System.Drawing.Point(18, 658);
+            this.measurementGroupBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.measurementGroupBox.Name = "measurementGroupBox";
-            this.measurementGroupBox.Size = new System.Drawing.Size(435, 419);
+            this.measurementGroupBox.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.measurementGroupBox.Size = new System.Drawing.Size(652, 645);
             this.measurementGroupBox.TabIndex = 43;
             this.measurementGroupBox.TabStop = false;
             this.measurementGroupBox.Text = "Measurement";
             // 
             // DeleteLastButton
             // 
-            this.DeleteLastButton.Location = new System.Drawing.Point(286, 382);
+            this.DeleteLastButton.Location = new System.Drawing.Point(429, 588);
+            this.DeleteLastButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.DeleteLastButton.Name = "DeleteLastButton";
-            this.DeleteLastButton.Size = new System.Drawing.Size(108, 22);
+            this.DeleteLastButton.Size = new System.Drawing.Size(162, 34);
             this.DeleteLastButton.TabIndex = 47;
             this.DeleteLastButton.Text = "Delete Last";
             this.DeleteLastButton.UseVisualStyleBackColor = true;
@@ -870,9 +940,10 @@
             // 
             // LoadMeasurementButton
             // 
-            this.LoadMeasurementButton.Location = new System.Drawing.Point(287, 342);
+            this.LoadMeasurementButton.Location = new System.Drawing.Point(430, 526);
+            this.LoadMeasurementButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.LoadMeasurementButton.Name = "LoadMeasurementButton";
-            this.LoadMeasurementButton.Size = new System.Drawing.Size(107, 23);
+            this.LoadMeasurementButton.Size = new System.Drawing.Size(160, 35);
             this.LoadMeasurementButton.TabIndex = 46;
             this.LoadMeasurementButton.Text = "Load Measurements";
             this.LoadMeasurementButton.UseVisualStyleBackColor = true;
@@ -881,42 +952,47 @@
             // DateTimeLabel
             // 
             this.DateTimeLabel.AutoSize = true;
-            this.DateTimeLabel.Location = new System.Drawing.Point(2, 387);
+            this.DateTimeLabel.Location = new System.Drawing.Point(3, 595);
+            this.DateTimeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.DateTimeLabel.Name = "DateTimeLabel";
-            this.DateTimeLabel.Size = new System.Drawing.Size(58, 13);
+            this.DateTimeLabel.Size = new System.Drawing.Size(82, 20);
             this.DateTimeLabel.TabIndex = 45;
             this.DateTimeLabel.Text = "Date/Time";
             // 
             // DateTimeTextBox
             // 
-            this.DateTimeTextBox.Location = new System.Drawing.Point(81, 384);
+            this.DateTimeTextBox.Location = new System.Drawing.Point(122, 591);
+            this.DateTimeTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.DateTimeTextBox.Name = "DateTimeTextBox";
-            this.DateTimeTextBox.Size = new System.Drawing.Size(140, 20);
+            this.DateTimeTextBox.Size = new System.Drawing.Size(208, 26);
             this.DateTimeTextBox.TabIndex = 44;
             // 
             // TemperatureLabel
             // 
             this.TemperatureLabel.AutoSize = true;
-            this.TemperatureLabel.Location = new System.Drawing.Point(2, 361);
+            this.TemperatureLabel.Location = new System.Drawing.Point(3, 555);
+            this.TemperatureLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.TemperatureLabel.Name = "TemperatureLabel";
-            this.TemperatureLabel.Size = new System.Drawing.Size(67, 13);
+            this.TemperatureLabel.Size = new System.Drawing.Size(100, 20);
             this.TemperatureLabel.TabIndex = 43;
             this.TemperatureLabel.Text = "Temperature";
             // 
             // TemperatureTextBox
             // 
-            this.TemperatureTextBox.Location = new System.Drawing.Point(81, 358);
+            this.TemperatureTextBox.Location = new System.Drawing.Point(122, 551);
+            this.TemperatureTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.TemperatureTextBox.Name = "TemperatureTextBox";
-            this.TemperatureTextBox.Size = new System.Drawing.Size(140, 20);
+            this.TemperatureTextBox.Size = new System.Drawing.Size(208, 26);
             this.TemperatureTextBox.TabIndex = 42;
             this.TemperatureTextBox.TextChanged += new System.EventHandler(this.TemperatureTextBox_TextChanged);
             // 
             // R2RadioButton
             // 
             this.R2RadioButton.AutoSize = true;
-            this.R2RadioButton.Location = new System.Drawing.Point(228, 308);
+            this.R2RadioButton.Location = new System.Drawing.Point(342, 474);
+            this.R2RadioButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.R2RadioButton.Name = "R2RadioButton";
-            this.R2RadioButton.Size = new System.Drawing.Size(14, 13);
+            this.R2RadioButton.Size = new System.Drawing.Size(21, 20);
             this.R2RadioButton.TabIndex = 2;
             this.R2RadioButton.TabStop = true;
             this.R2RadioButton.UseVisualStyleBackColor = true;
@@ -925,9 +1001,10 @@
             // R1RadioButton
             // 
             this.R1RadioButton.AutoSize = true;
-            this.R1RadioButton.Location = new System.Drawing.Point(228, 74);
+            this.R1RadioButton.Location = new System.Drawing.Point(342, 114);
+            this.R1RadioButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.R1RadioButton.Name = "R1RadioButton";
-            this.R1RadioButton.Size = new System.Drawing.Size(14, 13);
+            this.R1RadioButton.Size = new System.Drawing.Size(21, 20);
             this.R1RadioButton.TabIndex = 1;
             this.R1RadioButton.TabStop = true;
             this.R1RadioButton.UseVisualStyleBackColor = true;
@@ -936,26 +1013,29 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(473, 401);
+            this.label13.Location = new System.Drawing.Point(710, 617);
+            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(77, 13);
+            this.label13.Size = new System.Drawing.Size(116, 20);
             this.label13.TabIndex = 44;
             this.label13.Text = "Gauge Results";
             // 
             // messagesRichTextBox
             // 
-            this.messagesRichTextBox.Location = new System.Drawing.Point(466, 27);
+            this.messagesRichTextBox.Location = new System.Drawing.Point(699, 42);
+            this.messagesRichTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.messagesRichTextBox.Name = "messagesRichTextBox";
-            this.messagesRichTextBox.Size = new System.Drawing.Size(560, 368);
+            this.messagesRichTextBox.Size = new System.Drawing.Size(838, 564);
             this.messagesRichTextBox.TabIndex = 45;
             this.messagesRichTextBox.Text = "";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(463, 9);
+            this.label14.Location = new System.Drawing.Point(694, 14);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(55, 13);
+            this.label14.Size = new System.Drawing.Size(82, 20);
             this.label14.TabIndex = 46;
             this.label14.Text = "Messages";
             // 
@@ -967,9 +1047,12 @@
             // 
             // VerticalFedForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1038, 859);
+            this.AutoScroll = true;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(1898, 1024);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.messagesRichTextBox);
             this.Controls.Add(this.label13);
@@ -980,6 +1063,7 @@
             this.Controls.Add(this.comgroupBox);
             this.Controls.Add(this.gaugeParametersGroupBox);
             this.Controls.Add(this.measurementGroupBox);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "VerticalFedForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Vertical Federal App";
