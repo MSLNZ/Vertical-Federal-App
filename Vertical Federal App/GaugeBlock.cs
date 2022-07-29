@@ -93,7 +93,7 @@ namespace Vertical_Federal_App
     }
     public enum ComplianceImperial
     {
-        BS_4311_1_2007_Grade_K, BS_4311_1_2007_Grade_0, BS_4311_1_2007_Grade_1, BS_4311_1_2007_Grade_2
+        BS_4311_1_2007_Grade_K = 17, BS_4311_1_2007_Grade_0, BS_4311_1_2007_Grade_1, BS_4311_1_2007_Grade_2
     }
 
     public class GaugeBlock

@@ -15,8 +15,10 @@ namespace Vertical_Federal_App
 
 
         private enum nom { category0 = 0, category1, category2, category3, category4, category5 }
-        private static List<Measurement> measurements = new List<Measurement>();
-        public static string Version_number = "Rev 3.0";
+        //private static List<Measurement> measurements = new List<Measurement>();
+        private static List<List<Measurement>> measurements = new List<List<Measurement>>();
+        private static List<string> setNames = new List<string>();
+        public static string Version_number = "Rev 4.0";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -41,24 +43,25 @@ namespace Vertical_Federal_App
         private double e;
         private static Thread tempRetriever;
         private static bool log_temperatures = false;
-        private static double rep_d;
-        private static double rep_v;
-        private static double rep_A;
-        private static double rep_B;
-        private static double rep_D;
-        private static double rep_E;
-        private static double rep_ABDE;
-        private static double rep_ext_dev;
-        private static double rms_theta_s;
+        private double rep_d;
+        private double rep_v;
+        private double rep_A;
+        private double rep_B;
+        private double rep_D;
+        private double rep_E;
+        private double rep_ABDE;
+        private double rep_ext_dev;
+        private double rms_theta_s;
 
         public static string measurement_file_header = "DateTime,Temperature,Units,Cal Nominal,Gauge Set Serial No,Gauge Serial No,Cal Gauge Material,Cal Gauge Exp Coeff,Cal Gauge Young's Modulus," +
                         "Cal Gauge Poisson Ratio,Ref Gauge 1 Nominal,Ref Gauge 1 Deviation,Ref Gauge 1 Set Serial No,Ref Gauge 1 Metric/Imperial,Ref Gauge 1 Serial No,Ref Gauge 1 Material,Ref Gauge 1 exp coeeff,Ref Gauge 1 Young's Modulus,Ref Gauge 1 Poisson Ratio," +
                         "Ref Gauge 2 Nominal,Ref Gauge 2 Deviation,Ref Gauge 2 Set Serial No,Ref Gauge 2 Metric/Imperial,Ref Gauge 2 Serial No,Ref Gauge 2 Material,Ref Gauge 2 exp coeeff,Ref Gauge 2 Young's Modulus,Ref Gauge 2 Poisson Ratio," +
                         "Ref Gauge 3 Nominal,Ref Gauge 3 Deviation,Ref Gauge 3 Set Serial No,Ref Gauge 3 Metric/Imperial,Ref Gauge 3 Serial No,Ref Gauge 3 Material,Ref Gauge 3 exp coeeff,Ref Gauge 3 Young's Modulus,Ref Gauge 3 Poisson Ratio," +
                         "Reference Stack Deviation,R1,C1,A,B,C2,D,E,C3,R2,Measured Length,Centre Deviation,Min Deviation,Max Deviation,Extreme Deviation,Variation,Compliance Standard ID,Compliance Standard String";
-        public static string filename ="";
-        public static string filename_sum = "";
-        public static string filename_U95_sum = "";
+        public static string filen = "";
+        public string measurement_working_filename = "";
+        public string measurement_working_filename_sum = "";
+        public string measurement_working_filename_U95_sum = "";
         public static List<GaugeBlockSet> calibration_gauge_sets;
         public static List<GaugeBlockSet> reference_gauge_sets;
         public static GaugeBlock working_gauge;
@@ -146,10 +149,15 @@ namespace Vertical_Federal_App
             get { return calibration_gauge; }
             set { calibration_gauge = value; }
         }
-        public static List<Measurement> Measurements
+        public static List<List<Measurement>> Measurements
         {
             get { return measurements; }
             set { measurements = value; }
+        }
+        public static List<string> SetNames
+        {
+            get { return setNames; }
+            set { setNames = value; }
         }
         public static bool LogTemperatures
         {
@@ -166,19 +174,28 @@ namespace Vertical_Federal_App
         private static void LookUpTemperatures(object tdr)
         {
             TemperatureRetrieved printData = (TemperatureRetrieved) tdr;
+            bool message_shown = false;
+
             while (LogTemperatures)
             {
+                tempRetriever.Join(200);
                 DateTime now = DateTime.Now;
                 DateTime previous_interation_datetime = DateTime.MinValue;
 
+                
                 string path = @"G:\Shared drives\MSL - Length\Length\Temperature Monitoring Data\Hilger Lab\"+ now.Year.ToString() + @"\" + now.Year.ToString() + "-" + now.Month.ToString() + @"\" + "Vertical Federal.txt";
                 if (!File.Exists(path))
                 {
-                    MessageBox.Show("Unable to get temperature.  Temperature data file expected, unable to find file at:\n" +
-                        path + "\nYou can enter temperatures into the box below manually each time you make a measurement");
+                    if (!message_shown)
+                    {
+                        MessageBox.Show("Unable to get temperature.  Temperature data file expected, unable to find file at:\n" +
+                            path + "\nYou can enter temperatures into the box below manually each time you make a measurement");
+                        message_shown = true;
+                    }
                     continue;
+
                 }
-                
+                message_shown = false;
                 //get the latest temperature from the temperature file.  This should be the last line of the file.
                 string line = GetLastLine(path);
 
@@ -389,21 +406,23 @@ namespace Vertical_Federal_App
         /// 
         public static void CalculateReproducibility()
         {
+
             List<string> found = new List<string>();
 
             //These lists hold the variances of each sample
-            List<double> vars_dev = new List<double>();
-            List<double> vars_A = new List<double>();
-            List<double> vars_B = new List<double>();
-            List<double> vars_D = new List<double>();
-            List<double> vars_E = new List<double>();
+            List<double> vars_dev;
+            List<double> vars_A;
+            List<double> vars_B;
+            List<double> vars_D;
+            List<double> vars_E;
 
             //These lists hold the sample size of each sample
-            List<double> counts_dev = new List<double>();
-            List<double> counts_A = new List<double>();
-            List<double> counts_B = new List<double>();
-            List<double> counts_D = new List<double>();
-            List<double> counts_E = new List<double>();
+            List<double> counts_dev;
+            List<double> counts_A;
+            List<double> counts_B;
+            List<double> counts_D;
+            List<double> counts_E;
+
 
             //These lists hold the mean of each sample
             List<double> means_dev = new List<double>();
@@ -412,127 +431,145 @@ namespace Vertical_Federal_App
             List<double> means_D = new List<double>();
             List<double> means_E = new List<double>();
 
-
-            //determine the standard deviations of all repeat measurements for deviation and variation
-            foreach (Measurement m in measurements)
+            foreach (List<Measurement> m_list in Measurement.Measurements)
             {
-                string find = "";
-                if (found.Contains(m.calibration_gauge.Nominal.ToString() + m.calibration_gauge.SerialNumber)) continue;
-                else
-                {
-                    find = m.calibration_gauge.Nominal.ToString() + m.calibration_gauge.SerialNumber;
-                }
+                //These lists hold the variances of each sample
+                vars_dev = new List<double>();
+                vars_A = new List<double>();
+                vars_B = new List<double>();
+                vars_D = new List<double>();
+                vars_E = new List<double>();
 
-                found.Add(m.CalibrationGauge.Nominal.ToString()+ m.calibration_gauge.SerialNumber);
-                
-                List<double> occurences_dev = new List<double>();
-                List<double> occurences_Adev = new List<double>();
-                List<double> occurences_Bdev = new List<double>();
-                List<double> occurences_Ddev = new List<double>();
-                List<double> occurences_Edev = new List<double>();
-                foreach (Measurement n in measurements)
+                //These lists hold the sample size of each sample
+                counts_dev = new List<double>();
+                counts_A = new List<double>();
+                counts_B = new List<double>();
+                counts_D = new List<double>();
+                counts_E = new List<double>();
+
+                //determine the standard deviations of all repeat measurements for deviation and variation
+                foreach (Measurement m in m_list)
                 {
-                    if (n.CalibrationGauge.Nominal.ToString()+n.calibration_gauge.SerialNumber == find) //we have a match
+                    string find = "";
+                    if (found.Contains(m.calibration_gauge.Nominal.ToString() + m.calibration_gauge.SerialNumber)) continue;
+                    else
                     {
-                        if (n.CalibrationGauge.Metric)
+                        find = m.calibration_gauge.Nominal.ToString() + m.calibration_gauge.SerialNumber;
+                    }
+
+                    found.Add(m.CalibrationGauge.Nominal.ToString() + m.calibration_gauge.SerialNumber);
+
+                    List<double> occurences_dev = new List<double>();
+                    List<double> occurences_Adev = new List<double>();
+                    List<double> occurences_Bdev = new List<double>();
+                    List<double> occurences_Ddev = new List<double>();
+                    List<double> occurences_Edev = new List<double>();
+                    foreach (Measurement n in m_list)
+                    {
+                        if (n.CalibrationGauge.Nominal.ToString() + n.calibration_gauge.SerialNumber == find) //we have a match
                         {
-                            occurences_dev.Add(n.CalibrationGauge.CentreDeviation);
-                            occurences_Adev.Add(n.CalibrationGauge.ADev);
-                            occurences_Bdev.Add(n.CalibrationGauge.BDev);
-                            occurences_Ddev.Add(n.CalibrationGauge.DDev);
-                            occurences_Edev.Add(n.CalibrationGauge.EDev);
-                          
-                        }
-                        else //it's imperial so the deviations and variations will be in micro inches - convert them to micrometres for the u95 calculations
-                        {
-                            occurences_dev.Add(n.CalibrationGauge.CentreDeviation * 0.0254);
-                            occurences_Adev.Add(n.CalibrationGauge.ADev * 0.0254);
-                            occurences_Bdev.Add(n.CalibrationGauge.BDev * 0.0254);
-                            occurences_Ddev.Add(n.CalibrationGauge.DDev * 0.0254);
-                            occurences_Edev.Add(n.CalibrationGauge.EDev * 0.0254);
+                            if (n.CalibrationGauge.Metric)
+                            {
+                                occurences_dev.Add(n.CalibrationGauge.CentreDeviation);
+                                occurences_Adev.Add(n.CalibrationGauge.ADev);
+                                occurences_Bdev.Add(n.CalibrationGauge.BDev);
+                                occurences_Ddev.Add(n.CalibrationGauge.DDev);
+                                occurences_Edev.Add(n.CalibrationGauge.EDev);
+
+                            }
+                            else //it's imperial so the deviations and variations will be in micro inches - convert them to micrometres for the u95 calculations
+                            {
+                                occurences_dev.Add(n.CalibrationGauge.CentreDeviation * 0.0254);
+                                occurences_Adev.Add(n.CalibrationGauge.ADev * 0.0254);
+                                occurences_Bdev.Add(n.CalibrationGauge.BDev * 0.0254);
+                                occurences_Ddev.Add(n.CalibrationGauge.DDev * 0.0254);
+                                occurences_Edev.Add(n.CalibrationGauge.EDev * 0.0254);
+                            }
                         }
                     }
+
+                    vars_dev.Add(getVariance(occurences_dev));
+                    vars_A.Add(getVariance(occurences_Adev));
+                    vars_B.Add(getVariance(occurences_Bdev));
+                    vars_D.Add(getVariance(occurences_Ddev));
+                    vars_E.Add(getVariance(occurences_Edev));
+
+                    counts_dev.Add(occurences_dev.Count);
+                    counts_A.Add(occurences_Adev.Count);
+                    counts_B.Add(occurences_Bdev.Count);
+                    counts_D.Add(occurences_Ddev.Count);
+                    counts_E.Add(occurences_Edev.Count);
                 }
-                
-                vars_dev.Add(getVariance(occurences_dev));
-                vars_A.Add(getVariance(occurences_Adev));
-                vars_B.Add(getVariance(occurences_Bdev));
-                vars_D.Add(getVariance(occurences_Ddev));
-                vars_E.Add(getVariance(occurences_Edev));
 
-                counts_dev.Add(occurences_dev.Count);
-                counts_A.Add(occurences_Adev.Count);
-                counts_B.Add(occurences_Bdev.Count);
-                counts_D.Add(occurences_Ddev.Count);
-                counts_E.Add(occurences_Edev.Count);
-            }
+                //now find the sum of the squares
+                double weighted_sum_d = 0.0;
+                double weighted_sum_A = 0.0;
+                double weighted_sum_B = 0.0;
+                double weighted_sum_D = 0.0;
+                double weighted_sum_E = 0.0;
+                double weighted_sum_ABDE = 0.0;
+                int count_index = 0;
+                double total_samples_centre_dev = 0;
+                foreach (double var_d in vars_dev)
+                {
+                    double sample_size = counts_dev.ElementAt(count_index);
+                    total_samples_centre_dev += sample_size;
+                    weighted_sum_d += (var_d) * (sample_size - 1);
+                    count_index++;
+                }
+                double pooled_variance_centre_dev = weighted_sum_d / (total_samples_centre_dev - count_index);
 
-            //now find the sum of the squares
-            double weighted_sum_d = 0.0;
-            double weighted_sum_A = 0.0;
-            double weighted_sum_B = 0.0;
-            double weighted_sum_D = 0.0;
-            double weighted_sum_E = 0.0;
-            double weighted_sum_ABDE = 0.0;
-            int count_index = 0;
-            double total_samples_centre_dev = 0;
-            foreach (double var_d in vars_dev)
-            {
-                double sample_size = counts_dev.ElementAt(count_index);
-                total_samples_centre_dev += sample_size;
-                weighted_sum_d += (var_d)*(sample_size-1);
-                count_index++;
-            }
-            double pooled_variance_centre_dev = weighted_sum_d / (total_samples_centre_dev - count_index);
+                double total_samples_ABDE_dev = 0;
+                count_index = 0;
+                foreach (double var_A in vars_A)
+                {
+                    double sample_size = counts_dev.ElementAt(count_index);
+                    total_samples_ABDE_dev += sample_size;
+                    weighted_sum_A += (var_A) * (sample_size - 1);
+                    count_index++;
+                }
+                count_index = 0;
+                foreach (double var_B in vars_B)
+                {
+                    double sample_size = counts_dev.ElementAt(count_index);
+                    total_samples_ABDE_dev += sample_size;
+                    weighted_sum_B += (var_B) * (sample_size - 1);
+                    count_index++;
+                }
+                count_index = 0;
+                foreach (double var_D in vars_D)
+                {
+                    double sample_size = counts_dev.ElementAt(count_index);
+                    total_samples_ABDE_dev += sample_size;
+                    weighted_sum_D += (var_D) * (sample_size - 1);
+                    count_index++;
+                }
+                count_index = 0;
+                foreach (double var_E in vars_E)
+                {
+                    double sample_size = counts_dev.ElementAt(count_index);
+                    total_samples_ABDE_dev += sample_size;
+                    weighted_sum_E += (var_E) * (sample_size - 1);
+                    count_index++;
+                }
+                weighted_sum_ABDE = weighted_sum_A + weighted_sum_B + weighted_sum_D + weighted_sum_E;
+                double pooled_variance_A = weighted_sum_A / (total_samples_ABDE_dev / 4 - count_index);
+                double pooled_variance_B = weighted_sum_B / (total_samples_ABDE_dev / 4 - count_index);
+                double pooled_variance_D = weighted_sum_D / (total_samples_ABDE_dev / 4 - count_index);
+                double pooled_variance_E = weighted_sum_E / (total_samples_ABDE_dev / 4 - count_index);
+                double pooled_variance_ABDE = weighted_sum_ABDE / (total_samples_ABDE_dev - count_index * 4);
 
-            double total_samples_ABDE_dev = 0;
-            count_index = 0;
-            foreach (double var_A in vars_A)
-            {
-                double sample_size = counts_dev.ElementAt(count_index);
-                total_samples_ABDE_dev += sample_size;
-                weighted_sum_A += (var_A) * (sample_size - 1);
-                count_index++;
+                foreach (Measurement l in m_list)
+                {
+                    //and the reproducability (pooled standard deviation)
+                    l.rep_d = Math.Sqrt(pooled_variance_centre_dev);
+                    l.rep_A = Math.Sqrt(pooled_variance_A);
+                    l.rep_B = Math.Sqrt(pooled_variance_B);
+                    l.rep_D = Math.Sqrt(pooled_variance_D);
+                    l.rep_E = Math.Sqrt(pooled_variance_E);
+                    l.rep_ABDE = Math.Sqrt(pooled_variance_ABDE);
+                }
             }
-            count_index = 0;
-            foreach (double var_B in vars_B)
-            {
-                double sample_size = counts_dev.ElementAt(count_index);
-                total_samples_ABDE_dev += sample_size;
-                weighted_sum_B += (var_B) * (sample_size - 1);
-                count_index++;
-            }
-            count_index = 0;
-            foreach (double var_D in vars_D)
-            {
-                double sample_size = counts_dev.ElementAt(count_index);
-                total_samples_ABDE_dev += sample_size;
-                weighted_sum_D += (var_D) * (sample_size - 1);
-                count_index++;
-            }
-            count_index = 0;
-            foreach (double var_E in vars_E)
-            {
-                double sample_size = counts_dev.ElementAt(count_index);
-                total_samples_ABDE_dev += sample_size;
-                weighted_sum_E += (var_E) * (sample_size - 1);
-                count_index++;
-            }
-            weighted_sum_ABDE = weighted_sum_A + weighted_sum_B + weighted_sum_D + weighted_sum_E;
-            double pooled_variance_A = weighted_sum_A / (total_samples_ABDE_dev / 4 - count_index);
-            double pooled_variance_B = weighted_sum_B / (total_samples_ABDE_dev / 4 - count_index);
-            double pooled_variance_D = weighted_sum_D / (total_samples_ABDE_dev / 4 - count_index);
-            double pooled_variance_E = weighted_sum_E / (total_samples_ABDE_dev / 4 - count_index);
-            double pooled_variance_ABDE = weighted_sum_ABDE / (total_samples_ABDE_dev - count_index*4);
-            
-            //and the reproducability (pooled standard deviation)
-            rep_d = Math.Sqrt(pooled_variance_centre_dev);
-            rep_A = Math.Sqrt(pooled_variance_A);
-            rep_B = Math.Sqrt(pooled_variance_B);
-            rep_D = Math.Sqrt(pooled_variance_D);
-            rep_E = Math.Sqrt(pooled_variance_E);
-            rep_ABDE = Math.Sqrt(pooled_variance_ABDE);
-            
         }
         private static double getStandardDeviation(List<double> doubleList)
         {
@@ -566,7 +603,8 @@ namespace Vertical_Federal_App
         /// Calculates the expanded uncertainty for this measurement for deviation measurements  
         /// </summary>
         /// <param name="vfed">A reference to the vertical federal object</param>
-        public void CalculateExpandedUncertaintyDeviation(ref VerticalFederal vfed)
+        /// <param name="set_index">The index of the measurement list associated with a gauge block set</param>
+        public void CalculateExpandedUncertaintyDeviation(ref VerticalFederal vfed,int set_index)
         {
             double s_d = 0.0;
             double s_inp = 0.0; //nm
@@ -574,7 +612,7 @@ namespace Vertical_Federal_App
 
             //independent terms
             CalculateReproducibility();
-            double stdu_reproducability = rep_d*1000; //in nanometres
+            double stdu_reproducability = Measurements[set_index][0].rep_d*1000; //in nanometres
             double stdu_scale_resolution = vfed.ScaleResStduIndependent; //in nanometers
             double stdu_scale_calibration = vfed.ScaleCalStduIndependent; //in nanometers
             double stdu_length_of_standard_i = s_inp;
@@ -592,8 +630,8 @@ namespace Vertical_Federal_App
             double stdu_theta_s = 0.0;
 
             u_of_g_ForAlphag(this, ref stdu_alpha_g, ref vfed);
-            u_of_g_ForDeltaAlpha(this, ref stdu_delta_alpha, ref vfed);
-            u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed);
+            u_of_g_ForDeltaAlpha(this, ref stdu_delta_alpha, ref vfed,set_index);
+            u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed,set_index);
             u_of_g_ForDeltaTheta(this, ref stdu_delta_theta, ref vfed);
 
             double combined_dependent = Math.Sqrt(Math.Pow(stdu_length_of_standard_d, 2) + Math.Pow(stdu_alpha_g, 2) + Math.Pow(stdu_delta_theta, 2) + Math.Pow(stdu_delta_alpha, 2) + Math.Pow(stdu_theta_s, 2));
@@ -611,7 +649,8 @@ namespace Vertical_Federal_App
         /// </summary>
         /// <param name="vfed">A reference to the vertical federal object</param>
         /// <param name="extrema_pos">integer representing where on the gauge the extrema occurs</param>
-        public void CalculateExpandedUncertaintyExtremeDeviation(ref VerticalFederal vfed,int extrema_pos)
+        /// <param name="set_index">The index of the measurement list associated with a gauge block set</param>
+        public void CalculateExpandedUncertaintyExtremeDeviation(ref VerticalFederal vfed,int extrema_pos,int set_index)
         {
             double s_d = 0.0;
             double s_inp = 0.0;
@@ -624,8 +663,8 @@ namespace Vertical_Federal_App
             //standard deviation of repeat measurements on the centre or a pooled standard deviation of repeat measurements on corners A,B,D and E.
 
             double stdu_reproducability = 0.0;
-            if (extrema_pos == 0) stdu_reproducability = rep_d*1000;
-            else stdu_reproducability = rep_ABDE*1000;
+            if (extrema_pos == 0) stdu_reproducability = Measurements[set_index][0].rep_d *1000;
+            else stdu_reproducability = Measurements[set_index][0].rep_ABDE *1000;
 
             double stdu_scale_resolution = vfed.ScaleResStduIndependent; //in micrometers
             double stdu_scale_calibration = vfed.ScaleCalStduIndependent; //in micrometers
@@ -644,8 +683,8 @@ namespace Vertical_Federal_App
             double stdu_theta_s = 0.0;
 
             u_of_g_ForAlphag(this, ref stdu_alpha_g, ref vfed);
-            u_of_g_ForDeltaAlpha(this, ref stdu_delta_alpha, ref vfed);
-            u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed);
+            u_of_g_ForDeltaAlpha(this, ref stdu_delta_alpha, ref vfed,set_index);
+            u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed, set_index);
             u_of_g_ForDeltaTheta(this, ref stdu_delta_theta, ref vfed);
 
             double combined_dependent = Math.Sqrt(Math.Pow(stdu_length_of_standard_d, 2) + Math.Pow(stdu_alpha_g, 2) + Math.Pow(stdu_delta_theta, 2) + Math.Pow(stdu_delta_alpha, 2) + Math.Pow(stdu_theta_s, 2));
@@ -702,7 +741,7 @@ namespace Vertical_Federal_App
 
         }
 
-        public void CalculateCMCs(VerticalFederal vfed)
+        public void CalculateCMCs(ref VerticalFederal vfed)
         {
             double dev_dep = vfed.ExpanedUncertaintyCMCDevDep;
             double dev_indep = vfed.ExpanedUncertaintyCMCDevIndep;
@@ -1530,9 +1569,12 @@ namespace Vertical_Federal_App
         /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
         /// <param name="u_g_delta_alpha">The component to be calculated</param>
         /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta alpha</param> 
-        private double u_of_g_ForDeltaAlpha(Measurement m, ref double u_g_delta_alpha, ref VerticalFederal vfederal)
+        /// <param name="set_index">The first dimension of the 2d measurement list which identifies which cal g</param> 
+        private double u_of_g_ForDeltaAlpha(Measurement m, ref double u_g_delta_alpha, ref VerticalFederal vfederal, int set_index)
         {
-            double utheta_s = RMS_Theta_S();
+
+            RMS_Theta_S();
+            double utheta_s = Measurement.Measurements[set_index][0].rms_theta_s;
             u_g_delta_alpha = vfederal.u_DeltaAlpha * utheta_s;
 
             return u_g_delta_alpha;
@@ -1544,7 +1586,8 @@ namespace Vertical_Federal_App
         /// <param name="m">The measurement for which the standard uncertainty component is determined</param>
         /// <param name="u_g_theta_s">The component to be calculated</param>
         /// <param name="vfederal">The vertical federal object which contains the uncertainty in delta alpha</param> 
-        private double u_of_g_ForThetaS(Measurement m, ref double u_g_theta_s, ref VerticalFederal vfederal)
+        /// <param name="set_index">The index of the measurement list associated with a gauge block set</param>
+        private double u_of_g_ForThetaS(Measurement m, ref double u_g_theta_s, ref VerticalFederal vfederal,int set_index)
         {
             double delta_alpha = 0.0;
             //case1 (singleton ref gauge) 
@@ -1571,9 +1614,11 @@ namespace Vertical_Federal_App
                 ref_g_exp_c = ((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeBlockMaterial.exp_coeff) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeBlockMaterial.exp_coeff) + (m.ReferenceStack.Gauge3.Nominal * m.ReferenceStack.Gauge3.GaugeBlockMaterial.exp_coeff)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal + m.ReferenceStack.Gauge3.Nominal);
                 delta_alpha = Math.Abs(Math.Round(m.CalibrationGauge.GaugeBlockMaterial.exp_coeff, 2) - Math.Round(ref_g_exp_c, 2));
             }
-
-            if (delta_alpha == 0.0) u_g_theta_s = RMS_Theta_S()*vfederal.u_DeltaAlpha;
-            else u_g_theta_s = RMS_Theta_S() * delta_alpha;
+            //calculate the RMS of theta_s
+            RMS_Theta_S();
+            double rms_theta_s = Measurement.Measurements[set_index][0].rms_theta_s;
+            if (delta_alpha == 0.0) u_g_theta_s = rms_theta_s*vfederal.u_DeltaAlpha;
+            else u_g_theta_s = rms_theta_s * delta_alpha;
 
             return u_g_theta_s;
         }
@@ -1603,19 +1648,29 @@ namespace Vertical_Federal_App
         }
 
         /// <summary>
-        /// Determines the root mean square of the departure from 20 degrees for all measurements
+        /// Determines the root mean square of the departure from 20 degrees for all measurements in each cal set
         /// </summary>
-        private static double RMS_Theta_S()
+        private static void RMS_Theta_S()
         {
             double sumsq_theta_s = 0.0;
             int count_theta_s = 0;
+            foreach (List<Measurement> m_list in Measurement.Measurements)
+            {
+                sumsq_theta_s = 0.0;
+                count_theta_s = 0;
 
-            foreach(Measurement m in measurements)
-            {  
-                sumsq_theta_s += Math.Pow(m.CalibrationGauge.Temperature - 20.000,2);
-                count_theta_s++; 
+                foreach (Measurement m in m_list)
+                {
+                    sumsq_theta_s += Math.Pow(m.CalibrationGauge.Temperature - 20.000, 2);
+                    count_theta_s++;
+                }
+
+                foreach (Measurement m in m_list)
+                {
+                    m.rms_theta_s = Math.Sqrt(sumsq_theta_s / count_theta_s);
+                }
             }
-            return Math.Sqrt(sumsq_theta_s / count_theta_s);
+            
         }
 
         /// <summary>
@@ -1623,7 +1678,8 @@ namespace Vertical_Federal_App
         /// </summary>
         /// <param name="lines">A string array containing lines of the measurement file</param>
         /// <param name="verticalFederal">A reference to the vertical federal object</param>
-        public static bool ParseFile(string[] lines, ref VerticalFederal verticalFederal)
+        /// <param name="meas_list_index">A reference the measurement list that is associated with the file we're parsing</param>
+        public static bool ParseFile(string[] lines, ref VerticalFederal verticalFederal, ref int meas_list_index)
         {
             bool first_line = true;
             bool second_line = true;
@@ -1647,10 +1703,10 @@ namespace Vertical_Federal_App
 
                 Measurement meas = new Measurement();
 
-                ParseLine(ref line_read, ref meas, ref verticalFederal);
+                ParseLine(ref line_read, ref meas, ref verticalFederal,ref meas_list_index);
 
 
-                int set_index = 0;
+                meas_list_index = 0;
 
                 working_gauge.Nominal = meas.CalibrationGauge.Nominal;
                 working_gauge.CentreDeviation = meas.CalibrationGauge.CentreDeviation;
@@ -1671,11 +1727,12 @@ namespace Vertical_Federal_App
                 working_gauge.Temperature = meas.CalibrationGauge.Temperature;
                 working_gauge.DeviationCMC = meas.CalibrationGauge.DeviationCMC;
                 working_gauge.VariationCMC = meas.CalibrationGauge.VariationCMC;
-                CreateNewCalSet(ref set_index);
 
-                //add the working gauge to its calibration gauge set
-                calibration_gauge_sets[set_index].GaugeList.Add(meas.CalibrationGauge);
-                calibration_gauge_sets[set_index].NumGauges++;
+                CreateNewCalSet(ref meas_list_index, meas.CalibrationGauge.FromSet);
+
+                //add the measurement to the measurement list at the appropriate index
+                measurements[meas_list_index].Add(meas);
+               
             }
             return true;
         }
@@ -1686,13 +1743,14 @@ namespace Vertical_Federal_App
         /// <param name="line">A string containing meta data for a single measurement object</param>
         /// <param name="meas">A to the measurement object to be updated with meta data</param>
         /// <param name="verticalFederal">A reference to the vertical federal object</param>
-        private static void ParseLine(ref string line, ref Measurement meas, ref VerticalFederal verticalFederal)
+        /// <param name="meas_list_index">A reference the measurement list that is associated with the file we're parsing</param>
+        private static void ParseLine(ref string line, ref Measurement meas, ref VerticalFederal verticalFederal, ref int meas_list_index)
         {
             //Populate the measurement with data we find in this files current line
             Stack ref_stack = new Stack(1);
             GaugeBlock calibration_gauge = new GaugeBlock(false);
             meas.CalibrationGauge = calibration_gauge;
-            
+
             meas.ReferenceStack = ref_stack;
             bool metric = true;
 
@@ -1726,9 +1784,9 @@ namespace Vertical_Federal_App
             bool.TryParse(strings[13], out metric);
             ref_stack.Gauge1.Metric = metric;
             GaugeBlockSet gb_set = GetGaugeSet(ref_stack.Gauge1.FromSet);
-            foreach(GaugeBlock gb in gb_set.GaugeList)
+            foreach (GaugeBlock gb in gb_set.GaugeList)
             {
-                if(gb.Nominal == ref_stack.Gauge1.Nominal)
+                if (gb.Nominal == ref_stack.Gauge1.Nominal)
                 {
                     ref_stack.Gauge1.GaugeStdU_Dep = gb.GaugeStdU_Dep;
                     ref_stack.Gauge1.GaugeStdU_Indp = gb.GaugeStdU_Indp;
@@ -1825,17 +1883,32 @@ namespace Vertical_Federal_App
             meas.CalibrationGauge.MaxDev = max_d;
             meas.CalibrationGauge.ExtremeDeviation = ext_d;
             meas.CalibrationGauge.Variation = v;
-        
+            meas.measurement_working_filename = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + meas.CalibrationGauge.FromSet + ".txt";
+            meas.measurement_working_filename_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\"+ meas.CalibrationGauge.FromSet + "_summary.txt";
+            meas.measurement_working_filename_U95_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + meas.CalibrationGauge.FromSet + "_U95_Compliance_summary.txt";
 
-          
+
+
             int comp_std = 0;
             int.TryParse(strings[53], out comp_std);
             meas.CalibrationGauge.ComplianceStandard = comp_std;
-            meas.CalculateCMCs(verticalFederal);
+            meas.CalculateCMCs(ref verticalFederal);
             meas.CalculateComplianceLimits();
 
+            //if needed add the set name to the set name list.
+            if (!Measurement.SetNames.Contains(meas.CalibrationGauge.FromSet))  //this measurement doesn't have an association with a set yet, so make it now
+            {
+                List<Measurement> m_list = new List<Measurement>();
+                Measurement.SetNames.Add(meas.CalibrationGauge.FromSet);
+                Measurement.Measurements.Add(m_list);  //add an empty measurement list to the list of measurement lists.
+            }
+                
+
+            //get the index of the current measurements set name.
+            int index_of_set = Measurement.SetNames.IndexOf(meas.CalibrationGauge.FromSet);
+
             //Save a copy of the current measurement to the measurement list.
-            Measurement.Measurements.Add(meas);
+           // Measurement.Measurements[meas_list_index].Add(meas);
         }
 
         public static GaugeBlockSet GetGaugeSet(string set_name)
@@ -2031,89 +2104,124 @@ namespace Vertical_Federal_App
         /// </summary>
         public static void writeSummaryToFile()
         {
-            if (System.IO.File.Exists(filename_sum)) System.IO.File.Delete(filename_sum);
-            System.IO.StreamWriter writer2;
-            writer2 = System.IO.File.CreateText(filename_sum);
-            writer2.WriteLine("DateTime,Temperature,Nominal,Serial Number,Centre Deviation,Extreme Deviation,Variation,Count");
-            writer2.WriteLine(Version_number);
-
-            string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
-            List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
-
-            foreach (Measurement m in Measurement.Measurements)
+        
+            foreach (List<Measurement> meas_list in Measurements)
             {
-                unique_id = m.CalibrationGauge.Nominal + m.CalibrationGauge.FromSet + m.CalibrationGauge.SerialNumber;
-                if (!unique_ids_used.Contains(unique_id))
+                if (meas_list == null) continue;
+                try
                 {
-                    int num_id_matches = 0;
-                    bool this_is_first_match = true;
-                    double t = 0.0;
-                    long date_time = 0;
-                    double nominal = m.CalibrationGauge.Nominal;
-                    string ser_no = m.CalibrationGauge.SerialNumber;
-                    double sum_centre_dev = 0.0;
-                    double sum_A_dev = 0.0;
-                    double sum_B_dev = 0.0;
-                    double sum_D_dev = 0.0;
-                    double sum_E_dev = 0.0;
-                    double sum_variation = 0.0;
-
-                    //with the unique id loop through each measurement
-                    foreach (Measurement k in Measurement.Measurements)
-                    {
-                        string unique_id_to_compare = k.CalibrationGauge.Nominal + k.CalibrationGauge.FromSet + k.CalibrationGauge.SerialNumber;
-                        if (unique_id_to_compare.Equals(unique_id))
-                        {
-                            num_id_matches++;
-                            //we have a match but if it's the first match then ignore doing the sums
-                         
-                            t += Convert.ToDouble(k.CalibrationGauge.Temperature);
-                            //we need the date time to be represented as a double to do averaging math on
-                            date_time += Convert.ToDateTime(k.Datetime).Ticks;
-                            sum_centre_dev += k.CalibrationGauge.CentreDeviation;
-                            sum_A_dev += k.CalibrationGauge.ADev;
-                            sum_B_dev += k.CalibrationGauge.BDev;
-                            sum_D_dev += k.CalibrationGauge.DDev;
-                            sum_E_dev += k.CalibrationGauge.EDev;
-                            sum_variation += k.CalibrationGauge.Variation;
-                            
-                        }
-                    }
-                    //compute the means
-                    sum_centre_dev /= num_id_matches;
-                    sum_A_dev /= num_id_matches;
-                    sum_B_dev /= num_id_matches;
-                    sum_D_dev /= num_id_matches;
-                    sum_E_dev /= num_id_matches;
-
-                    //put the average gauge points into a list for processing.
-                    List<double> devs = new List<double>();
-                    devs.Add(sum_centre_dev);
-                    devs.Add(sum_A_dev);
-                    devs.Add(sum_B_dev);
-                    devs.Add(sum_D_dev);
-                    devs.Add(sum_E_dev);
-
-                    double corr_min_dev = devs.Min();
-                    double corr_max_dev = devs.Max();
-
-                    double corr_extreme_dev = 0.0;
-                    if (Math.Abs(corr_max_dev) >= Math.Abs(corr_min_dev)) corr_extreme_dev = corr_max_dev;
-                    else corr_extreme_dev = corr_min_dev;
-
-                    double vari = corr_max_dev - corr_min_dev;
-
-                    
-                    t /= num_id_matches;
-                    date_time /= num_id_matches;
-                    var a_dt = new DateTime(date_time);
-                    sum_variation /= (num_id_matches);
-                    writer2.WriteLine(a_dt.ToString() + "," + t.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + corr_extreme_dev + "," + vari + "," + num_id_matches.ToString());
-                    unique_ids_used.Add(unique_id);
+                    System.IO.File.Delete(meas_list[0].measurement_working_filename_sum);
                 }
+                catch (System.IO.IOException)
+                {
+                    MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. If it's in use please close it now before pushing OK");
+                    try
+                    {
+                        System.IO.File.Delete(meas_list[0].measurement_working_filename_sum);
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. Uncertainties calculations won't be attempted until the next measurement is made");
+                        return;
+                    }
+                }
+                System.IO.StreamWriter writer2 = null;
+                int count = 0;
+                while (count < 100)
+                {
+                    try
+                    {
+                        writer2 = System.IO.File.CreateText(meas_list[0].measurement_working_filename_sum);
+                        break;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        if (count == 99) MessageBox.Show("Cannot write to the summary file, file may be in use. summary calculations won't be attempted until the next measurement is made");
+                        Thread.Sleep(100);
+                        continue;
+                    }
+                }
+                writer2.WriteLine("DateTime,Temperature,Nominal,Serial Number,Centre Deviation,Extreme Deviation,Variation,Count");
+                writer2.WriteLine(Version_number);
 
+                string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
+                List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
+
+                foreach (Measurement m in meas_list)
+                {
+                    unique_id = m.CalibrationGauge.Nominal + m.CalibrationGauge.FromSet + m.CalibrationGauge.SerialNumber;
+                    if (!unique_ids_used.Contains(unique_id))
+                    {
+                        int num_id_matches = 0;
+                        bool this_is_first_match = true;
+                        double t = 0.0;
+                        long date_time = 0;
+                        double nominal = m.CalibrationGauge.Nominal;
+                        string ser_no = m.CalibrationGauge.SerialNumber;
+                        double sum_centre_dev = 0.0;
+                        double sum_A_dev = 0.0;
+                        double sum_B_dev = 0.0;
+                        double sum_D_dev = 0.0;
+                        double sum_E_dev = 0.0;
+                        double sum_variation = 0.0;
+
+                        //with the unique id loop through each measurement
+                        foreach (Measurement k in meas_list)
+                        {
+                            string unique_id_to_compare = k.CalibrationGauge.Nominal + k.CalibrationGauge.FromSet + k.CalibrationGauge.SerialNumber;
+                            if (unique_id_to_compare.Equals(unique_id))
+                            {
+                                num_id_matches++;
+                                //we have a match but if it's the first match then ignore doing the sums
+
+                                t += Convert.ToDouble(k.CalibrationGauge.Temperature);
+                                //we need the date time to be represented as a double to do averaging math on
+                                date_time += Convert.ToDateTime(k.Datetime).Ticks;
+                                sum_centre_dev += k.CalibrationGauge.CentreDeviation;
+                                sum_A_dev += k.CalibrationGauge.ADev;
+                                sum_B_dev += k.CalibrationGauge.BDev;
+                                sum_D_dev += k.CalibrationGauge.DDev;
+                                sum_E_dev += k.CalibrationGauge.EDev;
+                                sum_variation += k.CalibrationGauge.Variation;
+
+                            }
+                        }
+                        //compute the means
+                        sum_centre_dev /= num_id_matches;
+                        sum_A_dev /= num_id_matches;
+                        sum_B_dev /= num_id_matches;
+                        sum_D_dev /= num_id_matches;
+                        sum_E_dev /= num_id_matches;
+
+                        //put the average gauge points into a list for processing.
+                        List<double> devs = new List<double>();
+                        devs.Add(sum_centre_dev);
+                        devs.Add(sum_A_dev);
+                        devs.Add(sum_B_dev);
+                        devs.Add(sum_D_dev);
+                        devs.Add(sum_E_dev);
+
+                        double corr_min_dev = devs.Min();
+                        double corr_max_dev = devs.Max();
+
+                        double corr_extreme_dev = 0.0;
+                        if (Math.Abs(corr_max_dev) >= Math.Abs(corr_min_dev)) corr_extreme_dev = corr_max_dev;
+                        else corr_extreme_dev = corr_min_dev;
+
+                        double vari = corr_max_dev - corr_min_dev;
+
+
+                        t /= num_id_matches;
+                        date_time /= num_id_matches;
+                        var a_dt = new DateTime(date_time);
+                        sum_variation /= (num_id_matches);
+                        writer2.WriteLine(a_dt.ToString() + "," + t.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + corr_extreme_dev + "," + vari + "," + num_id_matches.ToString());
+                        unique_ids_used.Add(unique_id);
+                    }
+
+                }
+                writer2.Close();
             }
-            writer2.Close();
         }
 
         /// <summary>
@@ -2121,194 +2229,257 @@ namespace Vertical_Federal_App
         /// </summary>
         public static void WriteUncertaintyAndComplianceToFile(ref VerticalFederal vfederal)
         {
-            try
+            
+            foreach (List<Measurement> m_list in Measurement.Measurements)
             {
-                if (System.IO.File.Exists(filename_U95_sum)) System.IO.File.Delete(filename_U95_sum);
-            }
-            catch (System.IO.IOException)
-            {
-                MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. If it's in use please close it now before pushing OK");
                 try
                 {
-                    if (System.IO.File.Exists(filename_U95_sum)) System.IO.File.Delete(filename_U95_sum);
+                    System.IO.File.Delete(m_list[0].measurement_working_filename_U95_sum);
                 }
                 catch (System.IO.IOException)
                 {
-                    MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. Uncertainties calculations won't be attempted until the next measurement is made");
-                    return;
+                    MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. If it's in use please close it now before pushing OK");
+                    try
+                    {
+                        System.IO.File.Delete(m_list[0].measurement_working_filename_U95_sum);
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. Uncertainties calculations won't be attempted until the next measurement is made");
+                        return;
+                    }
                 }
-            }
-            System.IO.StreamWriter writer3;
-            writer3 = System.IO.File.CreateText(filename_U95_sum);
-            if (measurements[0].CalibrationGauge.Metric)
-            {
-                writer3.WriteLine("DateTime,Nominal (inch),Serial Number,Centre Deviation (um),U95 Centre Deviation As Calculated (um),U95 Centre Deviation CMC (um),CMC U95 Centre Deviation As Reported (um),Extreme Deviation (um),U95 Extreme Deviation As Calculated (um),U95 Extreme Deviation CMC (um),U95 Extreme Deviation As Reported (um),Variation,U95 Variation As Calculated (um),U95 Variation CMC (um),U95 Variation As Reported (um),Compliance Deviation, Compliance Variation");
-            }
-            else writer3.WriteLine("DateTime,Nominal (inch),Serial Number,Centre Deviation (uinch),U95 Centre Deviation As Calculated (uinch),U95 Centre Deviation CMC (uinch) ,CMC U95 Centre Deviation As Reported (uinch),Extreme Deviation (uinch),U95 Extreme Deviation As Calculated (uinch),U95 Extreme Deviation CMC (uinch),U95 Extreme Deviation As Reported (uinch),Variation (uinch),U95 Variation As Calculated (uinch),U95 Variation CMC (uinch),U95 Variation As Reported (uinch),Compliance Deviation, Compliance Variation");
-
-            writer3.WriteLine(Version_number);
-
-            string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
-            List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
-            
-
-            foreach (Measurement m in Measurement.Measurements)
-            {
-                unique_id = m.CalibrationGauge.Nominal + m.CalibrationGauge.FromSet + m.CalibrationGauge.SerialNumber;
-
-                if (!unique_ids_used.Contains(unique_id))
+                System.IO.StreamWriter writer3 = null;
+                int count = 0;
+                while (count < 100)
                 {
-                    int num_id_matches = 0;
-
-                    long date_time = 0;
-                    double nominal = m.CalibrationGauge.Nominal;
-                    string ser_no = m.CalibrationGauge.SerialNumber;
-         
-                    //double sum_variation = 0.0;
-                    double sum_centre_dev = 0.0;
-                    double U95_centre_dev = 0.0;
-                    double U95_extreme_dev = 0.0;
-                    double U95_variation = 0.0;
-                    double sum_A_dev = 0.0;
-                    double sum_B_dev = 0.0;
-                    double sum_D_dev = 0.0;
-                    double sum_E_dev = 0.0;
-                    double tolerance_variation = 0.0;
-                    double limit_deviation = 0.0;
-                    double cmc_d = 0.0;
-                    double cmc_v = 0.0;
-                    List<Measurement> gauge_measurements = new List<Measurement>();
-
-                    //with the unique id loop through each measurement
-                    foreach (Measurement k in Measurement.Measurements)
+                    try
                     {
-                        string unique_id_to_compare = k.CalibrationGauge.Nominal + k.CalibrationGauge.FromSet + k.CalibrationGauge.SerialNumber;
-
-                        if (unique_id_to_compare.Equals(unique_id))
-                        {
-                            gauge_measurements.Add(k);
-                            num_id_matches++;
-                            k.CalculateExpandedUncertaintyDeviation(ref vfederal);
-                            U95_centre_dev = k.CalibrationGauge.ExpandedUncertaintyDev;
-                            limit_deviation = k.CalibrationGauge.LimitDeviation;
-                            tolerance_variation = k.CalibrationGauge.ToleranceVariation;
-                            cmc_d = k.CalibrationGauge.DeviationCMC;
-                            cmc_v = k.CalibrationGauge.VariationCMC;
-
-                            //we need the date time to be represented as a double to do averaging math on
-                            date_time += Convert.ToDateTime(k.Datetime).Ticks;
-                            
-                            //add up all the repeat measurements for each point of this gauge block
-                            sum_centre_dev += k.CalibrationGauge.CentreDeviation;
-                            sum_A_dev += k.CalibrationGauge.ADev;
-                            sum_B_dev += k.CalibrationGauge.BDev;
-                            sum_D_dev += k.CalibrationGauge.DDev;
-                            sum_E_dev += k.CalibrationGauge.EDev;
-                        }
+                        writer3 = System.IO.File.CreateText(m_list[0].measurement_working_filename_U95_sum);
+                        break;
                     }
-
-                    //compute the means
-                    date_time /= gauge_measurements.Count;
-                    var a_dt = new DateTime(date_time);
-                    sum_centre_dev /= gauge_measurements.Count;
-                    sum_A_dev /= gauge_measurements.Count;
-                    sum_B_dev /= gauge_measurements.Count;
-                    sum_D_dev /= gauge_measurements.Count;
-                    sum_E_dev /= gauge_measurements.Count;
-      
-
-                    
-                    //put the average values into a list for processing
-                    List<double> devs = new List<double>();
-                    devs.Add(sum_centre_dev);
-                    devs.Add(sum_A_dev);
-                    devs.Add(sum_B_dev);
-                    devs.Add(sum_D_dev);
-                    devs.Add(sum_E_dev);
-
-                    //determine the extreme deviation and at which position is occurs on the gauge
-                    double corr_extreme_dev = 0.0;
-                    int index_of_extreme_deviation = 0;
-
-                    if (Math.Abs(devs.Max()) >= Math.Abs(devs.Min()))
+                    catch(UnauthorizedAccessException) 
                     {
-                        corr_extreme_dev = devs.Max();
-                        index_of_extreme_deviation = devs.IndexOf(devs.Max());
-
+                    if(count==99) MessageBox.Show("Cannot write to the U95 uncertainty and compliance file, file may be in use. Uncertainties calculations won't be attempted until the next measurement is made");
+                        Thread.Sleep(100);
+                        continue;
                     }
-                    else
-                    {
-                        corr_extreme_dev = devs.Min();
-                        index_of_extreme_deviation = devs.IndexOf(devs.Min());
-                    }
-
-                    //determine the variation
-                    double var_ = devs.Max() - devs.Min();
-
-                    int max_index = devs.IndexOf(devs.Max());
-                    int min_index = devs.IndexOf(devs.Min());
-
-                    //Now that we have the extrema calculated we can determine the uncertainty for the extreme deviation and variation in length
-                    foreach (Measurement k in gauge_measurements)
-                    {
-                        k.CalculateExpandedUncertaintyExtremeDeviation(ref vfederal,index_of_extreme_deviation);
-                        U95_extreme_dev = k.CalibrationGauge.ExpandedUncertaintyExtDev;
-                        k.CalculateExpandedUncertaintyVariation(ref vfederal,max_index,min_index);
-                        U95_variation = k.CalibrationGauge.ExpandedUncertaintyVar;
-                    }
-
-                    if (!m.CalibrationGauge.Metric) CalculateUncertaintiesMicroInch(ref U95_centre_dev, ref U95_extreme_dev, ref U95_variation);
-                    if (!m.CalibrationGauge.Metric) CalculateCMCMicroInch(ref cmc_d, ref cmc_v);
-
-
-                    string compliance_d = "";
-                    if (m.CalibrationGauge.Metric)
-                    {
-                        if ((Math.Abs(corr_extreme_dev) + U95_extreme_dev / 1000) < limit_deviation) compliance_d = "P";
-                        else if (Math.Abs(corr_extreme_dev) > (limit_deviation + U95_extreme_dev / 1000)) compliance_d = "F";
-                        else compliance_d = "U";
-                    }
-                    else
-                    {
-                        if ((Math.Abs(corr_extreme_dev) + U95_extreme_dev) < limit_deviation) compliance_d = "P";
-                        else if (Math.Abs(corr_extreme_dev) > (limit_deviation + U95_extreme_dev)) compliance_d = "F";
-                        else compliance_d = "U";
-                    }
-
-                    string compliance_v ="";
-                    if (m.CalibrationGauge.Metric)
-                    {
-                        if ((Math.Abs(var_) + U95_variation / 1000) < tolerance_variation) compliance_v = "P";
-                        else if (Math.Abs(var_) > (tolerance_variation + U95_variation / 1000)) compliance_v = "F";
-                        else compliance_v = "U";
-                    }
-                    else
-                    {
-                        if ((Math.Abs(var_) + U95_variation) < tolerance_variation) compliance_v = "P";
-                        else if (Math.Abs(var_) > (tolerance_variation + U95_variation)) compliance_v = "F";
-                        else compliance_v = "U";
-                    }
-
-                    double reported_U95_dev = 0.0;
-                    double reported_U95_ext_dev = 0.0;
-                    double reported_U95_var = 0.0;
-
-                    if (U95_centre_dev <= cmc_d) reported_U95_dev = cmc_d;
-                    else reported_U95_dev = U95_centre_dev;
-                    if (U95_extreme_dev <= cmc_d) reported_U95_ext_dev = cmc_d;
-                    else reported_U95_ext_dev = U95_extreme_dev;
-                    if (U95_variation < cmc_v) reported_U95_var = cmc_v;
-                    else reported_U95_var = U95_variation;
-
-                    if(m.CalibrationGauge.Metric) writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_dev/1000 + "," + corr_extreme_dev + "," + U95_extreme_dev/1000 + "," + cmc_d/1000 + "," + reported_U95_ext_dev/1000 + "," + var_ + "," + U95_variation/1000 + "," + cmc_v/1000 + "," + reported_U95_var/1000 + "," + compliance_d + "," + compliance_v);
-                    else writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev + "," + cmc_d + "," + reported_U95_dev + "," + corr_extreme_dev + "," + U95_extreme_dev + "," + cmc_d + "," + reported_U95_ext_dev + "," + var_ + "," + U95_variation + "," + cmc_v + "," + reported_U95_var + "," + compliance_d + "," + compliance_v);
-                    unique_ids_used.Add(unique_id);
                 }
+                if (m_list[0].CalibrationGauge.Metric)
+                {
+                    writer3.WriteLine("DateTime,Nominal (mm),Serial Number,Centre Deviation (um),U95 Centre Deviation As Calculated (um),U95 Centre Deviation CMC (um),CMC U95 Centre Deviation As Reported (um),Extreme Deviation (um),U95 Extreme Deviation As Calculated (um),U95 Extreme Deviation CMC (um),U95 Extreme Deviation As Reported (um),Variation,U95 Variation As Calculated (um),U95 Variation CMC (um),U95 Variation As Reported (um),Compliance Deviation, Compliance Variation");
+                }
+                else writer3.WriteLine("DateTime,Nominal (inch),Serial Number,Centre Deviation (uinch),U95 Centre Deviation As Calculated (uinch),U95 Centre Deviation CMC (uinch) ,CMC U95 Centre Deviation As Reported (uinch),Extreme Deviation (uinch),U95 Extreme Deviation As Calculated (uinch),U95 Extreme Deviation CMC (uinch),U95 Extreme Deviation As Reported (uinch),Variation (uinch),U95 Variation As Calculated (uinch),U95 Variation CMC (uinch),U95 Variation As Reported (uinch),Compliance Deviation, Compliance Variation");
+
+                writer3.WriteLine(Version_number);
+
+                string unique_id = "";  //a unit id is a concatination of Nominal, setid, serial no
+                List<string> unique_ids_used = new List<string>(); //a list of the ids we have used in the loop below
+                int j = 0;
+                foreach (Measurement m in m_list)
+                {
+                    unique_id = m.CalibrationGauge.Nominal + m.CalibrationGauge.FromSet + m.CalibrationGauge.SerialNumber;
+
+                    if (!unique_ids_used.Contains(unique_id))
+                    {
+                        int num_id_matches = 0;
+
+                        long date_time = 0;
+                        double nominal = m.CalibrationGauge.Nominal;
+                        string ser_no = m.CalibrationGauge.SerialNumber;
+
+                        //double sum_variation = 0.0;
+                        double sum_centre_dev = 0.0;
+                        double U95_centre_dev = 0.0;
+                        double U95_extreme_dev = 0.0;
+                        double U95_variation = 0.0;
+                        double sum_A_dev = 0.0;
+                        double sum_B_dev = 0.0;
+                        double sum_D_dev = 0.0;
+                        double sum_E_dev = 0.0;
+                        double tolerance_variation = 0.0;
+                        double limit_deviation = 0.0;
+                        double cmc_d = 0.0;
+                        double cmc_v = 0.0;
+                        List<Measurement> gauge_measurements = new List<Measurement>();
+
+                        //with the unique id loop through each measurement
+                        foreach (Measurement k in m_list)
+                        {
+                            string unique_id_to_compare = k.CalibrationGauge.Nominal + k.CalibrationGauge.FromSet + k.CalibrationGauge.SerialNumber;
+
+                            if (unique_id_to_compare.Equals(unique_id))
+                            {
+                                gauge_measurements.Add(k);
+                                num_id_matches++;
+                                k.CalculateExpandedUncertaintyDeviation(ref vfederal,Measurement.Measurements.IndexOf(m_list));
+                                U95_centre_dev = k.CalibrationGauge.ExpandedUncertaintyDev;
+                                limit_deviation = k.CalibrationGauge.LimitDeviation;
+                                tolerance_variation = k.CalibrationGauge.ToleranceVariation;
+                                cmc_d = k.CalibrationGauge.DeviationCMC;
+                                cmc_v = k.CalibrationGauge.VariationCMC;
+
+                                //we need the date time to be represented as a double to do averaging math on
+                                date_time += Convert.ToDateTime(k.Datetime).Ticks;
+
+                                //add up all the repeat measurements for each point of this gauge block
+                                sum_centre_dev += k.CalibrationGauge.CentreDeviation;
+                                sum_A_dev += k.CalibrationGauge.ADev;
+                                sum_B_dev += k.CalibrationGauge.BDev;
+                                sum_D_dev += k.CalibrationGauge.DDev;
+                                sum_E_dev += k.CalibrationGauge.EDev;
+                            }
+                        }
+
+                        //compute the means
+                        date_time /= gauge_measurements.Count;
+                        var a_dt = new DateTime(date_time);
+                        sum_centre_dev /= gauge_measurements.Count;
+                        sum_A_dev /= gauge_measurements.Count;
+                        sum_B_dev /= gauge_measurements.Count;
+                        sum_D_dev /= gauge_measurements.Count;
+                        sum_E_dev /= gauge_measurements.Count;
+
+
+
+                        //put the average values into a list for processing
+                        List<double> devs = new List<double>();
+                        devs.Add(sum_centre_dev);
+                        devs.Add(sum_A_dev);
+                        devs.Add(sum_B_dev);
+                        devs.Add(sum_D_dev);
+                        devs.Add(sum_E_dev);
+
+                        //determine the extreme deviation and at which position is occurs on the gauge
+                        double corr_extreme_dev = 0.0;
+                        int index_of_extreme_deviation = 0;
+
+                        if (Math.Abs(devs.Max()) >= Math.Abs(devs.Min()))
+                        {
+                            corr_extreme_dev = devs.Max();
+                            index_of_extreme_deviation = devs.IndexOf(devs.Max());
+
+                        }
+                        else
+                        {
+                            corr_extreme_dev = devs.Min();
+                            index_of_extreme_deviation = devs.IndexOf(devs.Min());
+                        }
+
+                        //determine the variation
+                        double var_ = devs.Max() - devs.Min();
+
+                        int max_index = devs.IndexOf(devs.Max());
+                        int min_index = devs.IndexOf(devs.Min());
+
+                        //Now that we have the extrema calculated we can determine the uncertainty for the extreme deviation and variation in length
+                        foreach (Measurement k in gauge_measurements)
+                        {
+                            k.CalculateExpandedUncertaintyExtremeDeviation(ref vfederal, index_of_extreme_deviation, Measurement.Measurements.IndexOf(m_list));
+                            U95_extreme_dev = k.CalibrationGauge.ExpandedUncertaintyExtDev;
+                            k.CalculateExpandedUncertaintyVariation(ref vfederal, max_index, min_index);
+                            U95_variation = k.CalibrationGauge.ExpandedUncertaintyVar;
+                        }
+
+                        if (!m.CalibrationGauge.Metric) CalculateUncertaintiesMicroInch(ref U95_centre_dev, ref U95_extreme_dev, ref U95_variation);
+                        if (!m.CalibrationGauge.Metric) CalculateCMCMicroInch(ref cmc_d, ref cmc_v);
+
+
+                        string compliance_d = "";
+                        if (m.CalibrationGauge.Metric)
+                        {
+                            if ((Math.Abs(corr_extreme_dev) + U95_extreme_dev / 1000) < limit_deviation) compliance_d = "P";
+                            else if (Math.Abs(corr_extreme_dev) > (limit_deviation + U95_extreme_dev / 1000)) compliance_d = "F";
+                            else compliance_d = "U";
+                        }
+                        else
+                        {
+                            if ((Math.Abs(corr_extreme_dev) + U95_extreme_dev) < limit_deviation) compliance_d = "P";
+                            else if (Math.Abs(corr_extreme_dev) > (limit_deviation + U95_extreme_dev)) compliance_d = "F";
+                            else compliance_d = "U";
+                        }
+
+                        string compliance_v = "";
+                        if (m.CalibrationGauge.Metric)
+                        {
+                            if ((Math.Abs(var_) + U95_variation / 1000) < tolerance_variation) compliance_v = "P";
+                            else if (Math.Abs(var_) > (tolerance_variation + U95_variation / 1000)) compliance_v = "F";
+                            else compliance_v = "U";
+                        }
+                        else
+                        {
+                            if ((Math.Abs(var_) + U95_variation) < tolerance_variation) compliance_v = "P";
+                            else if (Math.Abs(var_) > (tolerance_variation + U95_variation)) compliance_v = "F";
+                            else compliance_v = "U";
+                        }
+
+                        double reported_U95_dev = 0.0;
+                        double reported_U95_ext_dev = 0.0;
+                        double reported_U95_var = 0.0;
+
+                        if (U95_centre_dev <= cmc_d) reported_U95_dev = cmc_d;
+                        else reported_U95_dev = U95_centre_dev;
+                        if (U95_extreme_dev <= cmc_d) reported_U95_ext_dev = cmc_d;
+                        else reported_U95_ext_dev = U95_extreme_dev;
+                        if (U95_variation < cmc_v) reported_U95_var = cmc_v;
+                        else reported_U95_var = U95_variation;
+
+                        int set_index = 0;
+                        CreateNewCalSet(ref set_index, m.CalibrationGauge.FromSet);       //see if we need to make a new cal set for this gauge
+                        GaugeBlockSet gs = calibration_gauge_sets.ElementAt(set_index);  //get the gauge block set that this gauge belongs to
+                        gs.ReportDate = System.DateTime.Now.ToString("dd MMMM yyyy");    //update the report number for the cal set to now.
+
+                        //make a new gauge with the average values in it
+                        GaugeBlock gb = m.CalibrationGauge.Clone();
+
+                        //update all the field of the gauge block that are specific to averages
+                        gb.CentreDeviation = devs[0];
+                        gb.ADev = devs[1];
+                        gb.BDev = devs[2];
+                        gb.DDev = devs[3];
+                        gb.EDev = devs[4];
+                        gb.FromSet = m.calibration_gauge.FromSet;
+                        gb.ExpandedUncertaintyDev = reported_U95_dev;
+                        gb.ExpandedUncertaintyExtDev = reported_U95_ext_dev;
+                        gb.ExpandedUncertaintyVar = reported_U95_var;
+                        gb.ExtremeDeviation = corr_extreme_dev;
+                        gb.Variation = var_;
+                        gb.CentreDeviation = sum_centre_dev;
+                        gb.DeviationOutcome = compliance_d;
+                        gb.VariationOutcome = compliance_v;
+                        gb.MaxDev = devs.Max();
+                        gb.MinDev = devs.Min();
+
+                        int gauge_index = 0;
+                        bool found = false;
+                        foreach (GaugeBlock gaugeBlock in gs.GaugeList)
+                        {
+                            if ((gb.Nominal + gb.SerialNumber).Equals(gs.GaugeList[gauge_index].Nominal+ gs.GaugeList[gauge_index].SerialNumber))
+                            {
+                                found = true;  //in the list
+                            }
+
+                            gauge_index++;
+                        }
+
+                        if (!found) {
+                            gs.GaugeList.Add(gb);
+                            gs.NumGauges++;
+                        }
+
+
+
+                        if (m.CalibrationGauge.Metric) writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev / 1000 + "," + cmc_d / 1000 + "," + reported_U95_dev / 1000 + "," + corr_extreme_dev + "," + U95_extreme_dev / 1000 + "," + cmc_d / 1000 + "," + reported_U95_ext_dev / 1000 + "," + var_ + "," + U95_variation / 1000 + "," + cmc_v / 1000 + "," + reported_U95_var / 1000 + "," + compliance_d + "," + compliance_v);
+                        else writer3.WriteLine(a_dt.ToString() + "," + nominal + "," + ser_no + "," + sum_centre_dev + "," + U95_centre_dev + "," + cmc_d + "," + reported_U95_dev + "," + corr_extreme_dev + "," + U95_extreme_dev + "," + cmc_d + "," + reported_U95_ext_dev + "," + var_ + "," + U95_variation + "," + cmc_v + "," + reported_U95_var + "," + compliance_d + "," + compliance_v);
+                        unique_ids_used.Add(unique_id);
+                    }
+                    
+                }
+                writer3.Close();
             }
-            writer3.Close();
         }
 
-        public static bool CreateNewCalSet(ref int set_index)
+        public static bool CreateNewCalSet(ref int set_index, string from_set)
         {
             if (working_gauge.FromSet.Equals(""))
             {
@@ -2319,7 +2490,8 @@ namespace Vertical_Federal_App
             if (calibration_gauge_sets.Count == 0)
             {
                 GaugeBlockSet gauge_set = new GaugeBlockSet();
-                gauge_set.GaugeSetName = working_gauge.FromSet;
+                gauge_set.GaugeSetName = from_set;
+                
                 calibration_gauge_sets.Add(gauge_set);
                 return true;
             }
@@ -2330,7 +2502,7 @@ namespace Vertical_Federal_App
                 //if we have calibration gauge sets already in the list then see if the set has previously been added (i.e is this a unique serial number)
                 foreach (GaugeBlockSet cal_set in calibration_gauge_sets)
                 {
-                    if (cal_set.GaugeSetName.Equals(working_gauge.FromSet))
+                    if (cal_set.GaugeSetName.Equals(from_set))
                     {
                         set_exists = true;
                         break;
@@ -2342,7 +2514,7 @@ namespace Vertical_Federal_App
                 else
                 {
                     GaugeBlockSet gauge_set = new GaugeBlockSet();
-                    gauge_set.GaugeSetName = working_gauge.FromSet;
+                    gauge_set.GaugeSetName = from_set;
                     calibration_gauge_sets.Add(gauge_set);
                     //set_index++;
                     return true;

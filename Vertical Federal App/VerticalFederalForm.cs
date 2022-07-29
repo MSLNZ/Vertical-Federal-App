@@ -26,7 +26,7 @@ namespace Vertical_Federal_App
         private PrintGaugeResultsToRichTextbox pgr;
         private VerticalFederal federal;
         private Stack ref_g;
-        
+        private Report report;
         private List<Stack> suitable_gauges;
         private int rb_position;
         private bool radiobuttionclearcalled;
@@ -42,6 +42,7 @@ namespace Vertical_Federal_App
             sdr = new SerialDataReveived(DataReceived);
             tdr = new TemperatureRetrieved(TemperatureReceived);
             pgr = new PrintGaugeResultsToRichTextbox(PrintGaugeResults);
+            
             Measurement.working_gauge = new GaugeBlock(true);
             INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data_federal_measurement"+System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\EQUIPREG\cal_data.ini",false);
             INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"G:\Shared drives\MSL - Length\Length\Technical Procedures\XML Files\config_uncertainty_federal_measurement"+System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\Technical Procedures\config_uncertainty.ini", true);
@@ -617,9 +618,6 @@ namespace Vertical_Federal_App
         private void clientNameTextBox_TextChanged(object sender, EventArgs e)
         {
             Measurement.working_gauge.ClientName = clientNameTextBox.Text;
-            Measurement.filename = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + clientNameTextBox.Text + "_" + DateTime.Today.Year + ".txt";
-            Measurement.filename_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + clientNameTextBox.Text + "_summary" + DateTime.Today.Year + ".txt";
-            Measurement.filename_U95_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + clientNameTextBox.Text + "_U95_Compliance_summary" + DateTime.Today.Year + ".txt";
         }
 
         private void materialComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -900,7 +898,7 @@ namespace Vertical_Federal_App
                 Measurement.working_gauge.ClientName = clientNameTextBox.Text;
             }
             int set_index = 0;
-            if (!Measurement.CreateNewCalSet(ref set_index)) return;
+            if (!Measurement.CreateNewCalSet(ref set_index,Measurement.working_gauge.FromSet)) return;
 
             //add the gauge to the calibration gauge set
             GaugeBlock working_gauge_clone = Measurement.working_gauge.Clone();
@@ -993,47 +991,80 @@ namespace Vertical_Federal_App
             current_measurement.CalibrationGauge.FromSet = setSerialTextBox.Text;
             current_measurement.CalibrationGauge.Variation = Math.Round(current_measurement.CalculateVariation(), 5);
             current_measurement.CalculateComplianceLimits();
-            current_measurement.CalculateCMCs(federal);
+            current_measurement.CalculateCMCs(ref federal);
+            current_measurement.measurement_working_filename = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + current_measurement.CalibrationGauge.FromSet + ".txt";
+            current_measurement.measurement_working_filename_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\"+ current_measurement.CalibrationGauge.FromSet + "_summary.txt";
+            current_measurement.measurement_working_filename_U95_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + current_measurement.CalibrationGauge.FromSet + "_U95_Compliance_summary.txt";
 
-            //Save a copy of the current measurement to the measurement list.
-            Measurement.Measurements.Add(current_measurement);
+            //if needed add the set name to the set name list
+            if (!Measurement.SetNames.Contains(current_measurement.CalibrationGauge.FromSet)) //this measurement doesn't have an association with a set yet, so make it now
+            {
+                List<Measurement> m_list = new List<Measurement>();
+                Measurement.SetNames.Add(current_measurement.CalibrationGauge.FromSet);
+                Measurement.Measurements.Add(m_list);  //add an empty measurement list to the list of measurement lists.
+                
+            }
+           
+            //get the index of the current measurements set name.
+            int index_of_set = Measurement.SetNames.IndexOf(current_measurement.CalibrationGauge.FromSet);
+
+            //Save a copy of the current measurement to the measurement list.  It's a 2 dimensional list 
+            //the 1st dimension enables sorting measurements by the set they belong to.
+            Measurement.Measurements[index_of_set].Add(current_measurement);
+            
             gaugeResultsRichTextBox.Clear();
             Thread saveprintThread = new Thread(new ThreadStart(DoSavePrint));
             saveprintThread.Start();
             
         }
+        /// <summary>
+        /// Saves all measurement data to file and prints measurement to the GUI
+        /// </summary>
         private void DoSavePrint()
         {
-            if (System.IO.File.Exists(Measurement.filename)) System.IO.File.Delete(Measurement.filename);
-            System.IO.StreamWriter writer = System.IO.File.CreateText(Measurement.filename);
+            foreach (List<Measurement> m_list in Measurement.Measurements)
+            {
+                
+
+                if (m_list == null) continue; //make sure the list has something in it
+
+                System.IO.File.Delete(m_list[0].measurement_working_filename);
+
+                //Note: every measurement in m_list is from the same gauge block set by implementation
+                System.IO.StreamWriter writer = System.IO.File.CreateText(m_list[0].measurement_working_filename);
+
+                Measurement.HeaderWritten = false;
+                if (!Measurement.HeaderWritten)
+                {
+                    writer.WriteLine(Measurement.measurement_file_header);
+                    writer.WriteLine(Measurement.Version_number);
+                }
+
+                StringBuilder rtb = new StringBuilder();
+                int count = 1;
+
+
+
+                foreach (Measurement m in m_list)
+                {
+                    string line_to_write = "";
+                    string units = "mm µm";
+                    if (!m.CalibrationGauge.Metric) units = "inch µinch";
+                    m.calculateElasticDeformations(federal);
+                    m.CalculateDeviations();
+                    Measurement.PrepareLineForWrite(m, ref line_to_write, units);
+                    string l = Measurement.writeRichTBLine(m, units, count);
+                    rtb.Append(l);
+                    writer.WriteLine(line_to_write);
+                    count++;
+                }
+                writer.Close();
+                //invoke the gui to print to the gauge results rich text box
+                pgr(rtb.ToString());
+            }
             
-            Measurement.HeaderWritten = false;
-            if (!Measurement.HeaderWritten)
-            {
-                writer.WriteLine(Measurement.measurement_file_header);
-                writer.WriteLine(Measurement.Version_number);
-            }
 
-            StringBuilder rtb = new StringBuilder();
-            int count = 1;
-            foreach (Measurement m in Measurement.Measurements)
-            {
-                string line_to_write = "";
-
-                string units = "mm µm";
-                if (!m.CalibrationGauge.Metric) units = "inch µinch";
-                m.calculateElasticDeformations(federal);
-                m.CalculateDeviations();
-                Measurement.PrepareLineForWrite(m, ref line_to_write, units);
-                string l = Measurement.writeRichTBLine(m, units, count);
-                rtb.Append(l);
-                writer.WriteLine(line_to_write);
-                count++;
-            }
-            writer.Close();
-
-            //invoke the gui to print to the gauge results rich text box
-            pgr(rtb.ToString());
+            
 
             Measurement.writeSummaryToFile();
             Measurement.WriteUncertaintyAndComplianceToFile(ref federal);
@@ -1066,13 +1097,23 @@ namespace Vertical_Federal_App
             string[] lines;
             if (MeasurementOpenFileDialog.ShowDialog() == DialogResult.OK)
             {
-                Measurement.filename = MeasurementOpenFileDialog.FileName;
-                lines = System.IO.File.ReadAllLines(Measurement.filename);
+                //check if this files data already exists i.e does the program already have data loaded relating to the file
+                
+                Measurement.filen = MeasurementOpenFileDialog.FileName;
+
+                foreach (List<Measurement> m_list in Measurement.Measurements)
+                {
+                    if (m_list[0].measurement_working_filename.Contains(Measurement.filen))
+                    {
+                        MessageBox.Show("This file has already been loaded");
+                        return; //we've already loaded this file
+                    }
+                }
+
+                lines = System.IO.File.ReadAllLines(Measurement.filen);
             }
             else return;
 
-            int index = Measurement.filename.IndexOf('_');
-            Measurement.filename_sum = Measurement.filename.Insert(index+1, "summary");
             if (lines.Length == 0)
             {
                 MessageBox.Show("The file is empty");
@@ -1087,15 +1128,22 @@ namespace Vertical_Federal_App
 
            
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="string_array"></param>
         private void doLoadWork(object string_array)
         {
-            string[] lines = (string[])string_array;
+           
 
-            System.IO.StreamWriter writer = System.IO.File.CreateText(Measurement.filename);
+            string[] lines = (string[])string_array;
+            int meas_list_index = 0;
+
+            System.IO.StreamWriter writer = System.IO.File.CreateText(Measurement.filen);
+
             //read the file and add measurements to the measurement list
-            Measurement.ParseFile(lines, ref federal);
-            
+            Measurement.ParseFile(lines, ref federal, ref meas_list_index);
+
             Measurement.HeaderWritten = false;
             if (!Measurement.HeaderWritten)
             {
@@ -1103,29 +1151,34 @@ namespace Vertical_Federal_App
                 writer.WriteLine(Measurement.Version_number);
             }
             int count = 1;
-
             StringBuilder sb = new StringBuilder();
-            //process all measurements
-            foreach (Measurement m in Measurement.Measurements)
-            {
-                string line_to_write = "";
 
-                string units = "mm µm";
-                if (!m.CalibrationGauge.Metric) units = "inch µinch";
-                m.calculateElasticDeformations(federal);
-                m.CalculateDeviations();
-                Measurement.PrepareLineForWrite(m, ref line_to_write, units);
-                sb.Append(Measurement.writeRichTBLine(m, units, count));
-                writer.WriteLine(line_to_write);
-                Measurement.writeSummaryToFile();
-                Measurement.WriteUncertaintyAndComplianceToFile(ref federal);
-                count++;
+
+            //process all measurements
+            foreach (List<Measurement> m_list in Measurement.Measurements){
+                foreach (Measurement m in m_list)
+                {
+                    string line_to_write = "";
+
+                    string units = "mm µm";
+                    if (!m.CalibrationGauge.Metric) units = "inch µinch";
+                    m.calculateElasticDeformations(federal);
+                    m.CalculateDeviations();
+                    Measurement.PrepareLineForWrite(m, ref line_to_write, units);
+                    sb.Append(Measurement.writeRichTBLine(m, units, count));
+                    writer.WriteLine(line_to_write);
+                    Measurement.writeSummaryToFile();
+                    Measurement.WriteUncertaintyAndComplianceToFile(ref federal);
+                    count++;
+                }
             }
+            
 
             writer.Close();
 
             //invoke the gui to print to the gauge results rich textbox
             pgr(sb.ToString());
+            
         }
 
         private void ComplianceComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1135,9 +1188,17 @@ namespace Vertical_Federal_App
             Measurement.working_gauge.ComplianceStandard = ComplianceComboBox.SelectedIndex;
         }
 
-        private void TemperatureTextBox_TextChanged(object sender, EventArgs e)
-        {
+        
 
+        private void GenerateReportButton_Click(object sender, EventArgs e)
+        {
+            int i = 0;
+            foreach (GaugeBlockSet gbs in Measurement.calibration_gauge_sets)
+            {
+                report = new Report(gbs, Measurement.Measurements[i],ref federal);
+                i++;
+                report.Show();
+            }
         }
     }
 }
