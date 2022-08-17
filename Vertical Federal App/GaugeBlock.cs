@@ -129,6 +129,8 @@ namespace Vertical_Federal_App
         private double wringing_film_thickness;
         private double cmc_dev;
         private double cmc_var;
+        private List<double> temperatures;
+        private List<string> dates;
 
         public GaugeBlock(bool with_values)
         {
@@ -152,7 +154,8 @@ namespace Vertical_Federal_App
                 gauge_material.material = "";
             }
             illegal_size = false;
-                
+            temperatures = new List<double>();
+            dates = new List<string>();
         }
 
         public GaugeBlock Clone()
@@ -289,6 +292,21 @@ namespace Vertical_Federal_App
             get { return temperature; }
             set { temperature = value; }
         }
+        /// <summary>
+        /// A list of temperatures for measurements on this gauge block.
+        /// </summary>
+        public List<double> TList
+        {
+            set { temperatures = value; }
+            get { return temperatures; }
+        }
+
+        public List<string> DList
+        {
+            set { dates = value; }
+            get { return dates; }
+        }
+    
         public bool IllegalSize
         {
             get { return illegal_size; }

@@ -26,7 +26,7 @@ namespace Vertical_Federal_App
         private PrintGaugeResultsToRichTextbox pgr;
         private VerticalFederal federal;
         private Stack ref_g;
-        private Report report;
+        private List<Report> reports = new List<Report>();
         private List<Stack> suitable_gauges;
         private int rb_position;
         private bool radiobuttionclearcalled;
@@ -1195,8 +1195,10 @@ namespace Vertical_Federal_App
             int i = 0;
             foreach (GaugeBlockSet gbs in Measurement.calibration_gauge_sets)
             {
-                report = new Report(gbs, Measurement.Measurements[i],ref federal);
+                Report report = new Report(gbs, ref federal);
+                reports.Add(report);
                 i++;
+                report.Text = "Report for gauge set " + gbs.GaugeSetName.ToString();
                 report.Show();
             }
         }

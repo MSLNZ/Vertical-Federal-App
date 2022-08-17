@@ -2301,6 +2301,9 @@ namespace Vertical_Federal_App
                         double limit_deviation = 0.0;
                         double cmc_d = 0.0;
                         double cmc_v = 0.0;
+                        double sum_temper = 0.0;
+                        List<double> tmps = new List<double>();
+                        List<string> date_list = new List<string>();
                         List<Measurement> gauge_measurements = new List<Measurement>();
 
                         //with the unique id loop through each measurement
@@ -2328,6 +2331,9 @@ namespace Vertical_Federal_App
                                 sum_B_dev += k.CalibrationGauge.BDev;
                                 sum_D_dev += k.CalibrationGauge.DDev;
                                 sum_E_dev += k.CalibrationGauge.EDev;
+                                sum_temper += k.CalibrationGauge.Temperature;
+                                tmps.Add(k.CalibrationGauge.Temperature);
+                                date_list.Add(k.Datetime);
                             }
                         }
 
@@ -2339,6 +2345,7 @@ namespace Vertical_Federal_App
                         sum_B_dev /= gauge_measurements.Count;
                         sum_D_dev /= gauge_measurements.Count;
                         sum_E_dev /= gauge_measurements.Count;
+                        sum_temper /= gauge_measurements.Count;
 
 
 
@@ -2432,7 +2439,7 @@ namespace Vertical_Federal_App
                         //make a new gauge with the average values in it
                         GaugeBlock gb = m.CalibrationGauge.Clone();
 
-                        //update all the field of the gauge block that are specific to averages
+                        //update all the fields of the gauge block that are specific to averages
                         gb.CentreDeviation = devs[0];
                         gb.ADev = devs[1];
                         gb.BDev = devs[2];
@@ -2449,14 +2456,18 @@ namespace Vertical_Federal_App
                         gb.VariationOutcome = compliance_v;
                         gb.MaxDev = devs.Max();
                         gb.MinDev = devs.Min();
+                        gb.Temperature = sum_temper;
+                        gb.TList = tmps;
+                        gb.DList = date_list;
 
                         int gauge_index = 0;
                         bool found = false;
                         foreach (GaugeBlock gaugeBlock in gs.GaugeList)
                         {
-                            if ((gb.Nominal + gb.SerialNumber).Equals(gs.GaugeList[gauge_index].Nominal+ gs.GaugeList[gauge_index].SerialNumber))
+                            if ((gb.Nominal + gb.SerialNumber).Equals(gaugeBlock.Nominal + gaugeBlock.SerialNumber))
                             {
                                 found = true;  //in the list
+                                break;
                             }
 
                             gauge_index++;
@@ -2465,6 +2476,10 @@ namespace Vertical_Federal_App
                         if (!found) {
                             gs.GaugeList.Add(gb);
                             gs.NumGauges++;
+                        }
+                        else
+                        {
+                            gs.GaugeList[gauge_index] = gb; //insert the updated gauge block
                         }
 
 
