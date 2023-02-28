@@ -2229,9 +2229,11 @@ namespace Vertical_Federal_App
         /// </summary>
         public static void WriteUncertaintyAndComplianceToFile(ref VerticalFederal vfederal)
         {
-            
+            int x = 0;
+            int y = 0;
             foreach (List<Measurement> m_list in Measurement.Measurements)
             {
+                x++;
                 try
                 {
                     System.IO.File.Delete(m_list[0].measurement_working_filename_U95_sum);
@@ -2278,6 +2280,7 @@ namespace Vertical_Federal_App
                 int j = 0;
                 foreach (Measurement m in m_list)
                 {
+                    y++;
                     unique_id = m.CalibrationGauge.Nominal + m.CalibrationGauge.FromSet + m.CalibrationGauge.SerialNumber;
 
                     if (!unique_ids_used.Contains(unique_id))
@@ -2336,7 +2339,10 @@ namespace Vertical_Federal_App
                                 date_list.Add(k.Datetime);
                             }
                         }
-
+                        if (y == 15)
+                        {
+                            MessageBox.Show("");
+                        }
                         //compute the means
                         date_time /= gauge_measurements.Count;
                         var a_dt = new DateTime(date_time);
