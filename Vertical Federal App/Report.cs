@@ -271,7 +271,7 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\begin{document}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\date{" + DateTime.Now.ToString("dd MMMM yyyy") + "}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\reportnumber{"+rep_num+"}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\serial{Set Serial Number:" + cal_set.GaugeSetName+"}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\serial{Set Serial Number:" + cal_set.GaugeSetName +"}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\fileref{"+ j_l_num +"}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\title{" + title + "}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\maketitlepage\n"); fs.Write(line, 0, line.Length);
@@ -287,6 +287,8 @@ namespace Vertical_Federal_App
                         line = new UTF8Encoding(true).GetBytes("\\includegraphics[width=16cm]{"+g.Filename+"}\n"); fs.Write(line, 0, line.Length);
                         line = new UTF8Encoding(true).GetBytes(g.Caption+".\\par\\pagebreak \n"); fs.Write(line, 0, line.Length);
                     }
+
+                    line = new UTF8Encoding(true).GetBytes(serial_Number_Note.Text+"\n");fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("\\section{Client}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes(bussiness_name + ", " +physical_address+".\n"); fs.Write(line, 0, line.Length);
@@ -354,7 +356,7 @@ namespace Vertical_Federal_App
                         line = new UTF8Encoding(true).GetBytes(CompStdString(st) + ".\\par\n"); fs.Write(line, 0, line.Length); //the last standard list, so we dont need a new line
                     }
 
-                    line = new UTF8Encoding(true).GetBytes("The standard(s) listed here are referred to as \"documentary standards\" in this report.\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("The standard(s) listed here are referred to as \"documentary standard(s)\" in this report.\n"); fs.Write(line, 0, line.Length);
 
                     UpdatePhysicalConditions();
 
@@ -419,11 +421,13 @@ namespace Vertical_Federal_App
                     
                     foreach (GaugeBlock g in gauge_blocks)
                     {
+                        string sn = g.SerialNumber;
+                        if (g.Nominal.ToString().Equals(g.SerialNumber)) sn = ""; //if the nominal is the same as the serial number that just means there's no serial number so just leave serial number blank.
                         cd = $"{(met ? Math.Round(g.CentreDeviation, 3).ToString("N3") : Math.Round(g.CentreDeviation,1).ToString("N1"))}";
                         ed = $"{(met ? Math.Round(g.ExtremeDeviation, 3).ToString("N3") : Math.Round(g.ExtremeDeviation, 1).ToString("N1"))}";
                         d_tol = $"{(met ? Math.Round(g.LimitDeviation, 3).ToString("N2") : Math.Round(g.LimitDeviation, 0).ToString("N0"))}";
-                        line = new UTF8Encoding(true).GetBytes(g.Nominal.ToString() + " & " + g.SerialNumber +" & " + cd + 
-                            " & " + ed + " & " + d_tol + " & " + g.DeviationOutcome + "\\\\ \n"); fs.Write(line, 0, line.Length);
+                        line = new UTF8Encoding(true).GetBytes(g.Nominal.ToString() + " & " + sn +" & " + cd + 
+                            " & " + ed + " & " + "\\pm" + d_tol + " & " + g.DeviationOutcome + "\\\\ \n"); fs.Write(line, 0, line.Length);
                     }
                     line = new UTF8Encoding(true).GetBytes("\\end{longtable} \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\pagebreak \n"); fs.Write(line, 0, line.Length);
@@ -1032,6 +1036,11 @@ namespace Vertical_Federal_App
 
             
             
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
