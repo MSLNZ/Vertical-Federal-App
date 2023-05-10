@@ -1,0 +1,120 @@
+
+% Class options: CIPM, IANZ, unendorsed (default: CIPM) - note, case sensitive
+\documentclass[CIPM]{MSLCalCert} 
+
+\begin{document}
+
+% Cover page details
+ \date{27 May 2021}   % Can use \today until the report date is known
+ 
+ \reportnumber{Length/2021/1202}
+ \fileref{J00711/L0168}
+ 
+ \title{
+ 	Report on the Measurement of 16 Tube Samples 
+ }
+ \maketitlepage
+
+	
+% Possible section headings: Description, Identification, Client
+% Reference, Date(s) of Calibration (of Test), Objective
+% Method, Conditions, Notes, Results, Uncertainty, Conclusion
+%
+\section{Description}
+There are sixteen cylindrical tube samples manufactured by We Can Precision Engineering Ltd. using a variety of manufacturing techniques. All samples are approximately 40 mm long with an inner diameter of approximately 32 mm. The odd numbered cylinders have an outer diameter of approximately 40 mm and the even numbered samples have an outer diameter of approximately 50 mm.
+
+
+\section{Identification}
+Each tube is stamped on one end with a number from 1 to 16.
+
+\section{Client}
+We Can Precision Engineering Ltd, 303 Wilson Road, Hastings 4120.
+
+\section{Dates of Calibration}
+23 April 2021 to 5 May 2021.
+
+\section{Conditions}
+Ambient temperature was maintained within $\SI{\pm 1}{\celsius}$ of $\SI{20}{\celsius}$.
+
+\section{Method}
+Measurements of the total run out and coaxiality of the inner and outer cylindrical surfaces of the tubes were measured on a Mitutoyo RA-2200 Roundness Machine according to MSLT.L.011.007 Roundness Measurement. Each cylinder was measured over a section extending between approximately 2.5 mm and 36.5 mm from the unstamped end of the tube. 
+
+Total run-out is defined for a cylindrical surface with respect to a datum axis. It is defined as the radial separation between two cylinders which are coaxial to the datum axis and where all measured surface points are between the two cylinders. It includes contributions from variations such as circularity, cylindricity, straightness, and coaxiality of the cylindrical surface.
+
+Coaxiality is determined form the greater of double the distances between the axis of the inner cylinder and the axis of the outer cylinder assessed at each end of the measurement section.
+
+\section{Results}
+The measured total run-out of each surface with respect to the axis of the other is given in Table 1. The measured coaxiality of the two axes is also given in Table 1.
+
+ \begin{center} % Centered horizontally on the page
+ 
+ % The report text has 1.5 line spacing, 
+ % but that is too wide for tables 
+ \begin{singlespace}
+ 
+ 	\small	% use a smaller font size for the table entries
+ 
+  	% Increases the vertical spacing between rows slightly  
+  	\setlength{\extrarowheight}{3pt}
+  
+	\[
+		% the 'S' array column type will align numbers on the decimal 
+  		\begin{array}{SSSS}
+\multicolumn{1}{c}{\text{Sample ID} } & \multicolumn{2}{c}{\text{Total Run-out} } & \multicolumn{1}{c}{\text{Coaxiality} }  \\
+\multicolumn{1}{c}{}          & \multicolumn{1}{c}{\text{surface: outer}} & \multicolumn{1}{c}{\text{surface: inner}} & \multicolumn{1}{c}{}            \\
+\multicolumn{1}{c}{}          & \multicolumn{1}{c}{\text{datum: inner}}   & \multicolumn{1}{c}{\text{datum: outer}}   & \multicolumn{1}{c}{}            \\
+\multicolumn{1}{c}{}          & \multicolumn{1}{c}{\si{\mu m}}             & \multicolumn{1}{c}{\si{\mu m}}             & \multicolumn{1}{c}{\si{\mu m} }         \\
+     		\\ \hline % Underline the headings
+
+  		%%-----------------------------------------------
+  		% Data here
+			1         & 5.9             & 6.8            & 1.53       \\
+			2         & 7.7             & 8.3            & 6.84       \\
+			3         & 10.6            & 11.0           & 4.75       \\
+			4         & 13.5            & 12.2           & 9.17       \\
+			5         & 27.2            & 35.7           & 27.26      \\
+			6         & 13.2            & 24.6           & 9.30       \\
+			7         & 411.3           & 412.4          & 411.72     \\
+			8         & 17.4            & 28.5           & 16.78      \\
+			9         & 61.2            & 59.0           & 59.41      \\
+			10        & 30.6            & 33.0           & 32.54      \\
+			11        & 14.8            & 20.4           & 8.50       \\
+			12        & 148.9           & 13.4           & 4.55       \\
+			13        & 28.1            & 53.4           & 33.46      \\
+			14        & 52.1            & 52.8           & 55.90      \\
+			15        & 14.4            & 37.8           & 5.56       \\
+			16        & 24.5            & 23.6           & 23.24     
+		%%-----------------------------------------------
+		
+		\end{array}
+	\]
+	
+\end{singlespace}
+\end{center}
+
+
+\section{Uncertainty}
+The expanded uncertainty for the measured total run-out is $\SI{2.0}{\mu m}$. The expanded uncertainty for the measured coaxiality is $\SI{0.62}{\mu m}$. The expanded uncertainty have been calculated using a coverage factor of 2.2.
+
+% A \paragraph is a lower heirarchy section. The 'heading' text will be in bold
+% and the 'body' text will follow on the same line.
+\paragraph{Note:} \referenceGUM	% Standard reference to the GUM
+
+%==============================================================
+% Signatures
+% \clearpage % This will start a new page for the signatures
+
+% Who will sign? 
+% Enter names here (up to '\signatureE', if needs be)
+\signatureA{E F Howick}
+\signatureB{C M Young}
+
+% Choose between the two roles:
+%\chiefMetrologist{
+\chiefMetrologistDelegate{T J Stewart}
+
+% Append letters (up to '\signaturesABCDE') to match those in
+% the '\signature' definitions above.
+\signaturesAB
+
+\end{document}
