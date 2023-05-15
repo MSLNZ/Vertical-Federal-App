@@ -18,7 +18,7 @@ namespace Vertical_Federal_App
         //private static List<Measurement> measurements = new List<Measurement>();
         private static List<List<Measurement>> measurements = new List<List<Measurement>>();
         private static List<string> setNames = new List<string>();
-        public static string Version_number = "Rev 4.2";
+        public static string Version_number = "Rev 4.3";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -2339,10 +2339,10 @@ namespace Vertical_Federal_App
                                 date_list.Add(k.Datetime);
                             }
                         }
-                        if (y == 15)
-                        {
-                            MessageBox.Show("");
-                        }
+                        //if (y == 15)
+                        //{
+                        //   MessageBox.Show("");
+                        //}
                         //compute the means
                         date_time /= gauge_measurements.Count;
                         var a_dt = new DateTime(date_time);

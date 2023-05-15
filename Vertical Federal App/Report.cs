@@ -394,9 +394,9 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("%Line 2\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{6}{l}{ \\text{} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 3\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Nominal} } & \\multicolumn{1}{c}{ \\text{Serial} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Extreme} } & \\multicolumn{1}{c}{ \\text{Limit} } & \\multicolumn{1}{c}{ \\text{Compliance} } \\\\ \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Nominal} } & \\multicolumn{1}{c}{ \\text{Serial} } & \\multicolumn{1}{c}{ \\text{Centre} } & \\multicolumn{1}{c}{ \\text{Extreme} } & \\multicolumn{1}{c}{ \\text{Limit} } & \\multicolumn{1}{c}{ \\text{Compliance} } \\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 4\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Length} } & \\multicolumn{1}{c}{ \\text{Number} } & \\multicolumn{1}{c}{ \\text{} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Outcome}}\\\\ \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Length} } & \\multicolumn{1}{c}{ \\text{Number} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Outcome}}\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 5\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{("+k+")}} & &\\multicolumn{1}{c}{ \\text{("+l+")}} &\\multicolumn{1}{c}{ \\text{("+l+")}} &\\multicolumn{1}{c}{ \\text{("+l+")}} &\\\\ \\hline\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\endfirsthead \n"); fs.Write(line, 0, line.Length);
