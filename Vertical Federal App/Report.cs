@@ -296,7 +296,19 @@ namespace Vertical_Federal_App
                     DateOfCalibration();
                     string doc = $"{(date_plural ? "Dates of Calibration" : "Date of Calibration")}";
                     line = new UTF8Encoding(true).GetBytes("\\section{"+doc+"}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd MMMM yyyy")+" to "+ max_date.ToString("dd MMMM yyyy") +".\n"); fs.Write(line, 0, line.Length);
+                    if (min_date.Year == max_date.Year)
+                    {
+                        if (min_date.Month == max_date.Month)
+                        {
+                            line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); fs.Write(line, 0, line.Length);
+                        }
+                        else line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd MMMM") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); fs.Write(line, 0, line.Length);
+                    }
+                    else
+                    {
+                       
+                        line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd MMMM yyyy") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); fs.Write(line, 0, line.Length);                
+                    }
                     
                     line = new UTF8Encoding(true).GetBytes("\\section{Method}\n"); fs.Write(line, 0, line.Length);
 
@@ -308,12 +320,12 @@ namespace Vertical_Federal_App
                     {
                         line = new UTF8Encoding(true).GetBytes("The deviation and variation in length" +
                             " of each gauge block was measured according to technical procedure "+federal.TechnicalProcedure+
-                            " \\emph{Gauge Blocks(<= 101.4 mm), Calibration by comparison}.  Measurements were " +
-                            "taken in five positions on each gauge(at the centre and toward each corner).");
+                            " \\emph{Gauge Blocks (<= 101.4 mm), Calibration by comparison}.  Measurements were " +
+                            "taken in five positions on each gauge (at the centre and toward each corner). ");
                         fs.Write(line, 0, line.Length);
                         line = new UTF8Encoding(true).GetBytes("\\emph{Deviation} is defined as the measured length minus the nominal length." +
                             " \\emph{Extreme deviation} is defined as either the maximum or minimum measured deviation, " +
-                            "depending on which has the larger magnitude.  \\emph{Variation} in length is defined as the difference " +
+                            "depending on which has the larger magnitude.  \\emph{Variation in length} is defined as the difference " +
                             "between the maximum measured length and the minimum measured length. " +
                             "\\emph{Limit Deviation} is defined as the permissible deviation at any point on the measuring face.\n");
                         fs.Write(line, 0, line.Length);
@@ -356,7 +368,12 @@ namespace Vertical_Federal_App
                         line = new UTF8Encoding(true).GetBytes(CompStdString(st) + ".\\par\n"); fs.Write(line, 0, line.Length); //the last standard list, so we dont need a new line
                     }
 
-                    line = new UTF8Encoding(true).GetBytes("The standard(s) listed here are referred to as \"documentary standard(s)\" in this report.\n"); fs.Write(line, 0, line.Length);
+                    bool plural_standard = false;
+                    if (compliance_stds.Count > 1) plural_standard = true;
+
+                    string z = $"{(plural_standard ? "standards" : "standard")}";
+                    string z_ = $"{(plural_standard ? "are" : "is")}";
+                    line = new UTF8Encoding(true).GetBytes("The " + z + " listed here " + z_ + " referred to as the \"documentary " + z + "\" in this report.\n"); fs.Write(line, 0, line.Length);
 
                     UpdatePhysicalConditions();
 
@@ -370,15 +387,15 @@ namespace Vertical_Federal_App
                     //if we have multiple standards being used we will need to modify this file.  Its too hard to program this
                     line = new UTF8Encoding(true).GetBytes("\\section{Results}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("The centre deviation of the gauge blocks is given in Table 1. " +
-                        "The extreme deviation in length is also shown for determining compliance " +
-                        "with the documentary standard(s) for limit deviation.\\par " +
+                        "The extreme deviation in length is shown for determining compliance " +
+                        "with the documentary " + z + " for limit deviation.\\par " +
                         "The variation in length of the gauge blocks is given in Table 2. The tolerance for the variation " +
-                        "in length is also shown for determining compliance " +
-                        "with the documentary standard(s) for variation in length.\\par " +
-                        "The tables also include results for compliance with the requirements of the documentary standard(s) for each gauge block for the limit deviation and variation in length. " +
-                        "A ‘P’ in the compliance columns states that the gauge block meets the requirements of documentary standard for the tested condition .Similarly, " +
-                        "an ‘F’ in the compliance columns states that the gauge block does not meet the requirements of documentary standard for the tested condition. " +
-                        "A ‘U’ in the compliance columns states that compliance to the documentary standard for the tested condition cannot be confirmed or refuted.\\par " +
+                        "in length is shown for determining compliance " +
+                        "with the documentary " + z + " for variation in length.\\par " +
+                        "The tables also include results for compliance with the requirements of the documentary " + z + " for each gauge block for the limit deviation and variation in length. " +
+                        "A ‘P’ in the compliance column states that the gauge block meets the requirements of documentary " + z + " for the tested condition. Similarly, " +
+                        "an ‘F’ in the compliance column states that the gauge block does not meet the requirements of documentary " + z + " for the tested condition. " +
+                        "A ‘U’ in the compliance column states that compliance to the documentary " + z + " for the tested condition cannot be confirmed or refuted.\\par " +
                         "The expanded measurement uncertainty is considered for all compliance outcomes.\\par " +
                         "The results are rounded to the nearest "+units+" and are valid at a reference temperature of $\\SI{20}{\\celsius}$.\\par \n"); fs.Write(line, 0, line.Length);
 
@@ -388,7 +405,7 @@ namespace Vertical_Federal_App
 
                     line = new UTF8Encoding(true).GetBytes("\\setlength\\extrarowheight{1pt}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\setlength\\tabcolsep{10pt}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{4}D{.}{.}{4}D{.}{.}{5}D{.}{.}{5}D{.}{.}{4}D{.}{.}{4}}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{6}D{.}{.}{1}D{.}{.}{5}D{.}{.}{5}D{.}{.}{4}D{.}{.}{4}}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{6}{l}{ \\text{Table 1: Deviations for gauge block set "+ cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 2\n"); fs.Write(line, 0, line.Length);
@@ -431,7 +448,7 @@ namespace Vertical_Federal_App
                     }
                     line = new UTF8Encoding(true).GetBytes("\\end{longtable} \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\pagebreak \n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{4}D{.}{.}{4}D{.}{.}{5}D{.}{.}{8}D{.}{.}{4}} \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{6}D{.}{.}{1}D{.}{.}{5}D{.}{.}{8}D{.}{.}{4}} \n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{Table 2: Variation in length for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
@@ -473,7 +490,7 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\pagebreak \n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("\\section{Uncertainty}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("The expanded measurement uncertainties for the deviation and variation in length measurements are given in the Table 3.\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("The expanded measurement uncertainties for the centre deviation, extreme deviation and variation in length measurements are given in the Table 3.\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\setlength\\tabcolsep{10pt}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{4}D{.}{.}{4}D{.}{.}{5}D{.}{.}{5}D{.}{.}{11}}\n"); fs.Write(line, 0, line.Length);
 
@@ -531,7 +548,7 @@ namespace Vertical_Federal_App
 
                     line = new UTF8Encoding(true).GetBytes("\\sigA{L A Evergreen}{Length Standards}{}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\sigB{C M Young}{Length Standards}{}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\chiefMetrologistDelegate{ T J Stewart}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\chiefMetrologistDelegate{ A J Dunford}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\signaturesAB\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\end{document}\n"); fs.Write(line, 0, line.Length);
 
