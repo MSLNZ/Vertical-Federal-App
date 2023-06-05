@@ -3,6 +3,7 @@
 % Revised to meet new MSL requirements March 2013
 % Removed Industrial Research, March 2014
 % Updated March 2022, by Chris Young
+% Added [hidelinks] 1 June 2023, by Lenice Evergreen
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{MSLCalCert}[2020/03/20 Format for MSL calibration reports]
 
@@ -47,7 +48,7 @@
 \usepackage{siunitx}
 
 
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 \usepackage{multirow}   % Allows table column entries that span rows
 \usepackage{array}      % Extends the tabular environment
@@ -172,16 +173,16 @@
 
     {\mslboldarialnarrow
         \thispageof\\
-        File: \@fileref\par
+         \@fileref\par
     }
 
     \vspace{70mm}
 
     \begin{minipage}[c]{142mm}
-        {\mslboldarialnarrow\huge{\@title{} }\\}
-        {\mslboldarialnarrow\huge{\@serial{} } \par}
+        {\mslboldarialnarrow\LARGE{\@title{} }\\}
+        {\mslboldarialnarrow\LARGE{\@serial{} } \par}
         \vspace{5mm}
-        {\mslboldarialnarrow\LARGE{\@reference} \par}
+        {\mslboldarialnarrow\Large{\@reference} \par}
     \end{minipage}
 
     \vspace*{\stretch{1}}
@@ -197,7 +198,7 @@
 
     % Start the next page by writing the report title
     \vspace*{4\baselineskip}
-    {\mslboldarialnarrow\LARGE{{\@title}\par} }  % Following page needs the title as first element
+    {\mslboldarialnarrow\Large{{\@title}\par} }  % Following page needs the title as first element
     \vspace{2\parskip}
     \changepage{}{}{}{}{}{}{}{20mm}{}
     \end{singlespace}
@@ -232,7 +233,7 @@
             {\z@}%
             {\parskip}
             {0.1\baselineskip}
-            {\mslboldarialnarrow\Large}
+            {\mslboldarialnarrow\large}
 %            {\normalfont\normalsize\sffamily\bfseries}
     }
 \renewcommand\subsection{
@@ -242,7 +243,7 @@
             {\z@}%
             {\parskip}
             {0.1\baselineskip}
-            {\mslboldarialnarrow\large}
+            {\mslboldarialnarrow\normal}
 %            {\normalfont\normalsize\sffamily}
     }
 \renewcommand\subsubsection{
