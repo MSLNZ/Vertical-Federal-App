@@ -43,3 +43,15 @@ C:\Users\MSL Lab\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\
 C:\Users\MSL Lab\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.csproj.CoreCompileInputs.cache
 C:\Users\MSL Lab\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.exe
 C:\Users\MSL Lab\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.pdb
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\bin\Debug\Vertical Federal App.exe.config
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\bin\Debug\Vertical Federal App.exe
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\bin\Debug\Vertical Federal App.pdb
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.csproj.AssemblyReference.cache
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.csproj.SuggestedBindingRedirects.cache
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical_Federal_App.Report.resources
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical_Federal_App.VerticalFedForm.resources
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical_Federal_App.Properties.Resources.resources
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.csproj.GenerateResource.cache
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.csproj.CoreCompileInputs.cache
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.exe
+C:\Users\f.robinson\Documents\GitHub\Vertical-Federal-App\Vertical Federal App\obj\Debug\Vertical Federal App.pdb
