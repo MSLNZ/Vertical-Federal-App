@@ -232,7 +232,7 @@ namespace Vertical_Federal_App
 
         private void WriteReportButton_Click(object sender, EventArgs e)
         {
-            string fileName = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\latex.tex";
+            string fileName = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\latex" + cal_set.GaugeSetName + ".tex";
             try
             {
                 // Check if file already exists. If yes, delete it.     
@@ -298,11 +298,21 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\section{"+doc+"}\n"); fs.Write(line, 0, line.Length);
                     if (min_date.Year == max_date.Year)
                     {
-                        if (min_date.Month == max_date.Month)
+                        if(min_date.Day == max_date.Day)
                         {
-                            line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); fs.Write(line, 0, line.Length);
+                            line = new UTF8Encoding(true).GetBytes(max_date.ToString("dd MMMM yyyy") + ".\n");
+                            fs.Write(line, 0, line.Length);
                         }
-                        else line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd MMMM") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); fs.Write(line, 0, line.Length);
+                        else if (min_date.Month == max_date.Month)
+                        {
+                            line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); 
+                            fs.Write(line, 0, line.Length);
+                        }
+                        else 
+                        { 
+                            line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd MMMM") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); 
+                            fs.Write(line, 0, line.Length); 
+                        }
                     }
                     else
                     {

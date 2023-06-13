@@ -93,6 +93,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.gaugeResultsRichTextBox = new System.Windows.Forms.RichTextBox();
             this.measurementGroupBox = new System.Windows.Forms.GroupBox();
+            this.GenerateReportButton = new System.Windows.Forms.Button();
             this.DeleteLastButton = new System.Windows.Forms.Button();
             this.LoadMeasurementButton = new System.Windows.Forms.Button();
             this.DateTimeLabel = new System.Windows.Forms.Label();
@@ -105,7 +106,6 @@
             this.messagesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.MeasurementOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.GenerateReportButton = new System.Windows.Forms.Button();
             this.gaugeParametersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).BeginInit();
             this.gaugeBlockGroupBox.SuspendLayout();
@@ -860,6 +860,16 @@
             this.measurementGroupBox.TabStop = false;
             this.measurementGroupBox.Text = "Measurement";
             // 
+            // GenerateReportButton
+            // 
+            this.GenerateReportButton.Location = new System.Drawing.Point(286, 388);
+            this.GenerateReportButton.Name = "GenerateReportButton";
+            this.GenerateReportButton.Size = new System.Drawing.Size(107, 33);
+            this.GenerateReportButton.TabIndex = 48;
+            this.GenerateReportButton.Text = "Generate Report(s)";
+            this.GenerateReportButton.UseVisualStyleBackColor = false;
+            this.GenerateReportButton.Click += new System.EventHandler(this.GenerateReportButton_Click);
+            // 
             // DeleteLastButton
             // 
             this.DeleteLastButton.Location = new System.Drawing.Point(286, 329);
@@ -966,16 +976,6 @@
             this.MeasurementOpenFileDialog.Filter = "txt files (*.txt)|*.txt";
             this.MeasurementOpenFileDialog.InitialDirectory = "G:\\Shared drives\\MSL - Length\\Length\\Federal\\FederalData";
             // 
-            // GenerateReportButton
-            // 
-            this.GenerateReportButton.Location = new System.Drawing.Point(286, 388);
-            this.GenerateReportButton.Name = "GenerateReportButton";
-            this.GenerateReportButton.Size = new System.Drawing.Size(107, 33);
-            this.GenerateReportButton.TabIndex = 48;
-            this.GenerateReportButton.Text = "Generate Report(s)";
-            this.GenerateReportButton.UseVisualStyleBackColor = false;
-            this.GenerateReportButton.Click += new System.EventHandler(this.GenerateReportButton_Click);
-            // 
             // VerticalFedForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -998,6 +998,7 @@
             this.Name = "VerticalFedForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Vertical Federal App";
+            this.Load += new System.EventHandler(this.VerticalFedForm_Load);
             this.gaugeParametersGroupBox.ResumeLayout(false);
             this.gaugeParametersGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.expNumericUpDown)).EndInit();

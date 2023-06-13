@@ -1202,5 +1202,10 @@ namespace Vertical_Federal_App
                 report.Show();
             }
         }
+
+        private void VerticalFedForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
