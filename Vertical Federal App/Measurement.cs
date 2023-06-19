@@ -18,7 +18,7 @@ namespace Vertical_Federal_App
         //private static List<Measurement> measurements = new List<Measurement>();
         private static List<List<Measurement>> measurements = new List<List<Measurement>>();
         private static List<string> setNames = new List<string>();
-        public static string Version_number = "Rev 4.5";
+        public static string Version_number = "Rev 4.6";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
