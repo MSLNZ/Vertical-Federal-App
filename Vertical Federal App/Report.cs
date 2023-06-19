@@ -246,7 +246,7 @@ namespace Vertical_Federal_App
                 {
                     // Add some text to file    
                     Byte[] line = new UTF8Encoding(true).GetBytes("%%=======================================================================\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\documentclass[IANZ]{MSLCalCert}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\documentclass[CIPM]{MSLCalCert}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\usepackage{parskip}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\usepackage{upgreek}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\usepackage{longtable,dcolumn}\n"); fs.Write(line, 0, line.Length);
@@ -271,7 +271,7 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\begin{document}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\date{" + DateTime.Now.ToString("dd MMMM yyyy") + "}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\reportnumber{"+rep_num+"}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\serial{Set Serial Number:" + cal_set.GaugeSetName +"}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\serial{Set Serial Number: " + cal_set.GaugeSetName +"}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\fileref{"+ j_l_num +"}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\title{" + title + "}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\maketitlepage\n"); fs.Write(line, 0, line.Length);
@@ -319,7 +319,28 @@ namespace Vertical_Federal_App
                        
                         line = new UTF8Encoding(true).GetBytes(min_date.ToString("dd MMMM yyyy") + " to " + max_date.ToString("dd MMMM yyyy") + ".\n"); fs.Write(line, 0, line.Length);                
                     }
+
+
                     
+                    ComplianceStandardsUsed();
+                    line = new UTF8Encoding(true).GetBytes("\\section{Objectives}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("To measure the centre deviation, extreme deviation and variation " +
+                        "in length of each gauge block for compliance with:\\par\n"); fs.Write(line, 0, line.Length);
+
+
+                    foreach (int st in compliance_stds)
+                    {
+                        line = new UTF8Encoding(true).GetBytes(CompStdString(st) + ".\\par\n"); fs.Write(line, 0, line.Length); //the last standard list, so we dont need a new line
+                    }
+
+                    bool plural_standard = false;
+                    if (compliance_stds.Count > 1) plural_standard = true;
+
+                    string z = $"{(plural_standard ? "standards" : "standard")}";
+                    string z_ = $"{(plural_standard ? "are" : "is")}";
+                    line = new UTF8Encoding(true).GetBytes("The " + z + " listed here " + z_ + " referred to as the \"documentary " + z + "\" in this report.\n"); fs.Write(line, 0, line.Length);
+
+
                     line = new UTF8Encoding(true).GetBytes("\\section{Method}\n"); fs.Write(line, 0, line.Length);
 
                     
@@ -368,22 +389,6 @@ namespace Vertical_Federal_App
                         units = "0.1 $\\mu$inch and 0.001 $\\mu$m";
                     }
 
-                    ComplianceStandardsUsed();
-                    line = new UTF8Encoding(true).GetBytes("\\section{Objectives}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("To measure the centre deviation, extreme deviation and variation " +
-                        "in length of each gauge block for compliance with:\\par\n"); fs.Write(line, 0, line.Length);
-
-                    
-                    foreach(int st in compliance_stds) {  
-                        line = new UTF8Encoding(true).GetBytes(CompStdString(st) + ".\\par\n"); fs.Write(line, 0, line.Length); //the last standard list, so we dont need a new line
-                    }
-
-                    bool plural_standard = false;
-                    if (compliance_stds.Count > 1) plural_standard = true;
-
-                    string z = $"{(plural_standard ? "standards" : "standard")}";
-                    string z_ = $"{(plural_standard ? "are" : "is")}";
-                    line = new UTF8Encoding(true).GetBytes("The " + z + " listed here " + z_ + " referred to as the \"documentary " + z + "\" in this report.\n"); fs.Write(line, 0, line.Length);
 
                     UpdatePhysicalConditions();
 
