@@ -284,11 +284,13 @@ namespace Vertical_Federal_App
                     foreach (GaugeImage g in gauge_images)
                     {
                         line = new UTF8Encoding(true).GetBytes(g.Description+"\\par\n"); fs.Write(line, 0, line.Length);
-                        line = new UTF8Encoding(true).GetBytes("\\includegraphics[width=16cm]{"+g.Filename+"}\n"); fs.Write(line, 0, line.Length);
-                        line = new UTF8Encoding(true).GetBytes(g.Caption+".\\par\\pagebreak \n"); fs.Write(line, 0, line.Length);
+                        line = new UTF8Encoding(true).GetBytes("\\begin{center}\n"); fs.Write(line, 0, line.Length);
+                        line = new UTF8Encoding(true).GetBytes("\\includegraphics[width=15cm]{"+g.Filename+"}\n"); fs.Write(line, 0, line.Length);
+                        line = new UTF8Encoding(true).GetBytes("\\end{center}\n"); fs.Write(line, 0, line.Length);
+                        line = new UTF8Encoding(true).GetBytes(g.Caption+".\\par \n"); fs.Write(line, 0, line.Length);
                     }
 
-                    line = new UTF8Encoding(true).GetBytes(serial_Number_Note.Text+"\n");fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes(serial_Number_Note.Text+ "\\pagebreak \n");fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("\\section{Client}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes(bussiness_name + ", " +physical_address+".\n"); fs.Write(line, 0, line.Length);
@@ -401,10 +403,10 @@ namespace Vertical_Federal_App
 
                     //if we have multiple standards being used we will need to modify this file.  Its too hard to program this
                     line = new UTF8Encoding(true).GetBytes("\\section{Results}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("The centre deviation of the gauge blocks is given in Table 1. " +
+                    line = new UTF8Encoding(true).GetBytes("The centre deviation of each gauge block is given in Table 1. " +
                         "The extreme deviation in length is shown for determining compliance " +
                         "with the documentary " + z + " for limit deviation.\\par " +
-                        "The variation in length of the gauge blocks is given in Table 2. The tolerance for the variation " +
+                        "The variation in length of each gauge block is given in Table 2. The tolerance for the variation " +
                         "in length is shown for determining compliance " +
                         "with the documentary " + z + " for variation in length.\\par " +
                         "The tables also include results for compliance with the requirements of the documentary " + z + " for each gauge block for the limit deviation and variation in length. " +
@@ -420,7 +422,7 @@ namespace Vertical_Federal_App
 
                     line = new UTF8Encoding(true).GetBytes("\\setlength\\extrarowheight{1pt}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\setlength\\tabcolsep{10pt}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{6}D{.}{.}{1}D{.}{.}{5}D{.}{.}{5}D{.}{.}{4}D{.}{.}{4}}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{4.4}D{.}{.}{0}D{.}{.}{2.3}D{.}{.}{2.3}D{.}{.}{2.2}D{.}{.}{-1}}\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{6}{l}{ \\text{Table 1: Deviations for gauge block set "+ cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 2\n"); fs.Write(line, 0, line.Length);
@@ -434,13 +436,13 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\endfirsthead \n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{6}{l}{ \\text{Table 1(continued): Deviations for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{6}{l}{ \\text{Table 1 (continued): Deviations for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 2\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{6}{l}{ \\text{} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 3\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Nominal} } & \\multicolumn{1}{c}{\\text{Serial} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Extreme} } & \\multicolumn{1}{c}{ \\text{Limit} } & \\multicolumn{1}{c}{ \\text{Compliance} } \\\\ \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Nominal} } & \\multicolumn{1}{c}{\\text{Serial} } & \\multicolumn{1}{c}{ \\text{Centre} } & \\multicolumn{1}{c}{ \\text{Extreme} } & \\multicolumn{1}{c}{ \\text{Limit} } & \\multicolumn{1}{c}{ \\text{Compliance} } \\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 4\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Length} } & \\multicolumn{1}{c}{ \\text{Number} } & \\multicolumn{1}{c}{ \\text{} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Outcome}}\\\\ \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{Length} } & \\multicolumn{1}{c}{ \\text{Number} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Deviation} } & \\multicolumn{1}{c}{ \\text{Outcome}}\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 5\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{1}{c}{ \\text{(" + k + ")}} & &\\multicolumn{1}{c}{\\text{(" + l + ")}} &\\multicolumn{1}{c}{\\text{(" + l + ")}} &\\multicolumn{1}{c}{ \\text{(" + l + ")}} &\\\\ \\hline\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\endhead \n"); fs.Write(line, 0, line.Length);
@@ -463,7 +465,7 @@ namespace Vertical_Federal_App
                     }
                     line = new UTF8Encoding(true).GetBytes("\\end{longtable} \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\pagebreak \n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{6}D{.}{.}{1}D{.}{.}{5}D{.}{.}{8}D{.}{.}{4}} \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{5.5}D{.}{.}{0}D{.}{.}{4.5}D{.}{.}{1.2}D{.}{.}{-1}} \n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{Table 2: Variation in length for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
@@ -478,7 +480,7 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\endfirsthead \n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{Table 2(continued): Variation in length for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{Table 2 (continued): Variation in length for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 2\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 3\n"); fs.Write(line, 0, line.Length);
@@ -505,9 +507,9 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\pagebreak \n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("\\section{Uncertainty}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("The expanded measurement uncertainties for the centre deviation, extreme deviation and variation in length measurements are given in the Table 3.\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("The expanded measurement uncertainties for the centre deviation, extreme deviation and variation in length measurements are given in Table 3.\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\setlength\\tabcolsep{10pt}\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{4}D{.}{.}{4}D{.}{.}{5}D{.}{.}{5}D{.}{.}{11}}\n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\begin{longtable}{D{.}{.}{5.5}D{.}{.}{0}D{.}{.}{4.5}D{.}{.}{4.5}D{.}{.}{2.3}}\n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{Table 3: Expanded uncertainties for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
@@ -522,7 +524,7 @@ namespace Vertical_Federal_App
                     line = new UTF8Encoding(true).GetBytes("\\endfirsthead\n"); fs.Write(line, 0, line.Length);
 
                     line = new UTF8Encoding(true).GetBytes("%Line 1\n"); fs.Write(line, 0, line.Length);
-                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{Table 3(continued): Expanded uncertainties for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
+                    line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{Table 3 (continued): Expanded uncertainties for gauge block set " + cal_set.GaugeSetName + ".} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 2\n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("\\multicolumn{5}{l}{ \\text{} }\\\\ \n"); fs.Write(line, 0, line.Length);
                     line = new UTF8Encoding(true).GetBytes("%Line 3\n"); fs.Write(line, 0, line.Length);
