@@ -404,7 +404,8 @@
             this.materialComboBox.Items.AddRange(new object[] {
             "steel",
             "ceramic",
-            "tungsten carbide"});
+            "tungsten carbide",
+            "fused silica"});
             this.materialComboBox.Location = new System.Drawing.Point(160, 143);
             this.materialComboBox.Name = "materialComboBox";
             this.materialComboBox.Size = new System.Drawing.Size(173, 21);
