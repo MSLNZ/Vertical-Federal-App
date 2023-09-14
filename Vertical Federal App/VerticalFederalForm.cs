@@ -645,6 +645,12 @@ namespace Vertical_Federal_App
                     mtrl.youngs_modulus = 599.84; //NIST EMToolBox 10% Cobalt - this agrees well with the opus website
                     mtrl.material = "tungsten carbide";
                     break;
+                case "fused silica":
+                    mtrl.exp_coeff = 0.49; //NIST Gauge Block Handbook
+                    mtrl.poissons_ratio = 0.17; //pg 45 elasticities of glass - Kaye and Laby "Tables of Physical and Chemical Constants", 16th eddition
+                    mtrl.youngs_modulus = 73.1; //pg 45 elasticities of glass - Kaye and Laby "Tables of Physical and Chemical Constants", 16th eddition
+                    mtrl.material = "fused silica";
+                    break;
             }
 
             poissonsRatioTextBox.Text = mtrl.poissons_ratio.ToString();
