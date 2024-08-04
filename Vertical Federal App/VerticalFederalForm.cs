@@ -44,8 +44,8 @@ namespace Vertical_Federal_App
             pgr = new PrintGaugeResultsToRichTextbox(PrintGaugeResults);
             
             Measurement.working_gauge = new GaugeBlock(true);
-            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\EQUIPREG\XML Files\cal_data_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\EQUIPREG\Length_Stds_Calibration_Data\cal_data.ini", false);
-            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Technical Procedures\XML Files\config_uncertainty_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\Technical Procedures\Uncertainty Config\config_uncertainty.ini", true);
+            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\EQUIPREG\XML Files\cal_data_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\EQUIPREG\Length_Stds_Calibration_Data\cal_data.ini", false);
+            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Technical Procedures\XML Files\config_uncertainty_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Technical Procedures\Uncertainty Config\config_uncertainty.ini", true);
             if (INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             Measurement.calibration_gauge_sets = new List<GaugeBlockSet>();  //make a new list for calibration gauge sets
             Measurement.reference_gauge_sets = new List<GaugeBlockSet>();
@@ -998,9 +998,9 @@ namespace Vertical_Federal_App
             current_measurement.CalibrationGauge.Variation = Math.Round(current_measurement.CalculateVariation(), 5);
             current_measurement.CalculateComplianceLimits();
             current_measurement.CalculateCMCs(ref federal);
-            current_measurement.measurement_working_filename = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + current_measurement.CalibrationGauge.FromSet + ".txt";
-            current_measurement.measurement_working_filename_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\"+ current_measurement.CalibrationGauge.FromSet + "_summary.txt";
-            current_measurement.measurement_working_filename_U95_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + current_measurement.CalibrationGauge.FromSet + "_U95_Compliance_summary.txt";
+            current_measurement.measurement_working_filename = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Federal\FederalData\" + current_measurement.CalibrationGauge.FromSet + ".txt";
+            current_measurement.measurement_working_filename_sum = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Federal\FederalData\" + current_measurement.CalibrationGauge.FromSet + "_summary.txt";
+            current_measurement.measurement_working_filename_U95_sum = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Federal\FederalData\" + current_measurement.CalibrationGauge.FromSet + "_U95_Compliance_summary.txt";
 
             //if needed add the set name to the set name list
             if (!Measurement.SetNames.Contains(current_measurement.CalibrationGauge.FromSet)) //this measurement doesn't have an association with a set yet, so make it now

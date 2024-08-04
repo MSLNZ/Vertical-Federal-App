@@ -232,7 +232,7 @@ namespace Vertical_Federal_App
 
         private void WriteReportButton_Click(object sender, EventArgs e)
         {
-            string fileName = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\latex" + cal_set.GaugeSetName + ".tex";
+            string fileName = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Federal\FederalData\latex" + cal_set.GaugeSetName + ".tex";
             try
             {
                 // Check if file already exists. If yes, delete it.     
@@ -1016,7 +1016,7 @@ namespace Vertical_Federal_App
         private void addImageButton_Click(object sender, EventArgs e)
         {
             GaugeImage gi = new GaugeImage();
-            ImageFileDialog.InitialDirectory = @"G:\Shared drives\MSL - Length\Length\Jobs";
+            ImageFileDialog.InitialDirectory = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Jobs";
             if (ImageFileDialog.ShowDialog() == DialogResult.OK)
             {
                 gi.Filename = ImageFileDialog.FileName.Substring(ImageFileDialog.FileName.LastIndexOf("\\")+1);
