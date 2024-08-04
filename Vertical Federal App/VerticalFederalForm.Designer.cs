@@ -807,10 +807,13 @@
             // 
             // gaugeResultsRichTextBox
             // 
+            this.gaugeResultsRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gaugeResultsRichTextBox.HideSelection = false;
-            this.gaugeResultsRichTextBox.Location = new System.Drawing.Point(466, 417);
+            this.gaugeResultsRichTextBox.Location = new System.Drawing.Point(856, 27);
             this.gaugeResultsRichTextBox.Name = "gaugeResultsRichTextBox";
-            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(551, 438);
+            this.gaugeResultsRichTextBox.Size = new System.Drawing.Size(538, 822);
             this.gaugeResultsRichTextBox.TabIndex = 42;
             this.gaugeResultsRichTextBox.Text = "";
             // 
@@ -948,7 +951,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(473, 401);
+            this.label13.Location = new System.Drawing.Point(853, 12);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(77, 13);
             this.label13.TabIndex = 44;
@@ -956,9 +959,11 @@
             // 
             // messagesRichTextBox
             // 
+            this.messagesRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.messagesRichTextBox.Location = new System.Drawing.Point(466, 27);
             this.messagesRichTextBox.Name = "messagesRichTextBox";
-            this.messagesRichTextBox.Size = new System.Drawing.Size(560, 368);
+            this.messagesRichTextBox.Size = new System.Drawing.Size(375, 822);
             this.messagesRichTextBox.TabIndex = 45;
             this.messagesRichTextBox.Text = "";
             // 
@@ -975,16 +980,15 @@
             // 
             this.MeasurementOpenFileDialog.DefaultExt = "txt";
             this.MeasurementOpenFileDialog.Filter = "txt files (*.txt)|*.txt";
-            this.MeasurementOpenFileDialog.InitialDirectory = "G:\\Shared drives\\MSL - Length\\Length\\Federal\\FederalData";
+            this.MeasurementOpenFileDialog.InitialDirectory = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\";
             // 
             // VerticalFedForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(1265, 867);
+            this.ClientSize = new System.Drawing.Size(1419, 873);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.messagesRichTextBox);
             this.Controls.Add(this.label13);
@@ -996,6 +1000,7 @@
             this.Controls.Add(this.gaugeParametersGroupBox);
             this.Controls.Add(this.measurementGroupBox);
             this.KeyPreview = true;
+            this.MinimumSize = new System.Drawing.Size(1435, 912);
             this.Name = "VerticalFedForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Vertical Federal App";

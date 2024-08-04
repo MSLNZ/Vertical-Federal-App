@@ -205,7 +205,7 @@ namespace Vertical_Federal_App
 				catch (System.IO.IOException)
 				{
 
-					strXMLFileName = @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data_" + "Federal_measurement_"+ System.DateTime.Now.Ticks.ToString() + ".xml";
+					strXMLFileName = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\EQUIPREG\XML Files\cal_data_" + "Federal_measurement_"+ System.DateTime.Now.Ticks.ToString() + ".xml";
 					xmlfilename = strXMLFileName;
 					//if the file is in use write it under another name
 					try
@@ -561,7 +561,7 @@ namespace Vertical_Federal_App
 				catch (System.IO.IOException)
 				{
 
-					strXMLFileName = @"G:\Shared drives\MSL - Length\Length\Technical Procedures\XML Files\config_uncertainty_federal" + System.DateTime.Now.Ticks.ToString() + ".xml";
+					strXMLFileName = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Technical Procedures\XML Files\config_uncertainty_federal" + System.DateTime.Now.Ticks.ToString() + ".xml";
 					xmlfilename_uncertainty = strXMLFileName;
 					//if the file is in use write it under another name
 					try
