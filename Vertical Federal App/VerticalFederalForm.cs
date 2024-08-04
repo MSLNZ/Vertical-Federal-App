@@ -44,8 +44,8 @@ namespace Vertical_Federal_App
             pgr = new PrintGaugeResultsToRichTextbox(PrintGaugeResults);
             
             Measurement.working_gauge = new GaugeBlock(true);
-            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"G:\Shared drives\MSL - Length\Length\EQUIPREG\XML Files\cal_data_federal_measurement"+System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\EQUIPREG\Length_Stds_Calibration_Data\cal_data.ini", false);
-            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"G:\Shared drives\MSL - Length\Length\Technical Procedures\XML Files\config_uncertainty_federal_measurement"+System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\Technical Procedures\Uncertainty Config\config_uncertainty.ini", true);
+            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\EQUIPREG\XML Files\cal_data_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\EQUIPREG\Length_Stds_Calibration_Data\cal_data.ini", false);
+            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\Technical Procedures\XML Files\config_uncertainty_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"G:\Shared drives\MSL - Length\Length\Technical Procedures\Uncertainty Config\config_uncertainty.ini", true);
             if (INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             Measurement.calibration_gauge_sets = new List<GaugeBlockSet>();  //make a new list for calibration gauge sets
             Measurement.reference_gauge_sets = new List<GaugeBlockSet>();
