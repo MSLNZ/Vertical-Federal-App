@@ -18,7 +18,7 @@ namespace Vertical_Federal_App
         //private static List<Measurement> measurements = new List<Measurement>();
         private static List<List<Measurement>> measurements = new List<List<Measurement>>();
         private static List<string> setNames = new List<string>();
-        public static string Version_number = "Rev 4.7";
+        public static string Version_number = "Rev 4.12";
 
         private static bool file_header_written = false;
         private const double oz_f_to_n_f = 0.27801385;  //newtons
@@ -183,7 +183,7 @@ namespace Vertical_Federal_App
                 DateTime previous_interation_datetime = DateTime.MinValue;
 
                 
-                string path = @"G:\Shared drives\MSL - Length\Length\Temperature Monitoring Data\Hilger Lab\"+ now.Year.ToString() + @"\" + now.Year.ToString() + "-" + now.Month.ToString() + @"\" + "Vertical Federal.txt";
+                string path = @"L:\Temperature Monitoring Data\Hilger Lab\" + now.Year.ToString() + @"\" + now.Year.ToString() + "-" + now.Month.ToString() + @"\" + "Vertical Federal.txt";
                 if (!File.Exists(path))
                 {
                     if (!message_shown)
@@ -298,34 +298,34 @@ namespace Vertical_Federal_App
             double probe_youngs_mod = fed.ProbeYoungsMod*1000000000; //Pa
             double probe_poissons_ratio = fed.ProbePoissonsRatio;
 
-            double v_ball = (1.0 - Math.Pow(probe_poissons_ratio, 2.0)) / (Math.PI * probe_youngs_mod);
-            double v_plate_ref_gauge1 = (1.0 - Math.Pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus * 1000000000);
+            double v_ball = (1.0 - Math.pow(probe_poissons_ratio, 2.0)) / (Math.PI * probe_youngs_mod);
+            double v_plate_ref_gauge1 = (1.0 - Math.pow(gauge_stack.Gauge1.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge1.GaugeBlockMaterial.youngs_modulus * 1000000000);
 
             double v_plate_ref_gauge2 = 0.0;
             if (gauge_stack.Gauge2 != null)
             {
-                v_plate_ref_gauge2 = (1.0 - Math.Pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.youngs_modulus * 1000000000);
+                v_plate_ref_gauge2 = (1.0 - Math.pow(gauge_stack.Gauge2.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge2.GaugeBlockMaterial.youngs_modulus * 1000000000);
             }
 
             double v_plate_ref_gauge3 = 0.0;
             if (gauge_stack.Gauge3 != null)
             {
-                v_plate_ref_gauge3 = (1.0 - Math.Pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.youngs_modulus * 1000000000);
+                v_plate_ref_gauge3 = (1.0 - Math.pow(gauge_stack.Gauge3.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * gauge_stack.Gauge3.GaugeBlockMaterial.youngs_modulus * 1000000000);
             }
 
             
-            double v_plate_cal_gauge = (1.0 - Math.Pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus * 1000000000);
+            double v_plate_cal_gauge = (1.0 - Math.pow(calibration_gauge.GaugeBlockMaterial.poissons_ratio, 2.0)) / (Math.PI * calibration_gauge.GaugeBlockMaterial.youngs_modulus * 1000000000);
             double tt =  2.0 / 3.0;
             double tt2 = 1.0 / 3.0;
-            double term1 =  (Math.Pow(3.0 * Math.PI, tt) / 2.0);
-            double term2_top = Math.Pow(top_probe_force, tt);
-            double term2_bottom =  Math.Pow(bottom_probe_force, tt);
-            double term3_ref_top =  Math.Pow(v_ball + v_plate_ref_gauge1, tt);
-            double term3_ref_bot1 =  Math.Pow(v_ball + v_plate_ref_gauge1, tt);
-            double term3_ref_bot2 =  Math.Pow(v_ball + v_plate_ref_gauge2, tt);
-            double term3_ref_bot3 =  Math.Pow(v_ball + v_plate_ref_gauge3, tt);
-            double term3_cal =  Math.Pow(v_ball + v_plate_cal_gauge, tt);
-            double term4 = Math.Pow(1.0 / probe_d, tt2);
+            double term1 =  (Math.pow(3.0 * Math.PI, tt) / 2.0);
+            double term2_top = Math.pow(top_probe_force, tt);
+            double term2_bottom =  Math.pow(bottom_probe_force, tt);
+            double term3_ref_top =  Math.pow(v_ball + v_plate_ref_gauge1, tt);
+            double term3_ref_bot1 =  Math.pow(v_ball + v_plate_ref_gauge1, tt);
+            double term3_ref_bot2 =  Math.pow(v_ball + v_plate_ref_gauge2, tt);
+            double term3_ref_bot3 =  Math.pow(v_ball + v_plate_ref_gauge3, tt);
+            double term3_cal =  Math.pow(v_ball + v_plate_cal_gauge, tt);
+            double term4 = Math.pow(1.0 / probe_d, tt2);
 
 
 
@@ -579,7 +579,7 @@ namespace Vertical_Federal_App
             double sumOfDeviation = 0;
             foreach (double value in doubleList)
             {
-                sumOfDeviation += Math.Pow((average - value), 2);
+                sumOfDeviation += Math.pow((average - value), 2);
             }
             sumOfDeviation /= (doubleList.Count-1);
             return Math.Sqrt(sumOfDeviation);
@@ -592,7 +592,7 @@ namespace Vertical_Federal_App
             double sum = 0;
             foreach (double sample in doubleList)
             {
-                sum += Math.Pow(sample - sample_mean, 2);
+                sum += Math.pow(sample - sample_mean, 2);
             }
             double variance = sum / (doubleList.Count - 1);
             
@@ -620,7 +620,7 @@ namespace Vertical_Federal_App
             double delta = 0.0;
             u_of_g_ForDeltaIndependent(ref delta,ref vfed);
 
-            double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2) + Math.Pow(stdu_length_of_standard_i, 2) + Math.Pow(delta, 2));
+            double combined_independent = Math.Sqrt(Math.pow(stdu_reproducability, 2) + Math.pow(stdu_scale_resolution, 2) + Math.pow(stdu_scale_calibration, 2) + Math.pow(stdu_length_of_standard_i, 2) + Math.pow(delta, 2));
 
             //dependent terms
             double stdu_length_of_standard_d = s_d;
@@ -634,11 +634,11 @@ namespace Vertical_Federal_App
             u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed,set_index);
             u_of_g_ForDeltaTheta(this, ref stdu_delta_theta, ref vfed);
 
-            double combined_dependent = Math.Sqrt(Math.Pow(stdu_length_of_standard_d, 2) + Math.Pow(stdu_alpha_g, 2) + Math.Pow(stdu_delta_theta, 2) + Math.Pow(stdu_delta_alpha, 2) + Math.Pow(stdu_theta_s, 2));
+            double combined_dependent = Math.Sqrt(Math.pow(stdu_length_of_standard_d, 2) + Math.pow(stdu_alpha_g, 2) + Math.pow(stdu_delta_theta, 2) + Math.pow(stdu_delta_alpha, 2) + Math.pow(stdu_theta_s, 2));
 
             double combined_standard_uncertainty = 0.0;
-            if (CalibrationGauge.Metric) combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal, 2));
-            else combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal*25.4, 2));
+            if (CalibrationGauge.Metric) combined_standard_uncertainty = Math.Sqrt(Math.pow(combined_independent, 2) + Math.pow(combined_dependent * CalibrationGauge.Nominal, 2));
+            else combined_standard_uncertainty = Math.Sqrt(Math.pow(combined_independent, 2) + Math.pow(combined_dependent * CalibrationGauge.Nominal*25.4, 2));
 
             CalibrationGauge.ExpandedUncertaintyDev = combined_standard_uncertainty * 2;
 
@@ -673,7 +673,7 @@ namespace Vertical_Federal_App
             double delta = 0.0;
             u_of_g_ForDeltaIndependent(ref delta, ref vfed);
 
-            double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2) + Math.Pow(stdu_length_of_standard_i, 2) + Math.Pow(delta, 2));
+            double combined_independent = Math.Sqrt(Math.pow(stdu_reproducability, 2) + Math.pow(stdu_scale_resolution, 2) + Math.pow(stdu_scale_calibration, 2) + Math.pow(stdu_length_of_standard_i, 2) + Math.pow(delta, 2));
 
             //dependent terms
             double stdu_length_of_standard_d = s_d;
@@ -687,11 +687,11 @@ namespace Vertical_Federal_App
             u_of_g_ForThetaS(this, ref stdu_theta_s, ref vfed, set_index);
             u_of_g_ForDeltaTheta(this, ref stdu_delta_theta, ref vfed);
 
-            double combined_dependent = Math.Sqrt(Math.Pow(stdu_length_of_standard_d, 2) + Math.Pow(stdu_alpha_g, 2) + Math.Pow(stdu_delta_theta, 2) + Math.Pow(stdu_delta_alpha, 2) + Math.Pow(stdu_theta_s, 2));
+            double combined_dependent = Math.Sqrt(Math.pow(stdu_length_of_standard_d, 2) + Math.pow(stdu_alpha_g, 2) + Math.pow(stdu_delta_theta, 2) + Math.pow(stdu_delta_alpha, 2) + Math.pow(stdu_theta_s, 2));
 
             double combined_standard_uncertainty = 0.0;
-            if (CalibrationGauge.Metric) combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal, 2));
-            else combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal * 25.4, 2));
+            if (CalibrationGauge.Metric) combined_standard_uncertainty = Math.Sqrt(Math.pow(combined_independent, 2) + Math.pow(combined_dependent * CalibrationGauge.Nominal, 2));
+            else combined_standard_uncertainty = Math.Sqrt(Math.pow(combined_independent, 2) + Math.pow(combined_dependent * CalibrationGauge.Nominal * 25.4, 2));
 
             CalibrationGauge.ExpandedUncertaintyExtDev = combined_standard_uncertainty * 2;
 
@@ -710,7 +710,7 @@ namespace Vertical_Federal_App
             
             
             if ((max_pos + min_pos) == 0) rep_v = Math.Sqrt(2) * rep_d;
-            else if ((max_pos == 0)||(min_pos == 0)) rep_v = Math.Sqrt(Math.Pow(rep_d, 2) + Math.Pow(rep_ABDE, 2));
+            else if ((max_pos == 0)||(min_pos == 0)) rep_v = Math.Sqrt(Math.pow(rep_d, 2) + Math.pow(rep_ABDE, 2));
             else rep_v = Math.Sqrt(2)*rep_ABDE;
             
             
@@ -719,23 +719,23 @@ namespace Vertical_Federal_App
             double stdu_scale_calibration = vfed.ScaleCalStduIndependent;
      
 
-            double combined_independent = Math.Sqrt(Math.Pow(stdu_reproducability, 2) + Math.Pow(stdu_scale_resolution, 2) + Math.Pow(stdu_scale_calibration, 2));
+            double combined_independent = Math.Sqrt(Math.pow(stdu_reproducability, 2) + Math.pow(stdu_scale_resolution, 2) + Math.pow(stdu_scale_calibration, 2));
 
             //dependent terms
             
             double delta_theta_v = 0.0;
             u_of_g_ForDeltaThetaVar(this, ref delta_theta_v, ref vfed);
 
-            double combined_dependent = Math.Sqrt(Math.Pow(delta_theta_v, 2));
+            double combined_dependent = Math.Sqrt(Math.pow(delta_theta_v, 2));
 
             double combined_standard_uncertainty = 0.0;
             if (CalibrationGauge.Metric)
             {
-                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal, 2));
+                combined_standard_uncertainty = Math.Sqrt(Math.pow(combined_independent, 2) + Math.pow(combined_dependent * CalibrationGauge.Nominal, 2));
             }
             else
             {
-                combined_standard_uncertainty = Math.Sqrt(Math.Pow(combined_independent, 2) + Math.Pow(combined_dependent * CalibrationGauge.Nominal*25.4, 2));
+                combined_standard_uncertainty = Math.Sqrt(Math.pow(combined_independent, 2) + Math.pow(combined_dependent * CalibrationGauge.Nominal*25.4, 2));
             }
             CalibrationGauge.ExpandedUncertaintyVar = combined_standard_uncertainty * 2;
 
@@ -751,13 +751,13 @@ namespace Vertical_Federal_App
             double cmc_var = 0.0;
             if (CalibrationGauge.Metric)
             {
-                CalibrationGauge.DeviationCMC = Math.Sqrt(Math.Pow(dev_dep * CalibrationGauge.Nominal, 2) + Math.Pow(dev_indep, 2));
-                CalibrationGauge.VariationCMC = Math.Sqrt(Math.Pow(var_dep * CalibrationGauge.Nominal, 2) + Math.Pow(var_indep, 2));
+                CalibrationGauge.DeviationCMC = Math.Sqrt(Math.pow(dev_dep * CalibrationGauge.Nominal, 2) + Math.pow(dev_indep, 2));
+                CalibrationGauge.VariationCMC = Math.Sqrt(Math.pow(var_dep * CalibrationGauge.Nominal, 2) + Math.pow(var_indep, 2));
             }
             else
             {
-                double cmc_dev_ = Math.Sqrt(Math.Pow(dev_dep * CalibrationGauge.Nominal*25.4, 2) + Math.Pow(dev_indep, 2));
-                double cmc_var_ = Math.Sqrt(Math.Pow(var_dep * CalibrationGauge.Nominal * 25.4, 2) + Math.Pow(var_indep, 2));
+                double cmc_dev_ = Math.Sqrt(Math.pow(dev_dep * CalibrationGauge.Nominal*25.4, 2) + Math.pow(dev_indep, 2));
+                double cmc_var_ = Math.Sqrt(Math.pow(var_dep * CalibrationGauge.Nominal * 25.4, 2) + Math.pow(var_indep, 2));
                 CalibrationGauge.DeviationCMC = cmc_dev_;
                 CalibrationGauge.VariationCMC = cmc_var_;
             }
@@ -1515,7 +1515,7 @@ namespace Vertical_Federal_App
                 //compute the  weighted mean of the standard uncertainties that make up the gauge block stack.  The weighting is done via nominal length
                 u_g_s_dependent = ((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Dep) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Dep)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal);
                 double standard_gauge_calibration_indp = Math.Sqrt(2) * (((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Indp) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Indp)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal));
-                u_g_s_independent = Math.Sqrt(Math.Pow(standard_gauge_calibration_indp, 2) + Math.Pow(max_wringing_film, 2));
+                u_g_s_independent = Math.Sqrt(Math.pow(standard_gauge_calibration_indp, 2) + Math.pow(max_wringing_film, 2));
             }
             //case3 (three wrung ref gauges) 
             else if (m.ReferenceStack.Count == 3)
@@ -1537,7 +1537,7 @@ namespace Vertical_Federal_App
                 u_g_s_dependent = ((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Dep) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Dep) + (m.ReferenceStack.Gauge3.Nominal * m.ReferenceStack.Gauge3.GaugeStdU_Dep)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal + m.ReferenceStack.Gauge3.Nominal);
                 double standard_gauge_calibration_indp = Math.Sqrt(3) * (((m.ReferenceStack.Gauge1.Nominal * m.ReferenceStack.Gauge1.GaugeStdU_Indp) + (m.ReferenceStack.Gauge2.Nominal * m.ReferenceStack.Gauge2.GaugeStdU_Indp) + (m.ReferenceStack.Gauge3.Nominal * m.ReferenceStack.Gauge3.GaugeStdU_Indp)) / (m.ReferenceStack.Gauge1.Nominal + m.ReferenceStack.Gauge2.Nominal + m.ReferenceStack.Gauge3.Nominal));
                 max_wringing_film = max_wringing_film * Math.Sqrt(2);
-                u_g_s_independent = Math.Sqrt(Math.Pow(standard_gauge_calibration_indp, 2) + Math.Pow(max_wringing_film, 2));
+                u_g_s_independent = Math.Sqrt(Math.pow(standard_gauge_calibration_indp, 2) + Math.pow(max_wringing_film, 2));
             }
         }
 
@@ -1661,7 +1661,7 @@ namespace Vertical_Federal_App
 
                 foreach (Measurement m in m_list)
                 {
-                    sumsq_theta_s += Math.Pow(m.CalibrationGauge.Temperature - 20.000, 2);
+                    sumsq_theta_s += Math.pow(m.CalibrationGauge.Temperature - 20.000, 2);
                     count_theta_s++;
                 }
 
@@ -1883,9 +1883,9 @@ namespace Vertical_Federal_App
             meas.CalibrationGauge.MaxDev = max_d;
             meas.CalibrationGauge.ExtremeDeviation = ext_d;
             meas.CalibrationGauge.Variation = v;
-            meas.measurement_working_filename = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + meas.CalibrationGauge.FromSet + ".txt";
-            meas.measurement_working_filename_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\"+ meas.CalibrationGauge.FromSet + "_summary.txt";
-            meas.measurement_working_filename_U95_sum = @"G:\Shared drives\MSL - Length\Length\Federal\FederalData\" + meas.CalibrationGauge.FromSet + "_U95_Compliance_summary.txt";
+            meas.measurement_working_filename = @"L:\Federal\FederalData\" + meas.CalibrationGauge.FromSet + ".txt";
+            meas.measurement_working_filename_sum = @"L:\Federal\FederalData\" + meas.CalibrationGauge.FromSet + "_summary.txt";
+            meas.measurement_working_filename_U95_sum = @"L:\Federal\FederalData\" + meas.CalibrationGauge.FromSet + "_U95_Compliance_summary.txt";
 
 
 

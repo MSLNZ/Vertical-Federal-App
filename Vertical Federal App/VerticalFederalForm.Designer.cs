@@ -980,7 +980,7 @@
             // 
             this.MeasurementOpenFileDialog.DefaultExt = "txt";
             this.MeasurementOpenFileDialog.Filter = "txt files (*.txt)|*.txt";
-            this.MeasurementOpenFileDialog.InitialDirectory = @"C:\Users\MSL Lab\OneDrive - Callaghan Innovation\";
+            this.MeasurementOpenFileDialog.InitialDirectory = @"L:\";
             // 
             // VerticalFedForm
             // 

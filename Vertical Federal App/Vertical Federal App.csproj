@@ -62,7 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EquipmentRegister.cs" />
     <Compile Include="GaugeImage.cs" />
+    <Compile Include="ICalibration.cs" />
     <Compile Include="Report.cs">
       <SubType>Form</SubType>
     </Compile>
