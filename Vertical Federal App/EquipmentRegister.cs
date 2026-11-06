@@ -3,42 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
-namespace Length_Stds_Environmental_Monitoring
+namespace Vertical_Federal_App
 {
     public class InventoryItem
     {
-        public string Keywords { get; set; }
-        public string Id { get; set; }
-        public string Manufacturer { get; set; }
-        public string Model { get; set; }
-        public string Serial { get; set; }
-        public string Description { get; set; }
-        public string Specifications { get; set; }
-        public string Location { get; set; }
-        public string Status { get; set; }
-        public string Loggable { get; set; }
-        public string Traceable { get; set; }
+        public string? Keywords { get; set; }
+        public string? Id { get; set; }
+        public string? Manufacturer { get; set; }
+        public string? Model { get; set; }
+        public string? Serial { get; set; }
+        public string? Description { get; set; }
+        public string? Location { get; set; }
+        public string? Status { get; set; }
+        public string? Loggable { get; set; }
+        public string? Traceable { get; set; }
 
     }
 
     public class CalibrationRecord
     {
-        public string EquipmentId { get; set; }
-        public string Quantity { get; set; }
+        public string? EquipmentId { get; set; }
+        public string? Quantity { get; set; }
         public int CalibrationIntervalYears { get; set; }
-        public string ComponentName { get; set; }
-        public string ReportId { get; set; }
+        public string? ComponentName { get; set; }
+        public string? ReportId { get; set; }
         public DateTime? ReportIssueDate { get; set; }
         public DateTime? MeasurementStartDate { get; set; }
         public DateTime? MeasurementStopDate { get; set; }
 
         public CalibrationType CalibrationType { get; set; }
         
-        public string EquationUnit { get; set; }
+        public string? EquationUnit { get; set; }
 
-        public string Equation { get; set; }
+        public string? Equation { get; set; }
 
     }
 
@@ -51,266 +51,159 @@ namespace Length_Stds_Environmental_Monitoring
         Unknown   // optional but very useful fallback
     }
 
+
+    public class TableData
+    {
+        public string[]? Type { get; set; }
+        public string[]? Unit { get; set; }
+        public string[]? Header { get; set; }
+
+        public object[,]? Data { get; set; }
+    }
+
+
+    public class GaugeBlockSetSpecification
+    {
+        public string? Grade { get; set; }
+
+        public bool? Metric { get; set; }
+        public string? Material { get; set; }
+
+        public double? YoungsModulus { get; set; }
+        public double? PoissonsRatio { get; set; }
+
+        public double? ExpansionCoefficient { get; set; }
+        public double? ExpansionCoefficientUncertainty { get; set; }
+
+        public double? WringingUncertainty { get; set; }
+        public double? LengthIndependentUncertainty { get; set; }
+        public double? LengthDependentUncertainty { get; set; }
+    }
+
+    public class GaugeBlockComparatorSpecifications
+    {
+        public double? ForceTopAnvil { get; set; }
+        public string? ForceTopAnvilUnit { get; set; }
+
+        public double? ForceBottomAnvil { get; set; }
+        public string? ForceBottomAnvilUnit { get; set; }
+
+        public double? ProbeDiameter { get; set; }
+        public string? ProbeDiameterUnit { get; set; }
+
+        public double? ProbeYoungsModulus { get; set; }
+        public string? ProbeYoungsModulusUnit { get; set; }
+
+        public double? ProbePoissonsRatio { get; set; }
+        public string? ProbePoissonsRatioUnit { get; set; }
+
+        public double? ScaleResolution { get; set; }
+        public string? ScaleResolutionUnit { get; set; }
+
+        public double? ScaleCalibration { get; set; }
+        public string? ScaleCalibrationUnit { get; set; }
+
+        public double? Reproducibility { get; set; }
+        public string? ReproducibilityUnit { get; set; }
+
+        // Uncertainty terms
+        public double? StduDelta { get; set; }
+        public string? StduDeltaUnit { get; set; }
+
+        public double? StduAlphaG { get; set; }
+        public string? StduAlphaGUnit { get; set; }
+
+        public double? StduDeltaAlpha { get; set; }
+        public string? StduDeltaAlphaUnit { get; set; }
+
+        public double? StduThetaS { get; set; }
+        public string? StduThetaSUnit { get; set; }
+
+        public double? StduDeltaTheta { get; set; }
+        public string? StduDeltaThetaUnit { get; set; }
+
+        public double? StduDeltaThetaVariation { get; set; }
+        public string? StduDeltaThetaVariationUnit { get; set; }
+
+        public double? ExpandedUncertaintyDeviationDependentCmc { get; set; }
+        public string? ExpandedUncertaintyDeviationDependentCmcUnit { get; set; }
+
+        public double? ExpandedUncertaintyDeviationIndependentCmc { get; set; }
+        public string? ExpandedUncertaintyDeviationIndependentCmcUnit { get; set; }
+
+        public double? ExpandedUncertaintyVariationDependentCmc { get; set; }
+        public string? ExpandedUncertaintyVariationDependentCmcUnit { get; set; }
+
+        public double? ExpandedUncertaintyVariationIndependentCmc { get; set; }
+        public string? ExpandedUncertaintyVariationIndependentCmcUnit { get; set; }
+    }
+
     public class EquipmentRegister
     {
+        public required XDocument doc;
+        public required XNamespace msl;
+        public required XElement register;
 
-        private XDocument doc;
-        private XNamespace msl = "";
-        private XElement register;
-
+       
         public EquipmentRegister()
         {
-            doc = XDocument.Load(@"C:\Users\MSL Lab\Documents\GitHub\Length_Stds_Equipment_Register\register.xml");
-            msl = "https://measurement.govt.nz/equipment-register";
-            register = doc.Root;
+            
         }
 
-        /// <summary>
-        /// General Inventory of all Equipment
-        /// </summary>
-        public List<InventoryItem> BasicInventory()
-        {
-            XElement register = doc.Root
-                        ?? throw new InvalidOperationException("Invalid XML document");
 
-            var items =
-                from e in register.Elements(msl + "equipment")
-                select new InventoryItem
-                {
-                    Keywords = (string)e.Attribute("keywords"),
-                    Id = (string)e.Element(msl + "id"),
-                    Manufacturer = (string)e.Element(msl + "manufacturer"),
-                    Model = (string)e.Element(msl + "model"),
-                    Serial = (string)e.Element(msl + "serial"),
-                    Description = (string)e.Element(msl + "description"),
-                    Location = (string)e.Element(msl + "location"),
-                    Status = (string)e.Element(msl + "status"),
-                    Loggable = (string)e.Element(msl + "loggable"),
-                    Traceable = (string)e.Element(msl + "traceable")
-                };
-            return items.ToList();
-        }
         /// <summary>
         /// General Inventory of Specified Equipment
         /// </summary>
         /// <param name="search_key">A keyword to find specific Equipment</param>
+        /// <summary>
+        /// Performs a keyword-based inventory search.
+        ///
+        /// The search_key may contain one or more keywords (space-separated).
+        /// 
+        /// Behaviour:
+        ///   - "Gauge" → matches all equipment containing "Gauge"
+        ///   - "Gauge Block" → matches only equipment containing BOTH "Gauge" AND "Block"
+        ///   - Case-insensitive matching
+        /// </summary>
         public List<InventoryItem> WildCardInventory(string search_key)
         {
             XElement register = doc.Root
-                        ?? throw new InvalidOperationException("Invalid XML document");
+                ?? throw new InvalidOperationException("Invalid XML document");
 
+            // ✅ Split search string into tokens
+            string[] searchTokens = (search_key ?? "")
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
+                .ToArray();
 
             var items =
                 from e in register.Elements(msl + "equipment")
-                let keywords = ((string)e.Attribute("keywords") ?? "")
-                    .Split(' ')
-                where keywords.Any(k =>
-                    string.Equals(k, search_key, StringComparison.OrdinalIgnoreCase))
+
+                // ✅ Split equipment keywords
+                let keywords = ((string?)e.Attribute("keywords") ?? "")
+                    .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+
+                // ✅ Match ALL search tokens against equipment keywords
+                where searchTokens.All(token =>
+                    keywords.Any(k =>
+                        string.Equals(k, token, StringComparison.OrdinalIgnoreCase)))
+
                 select new InventoryItem
                 {
                     Keywords = string.Join(" ", keywords),
-                    Id = (string)e.Element(msl + "id"),
-                    Manufacturer = (string)e.Element(msl + "manufacturer"),
-                    Model = (string)e.Element(msl + "model"),
-                    Serial = (string)e.Element(msl + "serial"),
-                    Description = (string)e.Element(msl + "description"),
-                    Location = (string)e.Element(msl + "location"),
-                    Status = (string)e.Element(msl + "status"),
-                    Loggable = (string)e.Element(msl + "loggable"),
-                    Traceable = (string)e.Element(msl + "traceable")
+                    Id = Convert.ToString(e.Element(msl + "id")),
+                    Manufacturer = Convert.ToString(e.Element(msl + "manufacturer")),
+                    Model = Convert.ToString(e.Element(msl + "model")),
+                    Serial = Convert.ToString(e.Element(msl + "serial")),
+                    Description = Convert.ToString(e.Element(msl + "description")),
+                    Location = Convert.ToString(e.Element(msl + "location")),
+                    Status = Convert.ToString(e.Element(msl + "status")),
+                    Loggable = Convert.ToString(e.Element(msl + "loggable")),
+                    Traceable = Convert.ToString(e.Element(msl + "traceable"))
                 };
 
             return items.ToList();
         }
-
-        /// <summary>
-        /// Find whether a particular piece of equipment is loggable (e.g monitoring equipment)
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        public bool Loggable(string equipmentId)
-        {
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
-
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    string.Format("Equipment with ID {0} was not found", equipmentId));
-
-            // Per schema: default is false if element is missing or empty
-            return (bool?)equipment.Element(msl + "loggable") ?? false;
-
-        }
-
-        /// <summary>
-        /// Gets basic inventory details for a given piece of equipment
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        public InventoryItem EquipmentDetails(string equipmentId)
-        {
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
-
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    string.Format("Equipment with ID {0} was not found", equipmentId));
-
-
-            InventoryItem i = new InventoryItem
-            {
-                Keywords = (string)equipment.Attribute("keywords"),
-                Id = (string)equipment.Element(msl + "id"),
-                Manufacturer = (string)equipment.Element(msl + "manufacturer"),
-                Model = (string)equipment.Element(msl + "model"),
-                Serial = (string)equipment.Element(msl + "serial"),
-                Description = (string)equipment.Element(msl + "description"),
-                Location = (string)equipment.Element(msl + "location"),
-                Status = (string)equipment.Element(msl + "status"),
-                Loggable = (string)equipment.Element(msl + "loggable"),
-                Traceable = (string)equipment.Element(msl + "traceable")
-            };
-
-            return i;
-
-        }
-
-        /// <summary>
-        /// returns a list of unique laboratories listed in the register
-        /// </summary>
-        public List<string> GetUniqueEquipmentLocations()
-        {
-            return doc.Root?
-                .Elements(msl + "equipment")
-                .Select(e => (string)e.Element(msl + "location"))
-                .Where(location => !string.IsNullOrWhiteSpace(location))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(location => location)
-                .ToList()
-                ?? new List<string>();
-        }
-
-
-
-        /// <summary>
-        /// Gets a list of calibration records for a given piece of equipment.
-        ///
-        /// Each record represents a component/report combination.
-        /// The type of calibration is determined using the CalibrationType enum.
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        /// <returns>List of CalibrationRecord objects</returns>
-        public List<CalibrationRecord> CalData(string equipmentId)
-        {
-            XElement equipment =
-                doc.Root?
-                   .Elements(msl + "equipment")
-                   .FirstOrDefault(e => string.Equals(
-                       (string)e.Element(msl + "id"),
-                       equipmentId,
-                       StringComparison.OrdinalIgnoreCase));
-
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    "Equipment '" + equipmentId + "' not found");
-
-            var records =
-                from measurand in equipment
-                    .Element(msl + "calibrations")?
-                    .Elements(msl + "measurand")
-                    ?? Enumerable.Empty<XElement>()
-
-                from component in measurand.Elements(msl + "component")
-
-                from report in component.Elements()
-                    .Where(el =>
-                        el.Name == msl + "report" ||
-                        el.Name == msl + "digitalReport")
-                    .DefaultIfEmpty() // include components with no reports
-
-                let isReport =
-                    report != null && report.Name == msl + "report"
-
-                let isDigitalReport =
-                    report != null && report.Name == msl + "digitalReport"
-
-                // ✅ Determine calibration type
-                let calibrationType =
-                    report == null
-                        ? CalibrationType.Unknown
-                        : report.Element(msl + "equation") != null
-                            ? CalibrationType.Equation
-                            : report.Element(msl + "table") != null
-                                ? CalibrationType.Table
-                                : (isDigitalReport || report.Element(msl + "file") != null)
-                                    ? CalibrationType.File
-                                    : CalibrationType.Unknown
-
-                // ✅ Extract equation info if present
-                let equationElement =
-                    report != null ? report.Element(msl + "equation") : null
-
-                let equationValue =
-                    equationElement != null
-                        ? (string)equationElement.Element(msl + "value")
-                        : null
-
-                let equationUnit =
-                    equationElement != null
-                        ? (string)equationElement.Element(msl + "unit")
-                        : null
-
-                select new CalibrationRecord
-                {
-                    EquipmentId = equipmentId,
-
-                    Quantity =
-                        (string)measurand.Attribute("quantity"),
-
-                    CalibrationIntervalYears =
-                        (int)measurand.Attribute("calibrationInterval"),
-
-                    ComponentName =
-                        (string)component.Attribute("name"),
-
-                    ReportId =
-                        (string)(report != null ? report.Attribute("id") : null),
-
-                    // ✅ Only valid for <report>
-                    ReportIssueDate =
-                        isReport
-                            ? (DateTime?)report.Element(msl + "reportIssueDate")
-                            : null,
-
-                    MeasurementStartDate =
-                        isReport
-                            ? (DateTime?)report.Element(msl + "measurementStartDate")
-                            : null,
-
-                    MeasurementStopDate =
-                        isReport
-                            ? (DateTime?)report.Element(msl + "measurementStopDate")
-                            : null,
-
-                    CalibrationType = calibrationType,
-
-                    Equation = equationValue,
-                    EquationUnit = equationUnit
-                };
-
-            return records.ToList();
-        }
-
 
         /// <summary>
         /// Retrieves the latest calibration record for a given equipment ID
@@ -475,470 +368,479 @@ namespace Length_Stds_Environmental_Monitoring
             return result;
         }
 
-        public string[][] GetLatestCalibrationTable(string equipmentId, string componentName)
+        /// <summary>
+        /// Retrieves the table data from the latest calibration report
+        /// for a given equipment ID and component name.
+        ///
+        /// "Latest" is defined as the report with the most recent measurementStartDate.
+        ///
+        /// Returns null if no table exists.
+        /// </summary>
+
+        public TableData GetLatestTypedTable(string equipmentId, string componentName)
         {
-
-            if (string.IsNullOrWhiteSpace(equipmentId))
-                throw new ArgumentException("equipmentId must not be empty", nameof(equipmentId));
-
-            if (string.IsNullOrWhiteSpace(componentName))
-                throw new ArgumentException("componentName must not be empty", nameof(componentName));
-
-
-
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
+            XElement equipment = doc.Root?
+                .Elements(msl + "equipment")
+                .FirstOrDefault(e => string.Equals(
+                    (string)e.Element(msl + "id"),
+                    equipmentId,
+                    StringComparison.OrdinalIgnoreCase));
 
             if (equipment == null)
-                throw new InvalidOperationException(
-                    $"Equipment '{equipmentId}' not found.");
+                throw new InvalidOperationException("Equipment not found.");
 
-            var candidates =
-                from measurand in equipment
-                    .Element(msl + "calibrations")?
-                    .Elements(msl + "measurand")
-                    ?? Enumerable.Empty<XElement>()
+            // ✅ Find latest report
+            var latest =
+                (from measurand in equipment
+                     .Element(msl + "calibrations")?
+                     .Elements(msl + "measurand")
+                 ?? Enumerable.Empty<XElement>()
 
-                from component in measurand.Elements(msl + "component")
-                where string.Equals(
-                    (string)component.Attribute("name"),
-                    componentName,
-                    StringComparison.OrdinalIgnoreCase)
+                 from component in measurand.Elements(msl + "component")
 
-                from report in component.Elements()
-                    .Where(el =>
-                        el.Name == msl + "report" ||
-                        el.Name == msl + "digitalReport")
+                 where string.Equals(
+                     (string)component.Attribute("name"),
+                     componentName,
+                     StringComparison.OrdinalIgnoreCase)
 
-                let startDate =
-                    (DateTime?)report.Element(msl + "measurementStartDate")
+                 from report in component.Elements(msl + "report")
 
-                let table =
-                    report.Element(msl + "table")
+                 let startDate =
+                     (DateTime?)report.Element(msl + "measurementStartDate")
 
-                where startDate.HasValue && table != null
+                 where startDate.HasValue
 
-                select new
-                {
-                    StartDate = startDate.Value,
-                    Table = table
-                };
+                 orderby startDate descending
 
-            var latest = candidates
-                .OrderByDescending(c => c.StartDate)
+                 select report)
                 .FirstOrDefault();
 
             if (latest == null)
-                return null; // no table for this component
+                return null;
 
-            XElement tableElement = latest.Table;
+            XElement table = latest.Element(msl + "table");
+            if (table == null)
+                return null;
 
-            // Helper: split comma-separated values safely
-            string[] SplitCsvLine(string value) =>
-                value.Split(',')
-                     .Select(v => v.Trim())
-                     .ToArray();
+            // ✅ Parse metadata
+            string[] type = ParseCsvLine((string)table.Element(msl + "type"));
+            string[] unit = ParseCsvLine((string)table.Element(msl + "unit"));
+            string[] header = ParseCsvLine((string)table.Element(msl + "header"));
 
-            var rows = new List<string[]>();
+            string rawData = (string)table.Element(msl + "data");
 
-            // Row 0: <type>
-            rows.Add(SplitCsvLine(
-                (string)tableElement.Element(msl + "type")));
+            if (string.IsNullOrWhiteSpace(rawData))
+                return null;
 
-            // Row 1: <unit>
-            rows.Add(SplitCsvLine(
-                (string)tableElement.Element(msl + "unit")));
+            string[] rows = rawData
+                .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // Row 2: <header>
-            rows.Add(SplitCsvLine(
-                (string)tableElement.Element(msl + "header")));
+            int rowCount = rows.Length;
+            int colCount = type.Length;
 
-            // Rows 3+: <data>
-            string dataText = (string)tableElement.Element(msl + "data");
+            object[,] data = new object[rowCount, colCount];
 
-            var dataRows =
-                dataText
-                    .Split(new[] { '\n', '\r' },
-                           StringSplitOptions.RemoveEmptyEntries)
-                    .Select(line => SplitCsvLine(line));
-
-            rows.AddRange(dataRows);
-
-            return rows.ToArray();
-        }
-
-        public ICalibration GetLatestCalibrationTableObject(string equipmentId, string componentName)
-        {
-
-            if (string.IsNullOrWhiteSpace(equipmentId))
-                throw new ArgumentException("equipmentId must not be empty", nameof(equipmentId));
-
-            if (string.IsNullOrWhiteSpace(componentName))
-                throw new ArgumentException("componentName must not be empty", nameof(componentName));
-
-
-
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
-
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    $"Equipment '{equipmentId}' not found.");
-
-            var candidates =
-                from measurand in equipment
-                    .Element(msl + "calibrations")?
-                    .Elements(msl + "measurand")
-                    ?? Enumerable.Empty<XElement>()
-
-                from component in measurand.Elements(msl + "component")
-                where string.Equals(
-                    (string)component.Attribute("name"),
-                    componentName,
-                    StringComparison.OrdinalIgnoreCase)
-
-                from report in component.Elements()
-                    .Where(el =>
-                        el.Name == msl + "report" ||
-                        el.Name == msl + "digitalReport")
-
-                let startDate =
-                    (DateTime?)report.Element(msl + "measurementStartDate")
-
-                let table =
-                    report.Element(msl + "table")
-
-                where startDate.HasValue && table != null
-
-                select new
-                {
-                    StartDate = startDate.Value,
-                    Table = table
-                };
-
-            var latest = candidates
-                .OrderByDescending(c => c.StartDate)
-                .FirstOrDefault();
-
-            if (latest == null)
-                return null; // no table for this component
-
-            XElement tableElement = latest.Table;
-
-            // Helper: split comma-separated values safely
-            string[] SplitCsvLine(string value) =>
-                value.Split(',')
-                     .Select(v => v.Trim())
-                     .ToArray();
-
-            var rows = new List<string[]>();
-
-            // Row 0: <type>
-            rows.Add(SplitCsvLine(
-                (string)tableElement.Element(msl + "type")));
-
-            // Row 1: <unit>
-            rows.Add(SplitCsvLine(
-                (string)tableElement.Element(msl + "unit")));
-
-            // Row 2: <header>
-            rows.Add(SplitCsvLine(
-                (string)tableElement.Element(msl + "header")));
-
-            // Rows 3+: <data>
-            string dataText = (string)tableElement.Element(msl + "data");
-
-            var dataRows =
-                dataText
-                    .Split(new[] { '\n', '\r' },
-                           StringSplitOptions.RemoveEmptyEntries)
-                    .Select(line => SplitCsvLine(line));
-
-            rows.AddRange(dataRows);
-
-            string[][] array = rows.ToArray();
-            ICalibration table_calibration = new TableCalibration(array);
-            foreach (string col in array[2])
+            for (int i = 0; i < rowCount; i++)
             {
-                if(col.Contains("Rising") || col.Contains("Falling"))
+                string[] cols = ParseCsvLine(rows[i]);
+
+                for (int j = 0; j < colCount && j < cols.Length; j++)
                 {
-                    //this table is a hysteresis table, so we can return a HysteresisTable object instead of a Table object
-                    table_calibration = new HysterisisTableCalibration(array);
-                    return table_calibration;
+                    data[i, j] = ConvertToType(cols[j], type[j]);
                 }
             }
-            return table_calibration;
+
+            return new TableData
+            {
+                Type = type,
+                Unit = unit,
+                Header = header,
+                Data = data
+            };
+        }
+
+
+        /// <summary>
+        /// Converts a string value to the specified type from &lt;type&gt;.
+        /// </summary>
+        private object ConvertToType(string value, string type)
+        {
+            type = type.ToLowerInvariant();
+
+            switch (type)
+            {
+                case "double":
+                    double d;
+                    if (double.TryParse(value, out d))
+                        return d;
+                    break;
+
+                case "int":
+                    int i;
+                    if (int.TryParse(value, out i))
+                        return i;
+                    break;
+
+                case "bool":
+                    bool b;
+                    if (bool.TryParse(value, out b))
+                        return b;
+
+                    // handle 0/1
+                    if (value == "0") return false;
+                    if (value == "1") return true;
+                    break;
+
+                case "string":
+                    return value;
+            }
+
+            // ✅ If parsing fails, fall back safely
+            return value;
+        }
+
+
+        /// <summary>
+        /// Splits a CSV line into trimmed values.
+        /// </summary>
+        private string[] ParseCsvLine(string line)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                return new string[0];
+
+            return line
+                .Split(',')
+                .Select(s => s.Trim())
+                .ToArray();
         }
 
         /// <summary>
-        /// Gets the equation for a given component
+        /// Retrieves the Gauge Block Set specifications for a given equipment ID.
+        ///
+        /// According to the schema, the <specifications> element is of type msl:any,
+        /// meaning it may contain arbitrary child elements with no enforced structure.
+        /// 
+        /// This function extracts known Gauge Block Set fields directly from the
+        /// specifications element.
+        ///
+        /// Returns null if no specifications are found.
         /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        /// <param name="componentName">The name of the component e.g Hygrometer</param>
-        public string GetLatestEquationValue(string equipmentId, string componentName)
+        public GaugeBlockSetSpecification GetGaugeBlockSetSpecifications(string equipmentId)
         {
-            if (string.IsNullOrWhiteSpace(equipmentId))
-                throw new ArgumentException("equipmentId must not be empty", nameof(equipmentId));
-
-            if (string.IsNullOrWhiteSpace(componentName))
-                throw new ArgumentException("componentName must not be empty", nameof(componentName));
-
-            XElement equipment =
-                doc.Root?
-                   .Elements(msl + "equipment")
-                   .FirstOrDefault(e =>
-                       string.Equals(
-                           (string)e.Element(msl + "id"),
-                           equipmentId,
-                           StringComparison.OrdinalIgnoreCase));
+            // ✅ Locate equipment
+            XElement equipment = doc.Root?
+                .Elements(msl + "equipment")
+                .FirstOrDefault(e => string.Equals(
+                    (string)e.Element(msl + "id"),
+                    equipmentId,
+                    StringComparison.OrdinalIgnoreCase));
 
             if (equipment == null)
                 throw new InvalidOperationException(
-                    $"Equipment '{equipmentId}' not found.");
+                    "Equipment '" + equipmentId + "' not found.");
 
-            var candidates =
-                from measurand in equipment
-                    .Element(msl + "calibrations")?
-                    .Elements(msl + "measurand")
-                    ?? Enumerable.Empty<XElement>()
+            // ✅ Access specifications (msl:any)
+            XElement specs = equipment.Element(msl + "specifications");
 
-                from component in measurand.Elements(msl + "component")
-                where string.Equals(
-                    (string)component.Attribute("name"),
-                    componentName,
-                    StringComparison.OrdinalIgnoreCase)
+            if (specs == null || !specs.HasElements)
+                return null;
 
-                from report in component.Elements()
-                    .Where(el =>
-                        el.Name == msl + "report" ||
-                        el.Name == msl + "digitalReport")
+            // ✅ Extract Gauge Block fields safely
+            GaugeBlockSetSpecification result = new GaugeBlockSetSpecification
+            {
+                Grade = GetString(specs, "grade"),
+                Metric = GetBool(specs, "metric"),
+                Material = GetString(specs, "material"),
+                YoungsModulus = GetDouble(specs, "youngsmodulus"),
+                PoissonsRatio = GetDouble(specs, "poissonsratio"),
+                ExpansionCoefficient = GetDouble(specs, "expansioncoefficient"),
+                ExpansionCoefficientUncertainty = GetDouble(specs, "expansioncoefficient_uncertainty"),
+                WringingUncertainty = GetDouble(specs, "stdu_wringing_uncertainty"),
+                LengthDependentUncertainty = GetDouble(specs, "stdu_dependent"),
+                LengthIndependentUncertainty = GetDouble(specs, "stdu_independent")
+            };
 
-                let startDate =
-                    (DateTime?)report.Element(msl + "measurementStartDate")
+            return result;
+        }
+        
+        /// <summary>
+        /// Retrieves the Gauge Block Comparator specifications for a given equipment ID.
+        /// </summary>
+        public GaugeBlockComparatorSpecifications GetGaugeBlockComparatorSpecifications(string equipmentId)
+        {
+            XElement equipment = doc.Root?
+                .Elements(msl + "equipment")
+                .FirstOrDefault(e => string.Equals(
+                    (string)e.Element(msl + "id"),
+                    equipmentId,
+                    StringComparison.OrdinalIgnoreCase));
 
-                let equation =
-                    report.Element(msl + "equation")
+            if (equipment == null)
+                throw new InvalidOperationException(
+                    "Equipment '" + equipmentId + "' not found.");
 
-                where startDate.HasValue && equation != null
+            XElement specs = equipment.Element(msl + "specifications");
 
-                select new
+            if (specs == null)
+                return null;
+
+            return new GaugeBlockComparatorSpecifications
+            {
+                ForceTopAnvil = GetDouble(specs, "forceTopAnvil"),
+                ForceTopAnvilUnit = GetUnit(specs, "forceTopAnvil"),
+
+                ForceBottomAnvil = GetDouble(specs, "forceBottomAnvil"),
+                ForceBottomAnvilUnit = GetUnit(specs, "forceBottomAnvil"),
+
+                ProbeDiameter = GetDouble(specs, "probeDiameter"),
+                ProbeDiameterUnit = GetUnit(specs, "probeDiameter"),
+
+                ProbeYoungsModulus = GetDouble(specs, "probeYoungsModulus"),
+                ProbeYoungsModulusUnit = GetUnit(specs, "probeYoungsModulus"),
+
+                ProbePoissonsRatio = GetDouble(specs, "probePoissonsRatio"),
+                ProbePoissonsRatioUnit = GetUnit(specs, "probePoissonsRatio"),
+
+                ScaleResolution = GetDouble(specs, "scaleResolution"),
+                ScaleResolutionUnit = GetUnit(specs, "scaleResolution"),
+
+                ScaleCalibration = GetDouble(specs, "scaleCalibration"),
+                ScaleCalibrationUnit = GetUnit(specs, "scaleCalibration"),
+
+                Reproducibility = GetDouble(specs, "reproducibility"),
+                ReproducibilityUnit = GetUnit(specs, "reproducibility"),
+
+                StduDelta = GetDouble(specs, "stdu_delta"),
+                StduDeltaUnit = GetUnit(specs, "stdu_delta"),
+
+                StduAlphaG = GetDouble(specs, "stdu_alpha_g"),
+                StduAlphaGUnit = GetUnit(specs, "stdu_alpha_g"),
+
+                StduDeltaAlpha = GetDouble(specs, "stdu_delta_alpha"),
+                StduDeltaAlphaUnit = GetUnit(specs, "stdu_delta_alpha"),
+
+                StduThetaS = GetDouble(specs, "stdu_theta_s"),
+                StduThetaSUnit = GetUnit(specs, "stdu_theta_s"),
+
+                StduDeltaTheta = GetDouble(specs, "stdu_delta_theta"),
+                StduDeltaThetaUnit = GetUnit(specs, "stdu_delta_theta"),
+
+                StduDeltaThetaVariation = GetDouble(specs, "stdu_delta_theta_variation"),
+                StduDeltaThetaVariationUnit = GetUnit(specs, "stdu_delta_theta_variation"),
+
+                ExpandedUncertaintyDeviationDependentCmc =
+                    GetDouble(specs, "expanded_uncertainty_deviation_dependent_cmc"),
+                ExpandedUncertaintyDeviationDependentCmcUnit =
+                    GetUnit(specs, "expanded_uncertainty_deviation_dependent_cmc"),
+
+                ExpandedUncertaintyDeviationIndependentCmc =
+                    GetDouble(specs, "expanded_uncertainty_deviation_independent_cmc"),
+                ExpandedUncertaintyDeviationIndependentCmcUnit =
+                    GetUnit(specs, "expanded_uncertainty_deviation_independent_cmc"),
+
+                ExpandedUncertaintyVariationDependentCmc =
+                    GetDouble(specs, "expanded_uncertainty_variation_dependent_cmc"),
+                ExpandedUncertaintyVariationDependentCmcUnit =
+                    GetUnit(specs, "expanded_uncertainty_variation_dependent_cmc"),
+
+                ExpandedUncertaintyVariationIndependentCmc =
+                    GetDouble(specs, "expanded_uncertainty_variation_independent_cmc"),
+                ExpandedUncertaintyVariationIndependentCmcUnit =
+                    GetUnit(specs, "expanded_uncertainty_variation_independent_cmc")
+            };
+        }
+
+        private bool? GetBool(XElement parent, string name)
+        {
+            
+            XElement? el = parent.Element(msl + name);
+            if (el == null)
+                return null;
+
+            bool value;
+            return bool.TryParse(el.Value, out value) ? value : (bool?)null;
+        }
+
+        private string? GetString(XElement parent, string name)
+        {
+            XElement? el = parent.Element(msl + name);
+            return el != null ? el.Value : null;
+        }
+
+        private double? GetDouble(XElement parent, string name)
+        {
+            XElement? el = parent.Element(msl + name);
+
+            if (el == null)
+                return null;
+
+            double value;
+            return double.TryParse(el.Value, out value) ? value : (double?)null;
+        }
+
+
+        private string GetUnit(XElement parent, string name)
+        {
+            return (string)parent.Element(msl + name)?.Attribute("unit");
+        }
+
+
+        /// <summary>
+		/// Populates the reference gauge block combo box
+		/// </summary>
+		public void PopulateReferenceGaugeComboBox(ref ComboBox reference_gauges, bool metric)
+        {
+         
+            List<InventoryItem> items = WildCardInventory("Gauge Block Set");
+
+            
+            foreach(InventoryItem item in items)
+            {
+                //get specifications for this set
+                GaugeBlockSetSpecification spec = GetGaugeBlockSetSpecifications(item.Id);
+                if (spec.Metric == metric)
                 {
-                    MeasurementStartDate = startDate.Value,
-                    EquationValue =
-                        (string)equation.Element(msl + "value")
-                };
-
-            var latest = candidates
-                .OrderByDescending(c => c.MeasurementStartDate)
-                .FirstOrDefault();
-
-            return latest?.EquationValue;
-        }
-
-        /// <summary>
-        /// Gets the equation for a given component
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        /// <param name="componentNameFragment">A partial match of the component e.g Hygro</param>
-        public string GetLatestEquationValuePartialMatch(string equipmentId, string componentNameFragment)
-        {
-
-
-            if (string.IsNullOrWhiteSpace(equipmentId))
-                throw new ArgumentException("equipmentId must not be empty", nameof(equipmentId));
-
-            if (string.IsNullOrWhiteSpace(componentNameFragment))
-                throw new ArgumentException("componentNameFragment must not be empty", nameof(componentNameFragment));
-
-            XElement equipment =
-                doc.Root?
-                   .Elements(msl + "equipment")
-                   .FirstOrDefault(e =>
-                       string.Equals(
-                           (string)e.Element(msl + "id"),
-                           equipmentId,
-                           StringComparison.OrdinalIgnoreCase));
-
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    string.Format("Equipment with ID {0} was not found", equipmentId));
-
-            var candidates =
-                from measurand in equipment
-                    .Element(msl + "calibrations")?
-                    .Elements(msl + "measurand")
-                    ?? Enumerable.Empty<XElement>()
-
-                from component in measurand.Elements(msl + "component")
-                where ((string)component.Attribute("name"))?
-                    .IndexOf(componentNameFragment,
-                             StringComparison.OrdinalIgnoreCase) >= 0
-
-                from report in component.Elements()
-                    .Where(el =>
-                        el.Name == msl + "report" ||
-                        el.Name == msl + "digitalReport")
-
-                let startDate =
-                    (DateTime?)report.Element(msl + "measurementStartDate")
-
-                let equationValue =
-                    (string)report
-                        .Element(msl + "equation")
-                        ?.Element(msl + "value")
-
-                where startDate.HasValue && !string.IsNullOrWhiteSpace(equationValue)
-
-                select new
+                    reference_gauges.Items.Add(item.Serial);
+                }
+                if (!spec.Metric == metric)
                 {
-                    MeasurementStartDate = startDate.Value,
-                    Equation = equationValue.Trim()
-                };
+                    reference_gauges.Items.Add(item.Serial);
+                }
+            }
 
-            return candidates
-                .OrderByDescending(c => c.MeasurementStartDate)
-                .Select(c => c.Equation)
-                .FirstOrDefault();
+            
         }
 
-
-
-
-        /// <summary>
-        /// Gets the address if it exists
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        /// <param name="addressType">can be "ip", "gpib" or "com"</param>
-        public string Address(string equipmentId, string addressType)
+        public bool LoadReferenceGauges(ref GaugeBlockSet gauge_set)
         {
+          
 
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
+            //get all the equipment register items that are a gauge block set
+            List<InventoryItem> items = WildCardInventory("Gauge Block Set");
+            bool set_found = false;
 
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    $"Equipment '{equipmentId}' was not found.");
+            foreach (InventoryItem item in items)
+            {
+                //if the gauge block set name matches the name of the reference gauge set we're trying to populate then populate it with the gauges from the xml file.
+                if (item.Serial == gauge_set.GaugeSetName)
+                {
+                    set_found = true;
 
-            return equipment
-                .Element(msl + "specifications")
-                ?.Elements(msl + "addr")
-                .FirstOrDefault(a =>
-                    string.Equals(
-                        (string)a.Attribute("type"),
-                        addressType,
-                        StringComparison.OrdinalIgnoreCase))
-                ?.Value
-                ?.Trim();
+                    //get the metadata we need from the XML equipment register file
+                    CalibrationRecord record = GetLatestCalibration(item.Id, "Gauge Block Set");
+                    if (record == null) return false;
+
+                    TableData table = GetLatestTypedTable(item.Id, "Gauge Block Set");
+
+                    //check for non-standard table colomns
+                    int num_columns = table.Unit.Length;
+                    if (num_columns != 5) return false;
+
+                    GaugeBlockSetSpecification gauge_spec_metadata = GetGaugeBlockSetSpecifications(item.Id);
+
+                    gauge_set.ReportNumber = record.ReportId;
+                    gauge_set.ReportDate = record.ReportIssueDate.ToString();
+                    gauge_set.EquipID = record.EquipmentId;
 
 
+                    if (table.Unit[0] == "mm") gauge_set.Unit = Units.Metric;
+                    else gauge_set.Unit = Units.Imperial;
+
+                    gauge_set.GaugeSetMaterial.material = gauge_spec_metadata.Material;
+                    double? expcoeff = gauge_spec_metadata.ExpansionCoefficient;
+                    double? ym = gauge_spec_metadata.YoungsModulus;
+                    double? pr = gauge_spec_metadata.PoissonsRatio;
+                    double? std_u_wringing_indep = gauge_spec_metadata.WringingUncertainty;
+                    double? std_u_dependent = gauge_spec_metadata.LengthDependentUncertainty;
+                    double? std_u_independent = gauge_spec_metadata.LengthIndependentUncertainty;
+
+                    int gauge_num = 0;
+                    //loop through each row in the table and create a gauge block for each nominal size.
+                    for (int row = 0; row < (table.Data.GetLength(0) - 1); row++)
+                    {
+                        GaugeBlock gauge = new GaugeBlock(true);
+                        if (gauge_set.Unit == Units.Metric)
+                        {
+                            gauge.Metric = true;
+                        }
+                        else if (gauge_set.Unit == Units.Imperial)
+                        {
+                            gauge.Metric = false;
+                        }
+                        gauge.Nominal = (double)table.Data[row, 0];
+                        gauge.SerialNumber = (string)table.Data[row, 1];
+                        gauge.CentreDeviation = (double)table.Data[row, 2];
+                        gauge.Dof = (int)table.Data[row, 4];
+
+                        double std_uncertainty = (double)table.Data[row, 3];
+                        gauge.ExpandedUncertaintyDev = std_uncertainty * MathNet.Numerics.ExcelFunctions.TInv(0.05, gauge.Dof);
+                        gauge.FromSet = gauge_set.GaugeSetName;
+
+
+                        if (ym != null) gauge.GaugeBlockMaterial.youngs_modulus = (double)ym;
+                        if (pr != null) gauge.GaugeBlockMaterial.poissons_ratio = (double)pr;
+                        if (expcoeff != null) gauge.GaugeBlockMaterial.exp_coeff = (double)expcoeff;
+                        if (std_u_wringing_indep != null) gauge.WringingFilm = (double)std_u_wringing_indep;
+                        if (std_u_independent != null) gauge.GaugeStdU_Indp = (double)std_u_independent;
+                        if (std_u_dependent != null) gauge.GaugeStdU_Dep = (double)std_u_dependent;
+
+                        gauge_set.NumGauges++;
+                        //add the gauge
+                        gauge_set.AddGauge(gauge);
+
+                    }
+                }
+
+            }
+            return set_found;
         }
 
-        /// <summary>
-        /// Gets the address if it exists
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        /// <param name="accessType">can be "ip", "gpib" or "com"</param>
-        public string Access(string equipmentId, string accessType)
+        public void LoadVerticalFederalMetaData(ref VerticalFederal vfed)
         {
+            
+            GaugeBlockComparatorSpecifications s = GetGaugeBlockComparatorSpecifications("MSLE.L.004");
 
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
+            if (s.ForceTopAnvil != null) vfed.TopProbeForce = (double)s.ForceTopAnvil;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ForceBottomAnvil != null) vfed.BottomProbeForce = (double) s.ForceBottomAnvil;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if(s.ProbeDiameter != null) vfed.ProbeDiameter = (double)s.ProbeDiameter;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ProbeYoungsModulus != null) vfed.ProbeYoungsMod = (double)s.ProbeYoungsModulus;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ProbePoissonsRatio != null) vfed.ProbePoissonsRatio = (double)s.ProbePoissonsRatio;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ScaleResolution != null) vfed.ScaleResStduIndependent = (double)s.ScaleResolution / Math.Sqrt(12);
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ScaleCalibration != null) vfed.ScaleCalStduIndependent = (double)s.ScaleCalibration;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.Reproducibility != null) vfed.ReproducibilityStduIndependent = (double)s.Reproducibility;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.StduDelta != null) vfed.u_Delta = (double)s.StduDelta;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.StduAlphaG != null) vfed.u_AlphaG = (double)s.StduAlphaG;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.StduDeltaAlpha != null) vfed.u_DeltaAlpha = (double)s.StduDeltaAlpha;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.StduThetaS != null) vfed.u_ThetaS = (double)s.StduThetaS;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.StduDeltaAlpha != null) vfed.u_DeltaTheta = (double)s.StduDeltaAlpha;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.StduDeltaThetaVariation != null) vfed.u_DeltaThetaVar = (double)s.StduDeltaThetaVariation;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ExpandedUncertaintyDeviationDependentCmc != null) vfed.ExpanedUncertaintyCMCDevDep = (double)s.ExpandedUncertaintyDeviationDependentCmc;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ExpandedUncertaintyDeviationIndependentCmc != null) vfed.ExpanedUncertaintyCMCDevIndep = (double)s.ExpandedUncertaintyDeviationIndependentCmc;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ExpandedUncertaintyVariationDependentCmc != null) vfed.ExpanedUncertaintyCMCVarDep = (double)s.ExpandedUncertaintyVariationDependentCmc;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
+            if (s.ExpandedUncertaintyVariationIndependentCmc != null) vfed.ExpanedUncertaintyCMCVarIndep = (double)s.ExpandedUncertaintyVariationIndependentCmc;
+            else { MessageBox.Show("Unable to read Federal MetaData"); return; }
 
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    $"Equipment '{equipmentId}' was not found.");
-
-            return equipment
-                .Element(msl + "specifications")
-                ?.Elements(msl + "access")
-                .FirstOrDefault(a =>
-                    string.Equals(
-                        (string)a.Attribute("type"),
-                        accessType,
-                        StringComparison.OrdinalIgnoreCase))
-                ?.Value
-                ?.Trim();
-
-
-        }
-
-        /// <summary>
-        /// Gets the SICL interface ID for a network gateway
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        /// <param name="specificationElementName">The name of the specification element</param>
-        public string SpecificationElement(string equipmentId, string specificationElementName)
-        {
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
-
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    $"Equipment with ID '{equipmentId}' was not found.");
-
-
-            return (string)equipment
-                        .Element(msl + "specifications")
-                        ?.Element(msl + specificationElementName);
+            //TO DO
+            //Once we have a scale calibration in the equipment register this should be added to the measurement
 
         }
-
-        /// <summary>
-        /// Gets the SICL interface ID for a network gateway
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment</param>
-        public string InternalResistorValue(string equipmentId)
-        {
-            XElement equipment =
-                        doc.Root?
-                           .Elements(msl + "equipment")
-                           .FirstOrDefault(e =>
-                               string.Equals(
-                                   (string)e.Element(msl + "id"),
-                                   equipmentId,
-                                   StringComparison.OrdinalIgnoreCase));
-
-            if (equipment == null)
-                throw new InvalidOperationException(
-                    $"Equipment with ID '{equipmentId}' was not found.");
-
-
-            return (string)equipment
-                        .Element(msl + "specifications")
-                        ?.Element(msl + "sicl");
-
-        }
-
 
     }
 }

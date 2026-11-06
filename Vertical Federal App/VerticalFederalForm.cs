@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO.Ports;
-using System.Threading;
+using System.Xml.Linq;
 //using Microsoft.Office.Interop.Excel;
 
 
@@ -30,6 +31,8 @@ namespace Vertical_Federal_App
         private List<Stack> suitable_gauges;
         private int rb_position;
         private bool radiobuttionclearcalled;
+
+        private EquipmentRegister equipment_register;
     
         enum RadioButtonPos
         {
@@ -42,24 +45,59 @@ namespace Vertical_Federal_App
             sdr = new SerialDataReveived(DataReceived);
             tdr = new TemperatureRetrieved(TemperatureReceived);
             pgr = new PrintGaugeResultsToRichTextbox(PrintGaugeResults);
-            
+            LoadRegister();
+            if(equipment_register == null)
+            {
+                MessageBox.Show("error loading equipment register");
+                Application.Exit();
+                return;
+            }
             Measurement.working_gauge = new GaugeBlock(true);
-            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"L:\EQUIPREG\XML Files\cal_data_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"L:\EQUIPREG\Length_Stds_Calibration_Data\cal_data.ini", false);
-            INI2XML.DoIni2XmlConversion(ref messagesRichTextBox, @"L:\Technical Procedures\XML Files\config_uncertainty_federal_measurement" + System.DateTime.Now.Ticks.ToString()+".xml", @"L:\Technical Procedures\Uncertainty Config\config_uncertainty.ini", true);
-            if (INI2XML.Converted) INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             Measurement.calibration_gauge_sets = new List<GaugeBlockSet>();  //make a new list for calibration gauge sets
             Measurement.reference_gauge_sets = new List<GaugeBlockSet>();
+            equipment_register.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);  //initially assume metric reference gauges (second argument true).
             radiobuttionclearcalled = false;
             Measurement.StartRetreivingTemperatures(ref tdr);
             Measurement.LogTemperatures = true;
             Measurement.working_gauge.Metric = true;
+            Measurement.register = equipment_register;
+
+            
+        }
+
+        private void LoadRegister()
+        {
+            XDocument doc_;
+            XNamespace msl_ = "https://measurement.govt.nz/equipment-register";
+            
+            try
+            {
+                var path = Path.Combine(@"C:\Users\MSL Lab\Documents\GitHub\Length_Stds_Equipment_Register\register.xml");
+                doc_ = XDocument.Load(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error reading Equipment Register:\n" + ex.Message);
+                Application.Exit();
+                return;
+            }
+
+            if (doc_.Root == null)
+            {
+                MessageBox.Show("Invalid XML: missing root element.");
+                Application.Exit();
+                return;
+            }
+
+            //if we get here we have a valid equipment register else notifiy user and exit the application.
+            XElement reg_ = doc_.Root;
+            equipment_register = new EquipmentRegister { doc = doc_, msl = msl_, register = reg_};
         }
 
         private void Comopenbutton_Click(object sender, EventArgs e)
         {
             federal = new VerticalFederal(ref sdr);
-            INI2XML.LoadUncertaintyMetaData(ref federal);
-            INI2XML.LoadVerticalFederalMetaData(ref federal);
+            equipment_register.LoadVerticalFederalMetaData(ref federal);
             federal.COMInit(COMComboBox.Text.ToString());
 
             imperialCheckBox.Enabled = true;
@@ -221,14 +259,14 @@ namespace Vertical_Federal_App
                 Measurement.working_gauge.Metric = false;
                 imperialCheckBox.Checked = true;
                 referenceSetComboBox.Items.Clear();
-                INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, false);
+                equipment_register.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, false);
             }
             else if (imperialCheckBox.Checked && metricCheckBox.Checked)
             {
                 Measurement.working_gauge.Metric = false;
                 metricCheckBox.Checked = false;
                 referenceSetComboBox.Items.Clear();
-                INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, false);
+                equipment_register.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, false);
             }
             ProcessSizeChangeEvent();
         }
@@ -241,14 +279,14 @@ namespace Vertical_Federal_App
                 Measurement.working_gauge.Metric = true;
                 metricCheckBox.Checked = true;
                 referenceSetComboBox.Items.Clear();
-                INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);
+                equipment_register.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);
             }
             else if (metricCheckBox.Checked && imperialCheckBox.Checked)
             {
                 Measurement.working_gauge.Metric = true;
                 imperialCheckBox.Checked = false;
                 referenceSetComboBox.Items.Clear();
-                INI2XML.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);
+                equipment_register.PopulateReferenceGaugeComboBox(ref referenceSetComboBox, true);
             }
 
             ComplianceComboBox.Items.Clear();
@@ -305,10 +343,9 @@ namespace Vertical_Federal_App
                 gauge_set.GaugeSetName = referenceSetComboBox.SelectedItem.ToString();
                 Measurement.reference_gauge_sets.Add(gauge_set);
 
-                //Get the reference set data from the xml file
-                INI2XML.GetReferenceSetMetaData(ref gauge_set);
+
                 //Add all gauges found in the xml file to the reference gauge set.
-                INI2XML.LoadReferenceGauges(ref gauge_set);
+                equipment_register.LoadReferenceGauges(ref gauge_set);
 
                 CheckBBFDate(gauge_set.ReportDate);
                 
@@ -334,12 +371,13 @@ namespace Vertical_Federal_App
                 {
                     GaugeBlockSet gauge_set = new GaugeBlockSet();
                     gauge_set.GaugeSetName = referenceSetComboBox.SelectedItem.ToString();
-                    Measurement.reference_gauge_sets.Add(gauge_set);
+                    
 
-                    //Get the reference set data from the xml file
-                    INI2XML.GetReferenceSetMetaData(ref gauge_set);
+                  
                     //Add all gauges found in the xml file to the reference gauge set.
-                    INI2XML.LoadReferenceGauges(ref gauge_set);
+                    if(!equipment_register.LoadReferenceGauges(ref gauge_set)) return;
+
+                    Measurement.reference_gauge_sets.Add(gauge_set);
                     CheckBBFDate(gauge_set.ReportDate);
 
                     foreach (GaugeBlockSet gbs in Measurement.reference_gauge_sets)

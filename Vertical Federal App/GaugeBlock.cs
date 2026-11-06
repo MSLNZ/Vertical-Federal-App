@@ -120,6 +120,7 @@ namespace Vertical_Federal_App
         private double expanded_uncertainty_dev;
         private double expanded_uncertainty_var;
         private double expanded_uncertainty_ext_dev;
+        private int dof_dev;
         private double temperature;
         private string from_set; //the name of the reference set this gauge belongs to
         private Material gauge_material;
@@ -275,6 +276,12 @@ namespace Vertical_Federal_App
         {
             get { return wringing_film_thickness; }
             set { wringing_film_thickness = value; }
+        }
+
+        public int Dof
+        {
+            get { return dof_dev; }
+            set { dof_dev = value; }
         }
 
         public double Nominal

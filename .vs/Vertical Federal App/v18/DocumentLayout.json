@@ -3,68 +3,65 @@
   "WorkspaceRootPath": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|Vertical Federal App||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\equipmentregister.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\equipmentregister.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\verticalfederalform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\verticalfederalform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\measurement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\measurement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\gaugeblockset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\gaugeblockset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\icalibration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\icalibration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\equipmentregister.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\equipmentregister.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\gaugeblock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\gaugeblock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\verticalfederal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\verticalfederal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd||{DEE6CEF9-3BCA-449A-82A6-FC757D6956FB}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\measurement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\measurement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\ini2xml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\ini2xml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\verticalfederalform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\verticalfederalform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\gaugeimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\gaugeimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\gaugeimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\gaugeblockset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\gaugeblockset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\verticalfederal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\verticalfederal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|Vertical Federal App||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\verticalfederalform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\verticalfederalform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\verticalfederalform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\verticalfederalform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\verticalfederalform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\vertical federal app\\gaugeblock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\gaugeblock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd||{DEE6CEF9-3BCA-449A-82A6-FC757D6956FB}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|5e9a8ac2-4f34-4521-858f-4c248ba31532"
+      "AbsoluteMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|c:\\users\\msl lab\\documents\\github\\vertical-federal-app\\vertical federal app\\vertical federal app.csproj||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|5e9a8ac2-4f34-4521-858f-4c248ba31532",
+      "RelativeMoniker": "D:0:0:{24F9FE1F-B539-4634-B7EE-6A0B0C822CD9}|Vertical Federal App\\Vertical Federal App.csproj|solutionrelative:vertical federal app\\vertical federal app.csproj||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|5e9a8ac2-4f34-4521-858f-4c248ba31532"
     }
   ],
   "DocumentGroupContainers": [
@@ -74,204 +71,203 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 7,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Vertical Federal App",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Vertical Federal App.csproj",
-              "RelativeDocumentMoniker": "Vertical Federal App\\Vertical Federal App.csproj",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Vertical Federal App.csproj*",
-              "RelativeToolTip": "Vertical Federal App\\Vertical Federal App.csproj*",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-06-11T02:06:32.154Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ICalibration.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\ICalibration.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\ICalibration.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\ICalibration.cs",
-              "RelativeToolTip": "Vertical Federal App\\ICalibration.cs",
-              "ViewState": "AgIAAF0AAAAAAAAAAAAkwA4AAAA6AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T02:05:02.115Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "EquipmentRegister.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\EquipmentRegister.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\EquipmentRegister.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\EquipmentRegister.cs",
-              "RelativeToolTip": "Vertical Federal App\\EquipmentRegister.cs",
-              "ViewState": "AgIAAC8CAAAAAAAAAAAMwD8CAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T02:00:38.292Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "equipment-register.xsd",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd",
-              "RelativeDocumentMoniker": "..\\equipment-register-schema\\equipment-register.xsd",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd",
-              "RelativeToolTip": "..\\equipment-register-schema\\equipment-register.xsd",
-              "ViewState": "AQIAABcIAAAAAAAAAAAlwCoIAABIAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003579|",
-              "WhenOpened": "2026-06-11T01:17:49.147Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "equipment-register.xsd",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd",
-              "RelativeDocumentMoniker": "..\\equipment-register-schema\\equipment-register.xsd",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd",
-              "RelativeToolTip": "..\\equipment-register-schema\\equipment-register.xsd",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003579|",
-              "WhenOpened": "2026-06-11T01:17:49.436Z"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Program.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\Program.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Program.cs",
-              "RelativeToolTip": "Vertical Federal App\\Program.cs",
-              "ViewState": "AQIAAAsAAAAAAAAAAAAQwA8AAAAIAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T01:17:49.486Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "GaugeImage.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeImage.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\GaugeImage.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeImage.cs",
-              "RelativeToolTip": "Vertical Federal App\\GaugeImage.cs",
-              "ViewState": "AQIAAA4AAAAAAAAAAAAQwAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T01:17:49.543Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "GaugeBlockSet.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeBlockSet.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\GaugeBlockSet.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeBlockSet.cs",
-              "RelativeToolTip": "Vertical Federal App\\GaugeBlockSet.cs",
-              "ViewState": "AQIAAAsAAAAAAAAAAAAQwAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T01:17:49.545Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Measurement.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Measurement.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\Measurement.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Measurement.cs",
-              "RelativeToolTip": "Vertical Federal App\\Measurement.cs",
-              "ViewState": "AQIAAB4BAAAAAAAAAAAjwCwBAAAsAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T01:17:49.545Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "INI2XML.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\INI2XML.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\INI2XML.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\INI2XML.cs",
-              "RelativeToolTip": "Vertical Federal App\\INI2XML.cs",
-              "ViewState": "AQIAAOABAAAAAAAAAAAAAPQBAABPAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T01:17:49.546Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
               "Title": "VerticalFederal.cs",
               "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederal.cs",
               "RelativeDocumentMoniker": "Vertical Federal App\\VerticalFederal.cs",
               "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederal.cs",
               "RelativeToolTip": "Vertical Federal App\\VerticalFederal.cs",
-              "ViewState": "AQIAAMQAAAAAAAAAAAAwwAoAAAAeAAAA",
+              "ViewState": "AgIAAMQAAAAAAAAAAAAwwAoAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T01:17:49.547Z"
+              "WhenOpened": "2026-06-11T01:17:49.547Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Report.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Report.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\Report.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Report.cs",
-              "RelativeToolTip": "Vertical Federal App\\Report.cs",
-              "ViewState": "AQIAABAEAAAAAAAAAAAlwNUDAAApAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003525|",
-              "WhenOpened": "2026-06-11T01:17:49.549Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "VerticalFederalForm.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\VerticalFederalForm.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs",
-              "RelativeToolTip": "Vertical Federal App\\VerticalFederalForm.cs",
-              "ViewState": "AQIAAOMCAAAAAAAAAAASwPoDAAAMAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003525|",
-              "WhenOpened": "2026-06-11T01:17:49.549Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "VerticalFederalForm.Designer.cs",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.Designer.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\VerticalFederalForm.Designer.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.Designer.cs",
-              "RelativeToolTip": "Vertical Federal App\\VerticalFederalForm.Designer.cs",
-              "ViewState": "AQIAADgEAAAAAAAAAAAowAIAAAASAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001384|",
-              "WhenOpened": "2026-06-11T01:17:49.549Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "VerticalFederalForm.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs",
-              "RelativeDocumentMoniker": "Vertical Federal App\\VerticalFederalForm.cs",
-              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs [Design]",
-              "RelativeToolTip": "Vertical Federal App\\VerticalFederalForm.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003525|",
-              "WhenOpened": "2026-06-11T01:17:49.549Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 6,
               "Title": "GaugeBlock.cs",
               "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeBlock.cs",
               "RelativeDocumentMoniker": "Vertical Federal App\\GaugeBlock.cs",
               "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeBlock.cs",
               "RelativeToolTip": "Vertical Federal App\\GaugeBlock.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-11T01:17:49.549Z"
+              "WhenOpened": "2026-06-11T01:17:49.549Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ICalibration.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\ICalibration.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\ICalibration.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\ICalibration.cs",
+              "RelativeToolTip": "Vertical Federal App\\ICalibration.cs",
+              "ViewState": "AgIAAIMAAAAAAAAAAADwv5kAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T02:05:02.115Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Report.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Report.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\Report.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Report.cs",
+              "RelativeToolTip": "Vertical Federal App\\Report.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.549Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "VerticalFederalForm.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\VerticalFederalForm.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs",
+              "RelativeToolTip": "Vertical Federal App\\VerticalFederalForm.cs",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAtwDsAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.549Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "equipment-register.xsd",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd",
+              "RelativeDocumentMoniker": "..\\equipment-register-schema\\equipment-register.xsd",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd",
+              "RelativeToolTip": "..\\equipment-register-schema\\equipment-register.xsd",
+              "ViewState": "AgIAABcIAAAAAAAAAAAlwCoIAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003579|",
+              "WhenOpened": "2026-06-11T01:17:49.147Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EquipmentRegister.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\EquipmentRegister.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\EquipmentRegister.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\EquipmentRegister.cs",
+              "RelativeToolTip": "Vertical Federal App\\EquipmentRegister.cs",
+              "ViewState": "AgIAABECAAAAAAAAAAD4vxoCAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T02:00:38.292Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Measurement.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Measurement.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\Measurement.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Measurement.cs",
+              "RelativeToolTip": "Vertical Federal App\\Measurement.cs",
+              "ViewState": "AgIAADYAAAAAAAAAAAAQwIgHAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.545Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "GaugeBlockSet.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeBlockSet.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\GaugeBlockSet.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeBlockSet.cs",
+              "RelativeToolTip": "Vertical Federal App\\GaugeBlockSet.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.545Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Program.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\Program.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Program.cs",
+              "RelativeToolTip": "Vertical Federal App\\Program.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwA8AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.486Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "GaugeImage.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeImage.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\GaugeImage.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\GaugeImage.cs",
+              "RelativeToolTip": "Vertical Federal App\\GaugeImage.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.543Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Vertical Federal App",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Vertical Federal App.csproj",
+              "RelativeDocumentMoniker": "Vertical Federal App\\Vertical Federal App.csproj",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\Vertical Federal App.csproj",
+              "RelativeToolTip": "Vertical Federal App\\Vertical Federal App.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-06-11T02:06:32.154Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "equipment-register.xsd [Design]",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd",
+              "RelativeDocumentMoniker": "..\\equipment-register-schema\\equipment-register.xsd",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\equipment-register-schema\\equipment-register.xsd [Design]",
+              "RelativeToolTip": "..\\equipment-register-schema\\equipment-register.xsd [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003579|",
+              "WhenOpened": "2026-11-06T05:19:47.618Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "VerticalFederalForm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.Designer.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\VerticalFederalForm.Designer.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.Designer.cs",
+              "RelativeToolTip": "Vertical Federal App\\VerticalFederalForm.Designer.cs",
+              "ViewState": "AgIAADgEAAAAAAAAAAAowAIAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.549Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "VerticalFederalForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs",
+              "RelativeDocumentMoniker": "Vertical Federal App\\VerticalFederalForm.cs",
+              "ToolTip": "C:\\Users\\MSL Lab\\Documents\\GitHub\\Vertical-Federal-App\\Vertical Federal App\\VerticalFederalForm.cs [Design]",
+              "RelativeToolTip": "Vertical Federal App\\VerticalFederalForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T01:17:49.549Z",
+              "EditorCaption": " [Design]"
             }
           ]
         }
