@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Vertical Federal App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c6a14dfcaeedb0ec27afb4687a6b40cdb690c475")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f74ffdfb44489d33a8b748cb0ca7311c38ad6b3c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Vertical Federal App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Vertical Federal App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

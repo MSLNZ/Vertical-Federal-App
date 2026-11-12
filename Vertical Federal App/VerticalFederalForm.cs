@@ -67,31 +67,21 @@ namespace Vertical_Federal_App
 
         private void LoadRegister()
         {
-            XDocument doc_;
-            XNamespace msl_ = "https://measurement.govt.nz/equipment-register";
-            
             try
             {
-                var path = Path.Combine(@"C:\Users\MSL Lab\Documents\GitHub\Length_Stds_Equipment_Register\register.xml");
-                doc_ = XDocument.Load(path);
+                string path = Path.Combine(
+                    @"C:\Users\MSL Lab\Documents\GitHub\Length_Stds_Equipment_Register\register.xml");
+
+                equipment_register = new EquipmentRegister(path);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error reading Equipment Register:\n" + ex.Message);
+                MessageBox.Show(
+                    "Error reading Equipment Register:\n" + ex.Message);
+
                 Application.Exit();
                 return;
             }
-
-            if (doc_.Root == null)
-            {
-                MessageBox.Show("Invalid XML: missing root element.");
-                Application.Exit();
-                return;
-            }
-
-            //if we get here we have a valid equipment register else notifiy user and exit the application.
-            XElement reg_ = doc_.Root;
-            equipment_register = new EquipmentRegister { doc = doc_, msl = msl_, register = reg_};
         }
 
         private void Comopenbutton_Click(object sender, EventArgs e)

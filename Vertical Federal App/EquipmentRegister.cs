@@ -140,14 +140,21 @@ namespace Vertical_Federal_App
 
     public class EquipmentRegister
     {
-        public required XDocument doc;
-        public required XNamespace msl;
-        public required XElement register;
+        public XDocument doc;
+        public XNamespace msl;
+        public XElement register;
 
        
-        public EquipmentRegister()
+        public EquipmentRegister(string fileName)
         {
-            
+            doc = XDocument.Load(fileName);
+
+            register = doc.Root
+                ?? throw new InvalidOperationException(
+                    "Equipment register XML has no root element.");
+
+            // Get the namespace from the XML itself
+            msl = register.Name.Namespace;
         }
 
 
@@ -170,7 +177,6 @@ namespace Vertical_Federal_App
             XElement register = doc.Root
                 ?? throw new InvalidOperationException("Invalid XML document");
 
-            // ✅ Split search string into tokens
             string[] searchTokens = (search_key ?? "")
                 .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim())
@@ -179,27 +185,29 @@ namespace Vertical_Federal_App
             var items =
                 from e in register.Elements(msl + "equipment")
 
-                // ✅ Split equipment keywords
                 let keywords = ((string?)e.Attribute("keywords") ?? "")
                     .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
 
-                // ✅ Match ALL search tokens against equipment keywords
                 where searchTokens.All(token =>
                     keywords.Any(k =>
-                        string.Equals(k, token, StringComparison.OrdinalIgnoreCase)))
+                        string.Equals(
+                            k,
+                            token,
+                            StringComparison.OrdinalIgnoreCase)))
 
                 select new InventoryItem
                 {
                     Keywords = string.Join(" ", keywords),
-                    Id = Convert.ToString(e.Element(msl + "id")),
-                    Manufacturer = Convert.ToString(e.Element(msl + "manufacturer")),
-                    Model = Convert.ToString(e.Element(msl + "model")),
-                    Serial = Convert.ToString(e.Element(msl + "serial")),
-                    Description = Convert.ToString(e.Element(msl + "description")),
-                    Location = Convert.ToString(e.Element(msl + "location")),
-                    Status = Convert.ToString(e.Element(msl + "status")),
-                    Loggable = Convert.ToString(e.Element(msl + "loggable")),
-                    Traceable = Convert.ToString(e.Element(msl + "traceable"))
+
+                    Id = (string?)e.Element(msl + "id") ?? "",
+                    Manufacturer = (string?)e.Element(msl + "manufacturer") ?? "",
+                    Model = (string?)e.Element(msl + "model") ?? "",
+                    Serial = (string?)e.Element(msl + "serial") ?? "",
+                    Description = (string?)e.Element(msl + "description") ?? "",
+                    Location = (string?)e.Element(msl + "location") ?? "",
+                    Status = (string?)e.Element(msl + "status") ?? "",
+                    Loggable = (string?)e.Element(msl + "loggable") ?? "",
+                    Traceable = (string?)e.Element(msl + "traceable") ?? ""
                 };
 
             return items.ToList();
@@ -540,7 +548,7 @@ namespace Vertical_Federal_App
                     "Equipment '" + equipmentId + "' not found.");
 
             // ✅ Access specifications (msl:any)
-            XElement specs = equipment.Element(msl + "specifications");
+            XElement? specs = equipment.Element(msl + "specifications");
 
             if (specs == null || !specs.HasElements)
                 return null;
@@ -696,6 +704,7 @@ namespace Vertical_Federal_App
             
             foreach(InventoryItem item in items)
             {
+                
                 //get specifications for this set
                 GaugeBlockSetSpecification spec = GetGaugeBlockSetSpecifications(item.Id);
                 if (spec.Metric == metric)
